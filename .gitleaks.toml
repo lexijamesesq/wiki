@@ -1,0 +1,15 @@
+# gitleaks config for the Wiki publication repo (public knowledge-system machinery).
+# Operator-specific PII rules loaded from .gitleaks-operator-rules.toml
+# (gitignored symlink -> ~/bin/dotty-private/gitleaks-operator-rules.toml).
+
+title = "Wiki gitleaks config"
+
+[extend]
+path = ".gitleaks-operator-rules.toml"
+
+[allowlist]
+paths = [
+  '''\.gitleaks\.toml$''',
+  '''CLAUDE\.sample\.md$''',
+  '''LICENSE$''',
+]

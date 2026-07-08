@@ -1,0 +1,44 @@
+# All patterns below are root-anchored (leading slash). Unanchored directory
+# names (e.g. bare "Queue/") match at ANY depth in gitignore semantics — on a
+# case-insensitive filesystem (macOS default, core.ignorecase=true) that
+# silently swallows same-named nested paths too, e.g. claude/skills/queue/
+# would vanish under a bare "Queue/" rule with no error, no signal. Anchor
+# everything; this is exactly the silent-drift failure mode the track-list
+# guard exists to catch — the ignore-list itself must not reintroduce it.
+
+# === Created Content (operator's living knowledge layer — never published) ===
+/Knowledge/
+/Data/
+/Contexts/
+/Attachments/
+/Queue/
+/Working/
+
+# === Operational State (queue/backlog artifacts) ===
+/backlog.json
+/backlog-archive.json
+
+# === Private Configuration ===
+/CLAUDE.md
+/claude/settings.local.json
+/claude/scheduled_tasks.lock
+
+# === Instance data embedded in an otherwise-public contract doc ===
+# Real colleague/employer names — see the file's own frontmatter Publication note.
+# Never mirror this content anywhere git-tracked.
+/spec/tag-taxonomy-rosters.md
+
+# === Symlink (local infrastructure, not tracked) ===
+/.claude
+
+# === Operator PII rules (symlink -> ~/bin/dotty-private/gitleaks-operator-rules.toml) ===
+/.gitleaks-operator-rules.toml
+
+# === Unsanitized eval fixtures (HOLD status — real/unscrubbed content, per
+# {workspace_root}/System/Context/wiki-publication-boundary-map.md > Decisions #4) ===
+
+# === Transient markers (any depth is fine/intended for this one) ===
+.DS_Store
+
+# Evals never publish (no estate repo ships evals — operator convention)
+/Evals/
