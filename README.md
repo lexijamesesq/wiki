@@ -48,7 +48,7 @@ cp CLAUDE.sample.md CLAUDE.md
 
 | Skill | What it does |
 |---|---|
-| `/knowledge-integration` | The gatekeeper — the single router every candidate passes through before it's filed, queued, or discarded, via a mode × trust × kind disposition matrix. |
+| `/gatekeeper` | The gatekeeper — the single router every candidate passes through before it's filed, queued, or discarded, via a mode × trust × kind disposition matrix. |
 | `/wiki-intake` | Single entry point for knowledge-axis captures — classifies intent, resolves destination, hands off to the gatekeeper. |
 | `/queue` | The operator-judgment queue — creates pending-decision items and runs the menu-guided triage flow. |
 | `/capture-meeting` | Structured capture for recurring meetings, with a registered/unregistered trust distinction that gates autonomous filing. |
@@ -111,7 +111,7 @@ The design bet: a wiki that reads at write-time — compiled, curated, kept "cle
 
 - **New meeting types:** Copy `claude/skills/capture-meeting/meeting-registry.sample.json` to your own registry and add an entry to promote a meeting to dual-write.
 - **New tag namespaces:** `spec/tag-taxonomy.md` documents growth thresholds per namespace — some auto-create, some need confirmation, some are procedural and require updating downstream consumers.
-- **Disposition judgment tuning:** `claude/skills/knowledge-integration/calibration-surface.md` is the canonical home for the dimensions, thresholds, and disposition matrix — amend there; every consumer skill references it rather than re-deriving its own copy.
+- **Disposition judgment tuning:** `claude/skills/gatekeeper/calibration-surface.md` is the canonical home for the dimensions, thresholds, and disposition matrix — amend there; every consumer skill references it rather than re-deriving its own copy.
 - **Without Obsidian:** The skills don't require Obsidian itself — wikilinks and frontmatter-driven tag queries are the actual dependency, so a plain folder tree with the same structure works.
 
 ## Security
