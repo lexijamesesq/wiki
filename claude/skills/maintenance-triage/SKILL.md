@@ -12,7 +12,6 @@ description: >-
 argument-hint:
   - (no argument — reads findings JSON from /tmp/pi-cc-staging/)
 context: fork
-disable-model-invocation: false
 allowed-tools:
   - Read
   - 'Bash(date:*)'
