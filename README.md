@@ -74,10 +74,8 @@ Each contract declares how to read it, so the lint engine derives its rules from
 
 | Contract | What it does |
 |----------|--------------|
-| `spec/structural-contract.md` | Defines the file envelope: required frontmatter, valid tags, discoverability |
-| `spec/tag-taxonomy.md` | Closes the tag namespaces, and sets a growth threshold and depth limit for each |
-| `spec/handoff-contracts.md` | Says which skill owns which write, so two skills never file the same thing |
-| `spec/lint-surface.md` | Lists the lint rules the engine derives from the three contracts above |
+| `spec/knowledge-contract.md` | The consolidated rulebook. Part I closes the tag namespaces with growth thresholds and depth limits; Part II defines the file envelope (required frontmatter, valid tags, discoverability); Part III says which skill owns which write, so two skills never file the same thing; Part IV lists the lint rules; Part V is the parsing contract the engine derives them from |
+| `spec/tag-taxonomy-rosters.md` | The real-name rosters (people, employers, area top-levels) — split from the contract so the public shape carries no PII |
 
 ## Configuration
 
@@ -85,11 +83,11 @@ The system separates what you configure from what skills handle.
 
 **You configure:**
 - `CLAUDE.md` — filled in from `CLAUDE.sample.md`'s `TODO:` markers: architecture doc link, intake skill name, size thresholds, automated-lane scope
-- `spec/tag-taxonomy.md` — only if your namespaces or growth thresholds differ from the defaults
+- `spec/knowledge-contract.md` Part I — only if your namespaces or growth thresholds differ from the defaults
 
 **Skills handle:**
 - Candidate disposition, through the gatekeeper's mode × trust × kind matrix
-- Tag-taxonomy and structural-contract enforcement
+- Tag and envelope enforcement per the knowledge contract
 - Lint-rule derivation from each contract's own Parsing Contract
 - Dead-man monitoring for the maintenance lane
 
@@ -136,7 +134,7 @@ The maintenance lane runs unattended on a schedule. A heartbeat check watches th
 The system ships tuned for an Obsidian vault, a meeting registry, and the companion dotty skills. To adapt it:
 
 - **New meeting types:** the `/capture-meeting` skill gates autonomous filing on a registry. Copy [meeting-registry.sample.json](claude/skills/capture-meeting/meeting-registry.sample.json) from this repo, then add an entry to promote a meeting to dual-write.
-- **New tag namespaces:** `spec/tag-taxonomy.md` sets a growth threshold per namespace — some auto-create, some need confirmation, and some are procedural, requiring downstream consumers to be updated.
+- **New tag namespaces:** `spec/knowledge-contract.md` Part I sets a growth threshold per namespace — some auto-create, some need confirmation, and some are procedural, requiring downstream consumers to be updated.
 - **Disposition tuning:** [spec/calibration-surface.md](spec/calibration-surface.md) is the canonical home for the dimensions, thresholds, and disposition matrix. Amend there; every consumer skill references it rather than re-deriving its own copy.
 - **Without Obsidian:** the skills need wikilinks and frontmatter-driven tag queries, not Obsidian itself. A plain folder tree with the same structure works.
 
