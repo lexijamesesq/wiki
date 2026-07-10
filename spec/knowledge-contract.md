@@ -16,7 +16,7 @@ Authority: derived from `target-architecture-v2.md` (space model, freshness desi
 
 ---
 
-# Part I — Tags
+## Part I — Tags
 
 Each namespace is an **orthogonal question** Claude can ask about a page. Together they form a closed set of query dimensions. Tags outside the closed set are either malformed or a missing dimension (triggers review). **When you reach for depth in a tag, reach for another namespace first** — multiple orthogonal tags out-search a deep hierarchical path every time.
 
@@ -179,7 +179,7 @@ When tempted to go deeper than the max, reach for another namespace first:
 
 ---
 
-# Part II — The Structural Envelope
+## Part II — The Structural Envelope
 
 Governs the **envelope**: mechanically-verifiable static structure — required frontmatter fields, tag validity, discoverability, single title. It does NOT govern *content architecture* (how a body is organized, how it mutates, when it goes stale) — that varies within every `type/` and is out of scope (see Body & Content Architecture). Every rule here is checkable by lint without judgment. A file is well-formed only when it satisfies both the tag dimension (Part I) and this envelope.
 
@@ -311,7 +311,7 @@ Tracked reconciliation work, not blockers to adopting the contract.
 
 ---
 
-# Part III — Filing Handoffs
+## Part III — Filing Handoffs
 
 Specifies the contract at each **filing handoff** — every boundary where content crosses into a knowledge-layer file. A filing-handoff contract = the Part II envelope (by reference) **+** a thin handoff-specific layer. This part holds only the layer; it does not restate the envelope.
 
@@ -393,7 +393,7 @@ Typed candidates from the unattended capture lane (Pi) → knowledge-layer files
 
 ---
 
-# Part IV — Lint Surface
+## Part IV — Lint Surface
 
 The complete set of integrity checks that verify vault content against this contract. **Lint is the executable form of the contract.** `/lint-knowledge`'s `lint.py` derives rule *values* at runtime from Parts I–II via the Parsing Contract — it never hardcodes them. Scope: integrity checks only (Layers 1–2). Associative-layer integrity is tracked separately.
 
@@ -508,7 +508,7 @@ A reference from one project's Knowledge into another's must be a `[[wikilink]]`
 
 ---
 
-# Part V — Parsing Contract
+## Part V — Parsing Contract
 
 `/lint-knowledge`'s `lint.py` extracts rules from Parts I–II at runtime — never hardcodes them. Every rule below is mechanically checkable. No rule appears elsewhere in this contract without a row here; if it can't be parsed, it isn't a contract rule. `[tightening]` markers indicate rules stricter than lint's current behavior — escalate during reconciliation.
 
@@ -557,3 +557,4 @@ Primary consumers: `/lint-knowledge` + `lint.py` (Parts I–II Parsing Contract,
 2. **`## The Namespaces` must not appear inline** anywhere above its real section (its presence check is unanchored). All other header searches are line-anchored.
 3. **Table shapes:** column counts and backtick formatting per the Parsing Contract. The `type/` vocab table must retain the `**Vocabulary (closed set):**` marker before it and keep "Deprecated" in the `type/raw` Meaning cell. The Exemption tiers table must keep all four rows (Invariant-core-only, Structure-not-imposed, Out of scope non-empty — lint fails loud on any empty tier) with `type/` values in backticks in column 3. The Location Gate table must keep ≥1 backticked glob in column 1.
 4. **Namespace sub-section order** (`type/` → `project/` → `area/` → `topic/` → `person/` → `status/`) keeps the `project/` grandfather scan bounded by the following `area/` header — preserve at least one `### \`…/\`` header after `### \`project/\``.
+5. **Part headers are H2** (`## Part N — …`); only the document title is H1. This file is itself governed (Location Gate: `Wiki/spec/*.md`) and must satisfy its own single-H1 rule.
