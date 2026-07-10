@@ -1,6 +1,8 @@
-A Claude Code system that runs an agent-maintained knowledge base inside an Obsidian vault. Every capture passes through a single gatekeeper that files, queues, or discards it; an operator-judgment queue holds what the gatekeeper will not decide alone; and machine-parseable contracts derive their own lint rules instead of drifting from prose. An unattended maintenance lane runs under dead-man monitoring behind layered publication guards, orchestrated through Claude Code skills.
+A Claude Code system that keeps a personal knowledge base in an Obsidian vault and maintains it. Every capture is routed by one skill, which decides whether to file it, hold it for a human decision, or drop it — so a new way to capture content never becomes a new way to write to the vault. The specs that define a valid note also generate the lint rules that enforce them, and a scheduled job cleans up what it safely can, orchestrated through Claude Code skills.
 
 ## Installation
+
+Four of the skills this system runs on ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo. Install both.
 
 Clone the repo, then set up the Claude Code directory:
 
@@ -17,32 +19,33 @@ cp CLAUDE.sample.md CLAUDE.md
 ### Required configuration
 
 | Field | Location | What to set |
-|---|---|---|
+|-------|----------|-------------|
 | `workspace_root` | Global Claude Code config | Your vault's root path. Every `{workspace_root}` placeholder in this repo resolves against it, and this repo must be cloned in as `Wiki/` at that root. |
-| Architecture doc link | `CLAUDE.md` § Header | Your own architecture doc — space structure, linking mechanisms, hub disposition |
-| Human-facing surface | `CLAUDE.md` § Design Philosophy | The surface you browse by hand, and its stewardship trigger |
-| Intake skill name | `CLAUDE.md` § Intake | Your single entry point for Wiki-axis content |
-| Consolidation threshold | `CLAUDE.md` § Health Metrics | The `Knowledge/` file size that triggers a human-approved review |
-| Automated lane scope | `CLAUDE.md` § Decision Authority | Your automated lanes, and the exact scope each may write to |
-| Queue taxonomy | `CLAUDE.md` § Self-Management | Your `Queue/` item kinds, and the name of your triage verb |
-| Freshness window | `CLAUDE.md` § Freshness Signals | Your staleness window in days, measured from `verified` or `updated` |
-| Instance-data roster | `CLAUDE.md` § Key Files | Your real names and employers roster — gitignored, referenced by the taxonomy contract, never restated inline |
+| Architecture doc link | CLAUDE.md > Header | Your own architecture doc — space structure, linking mechanisms, hub disposition |
+| Human-facing surface | CLAUDE.md > Design Philosophy | The surface you browse by hand |
+| Stewardship trigger | CLAUDE.md > Human-Facing Page Stewardship | What causes Claude to re-check those pages for stale facts |
+| Intake skill name | CLAUDE.md > Intake | Your single entry point for Wiki-axis content |
+| Consolidation threshold | CLAUDE.md > Health Metrics | The `Knowledge/` file size that triggers a human-approved review |
+| Automated lane scope | CLAUDE.md > Decision Authority | Your automated lanes, and the exact scope each may write to |
+| Queue taxonomy | CLAUDE.md > Self-Management | Your `Queue/` item kinds, and the name of your triage verb |
+| Freshness window | CLAUDE.md > Freshness signals | Your staleness window in days, measured from `verified` or `updated` |
+| Instance-data roster | CLAUDE.md > Key Files | Your real names and employers roster — gitignored, referenced by the taxonomy contract, never restated inline |
 
 ### Optional configuration
 
 | Field | Location | What to set |
-|---|---|---|
-| Migration doc link | `CLAUDE.md` § Knowledge Sources | Your migration or onboarding doc, if you have one |
-| Specialized handlers | `CLAUDE.md` § Intake | Your own intake handlers, such as a recurring-meeting capture skill |
-| Pending-work log | `CLAUDE.md` § Pending Work | Genuinely pending infrastructure work only |
+|-------|----------|-------------|
+| Migration doc link | CLAUDE.md > Knowledge Sources | Your migration or onboarding doc, if you have one |
+| Specialized handlers | CLAUDE.md > Intake | Your own intake handlers, such as a recurring-meeting capture skill |
+| Pending-work log | CLAUDE.md > Pending Work | Genuinely pending infrastructure work only |
 
 ### Dependencies
 
-- **Claude Code**, with this repo's skills installed as a project-level skills directory (`mv claude .claude`).
-- **An Obsidian vault**, or a plain folder tree. Wikilinks and frontmatter-driven tag queries are the real dependency, not Obsidian itself.
+- **Claude Code** — this repo's skills install as a project-level skills directory (`mv claude .claude`).
+- **An Obsidian vault** *(optional)* — the skills read wikilinks and frontmatter tag queries, which Obsidian provides.
 - **Sibling content folders** — the skills expect `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, and `Queue/` beside this repo's tracked machinery. None are tracked here; they are your content.
-- **The companion [dotty](https://github.com/lexijamesesq/dotty) repo** — it ships the four ingress skills this system runs on, plus the lint engine the contracts feed. Install both.
-- **A session harness (optional)** — these skills run standalone. A broader orchestration layer can wrap them, but nothing here requires one beyond Claude Code itself.
+- **The companion [dotty](https://github.com/lexijamesesq/dotty) repo** — it also ships the lint engine that reads the contracts under `spec/`.
+- **A session harness** *(optional)* — these skills run standalone. A broader orchestration layer can wrap them, but nothing here requires one beyond Claude Code itself.
 
 ## What's Included
 
@@ -50,31 +53,31 @@ cp CLAUDE.sample.md CLAUDE.md
 
 How content gets in. Every capture passes through the gatekeeper before anything is written. These four skills ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo, not here — install both.
 
-| Artifact | Type | What it does |
-|----------|------|--------------|
-| `/wiki-intake` | Skill (dotty) | Classifies a capture's intent, resolves its destination, and hands it to the gatekeeper |
-| `/gatekeeper` | Skill (dotty) | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix |
-| `/capture-meeting` | Skill (dotty) | Captures a recurring meeting, gating autonomous filing on whether the source is registered |
-| `/queue` | Skill (dotty) | Creates pending-decision items and runs the menu-guided triage flow |
+| Skill | What it does |
+|-------|--------------|
+| `/wiki-intake` | Classifies a capture's intent and hands it to the gatekeeper |
+| `/gatekeeper` | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix |
+| `/capture-meeting` | Captures a recurring meeting, gating autonomous filing on whether the source is registered |
+| `/queue` | Creates pending-decision items and runs the menu-guided triage flow |
 
 ### Maintenance
 
-Runs unattended on a schedule, and writes nothing outside `Queue/`.
+The scheduled cleanup pass.
 
-| Artifact | Type | What it does |
-|----------|------|--------------|
-| `/maintenance-triage` | Skill | Reads staged lint findings, then splits deterministic envelope fixes from the judgments that must land in the queue |
+| Skill | What it does |
+|-------|--------------|
+| `/maintenance-triage` | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you |
 
 ### Contracts
 
-Each contract carries a Parsing Contract, so a lint engine derives its rules mechanically at runtime rather than hardcoding a second copy. That engine — the `/lint-knowledge` skill and its `filing-validator` agent — also ships in dotty.
+Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `filing-validator` agent — ships in dotty.
 
-| Artifact | Type | What it does |
-|----------|------|--------------|
-| `spec/structural-contract.md` | Contract | Defines the file envelope: required frontmatter, valid tags, discoverability |
-| `spec/tag-taxonomy.md` | Contract | Closes the tag namespaces, and sets a growth threshold and depth limit for each |
-| `spec/handoff-contracts.md` | Contract | Says which skill owns which write, so two skills never file the same thing |
-| `spec/lint-surface.md` | Contract | Lists the lint rules the engine derives from the three contracts above |
+| Contract | What it does |
+|----------|--------------|
+| `spec/structural-contract.md` | Defines the file envelope: required frontmatter, valid tags, discoverability |
+| `spec/tag-taxonomy.md` | Closes the tag namespaces, and sets a growth threshold and depth limit for each |
+| `spec/handoff-contracts.md` | Says which skill owns which write, so two skills never file the same thing |
+| `spec/lint-surface.md` | Lists the lint rules the engine derives from the three contracts above |
 
 ## Configuration
 
@@ -126,7 +129,7 @@ The contracts under `spec/` are the schema, and each publishes a Parsing Contrac
 
 The design bet: a wiki that reads at write-time — compiled, curated, kept "clean" — drifts silently the moment a source changes underneath it, because nothing forces a re-check of the compilation. This system instead keeps faithful, source-attributed captures and synthesizes at query time, so every session load is a fresh read of current state rather than a cached summary. Mutation is append-biased by design: editing existing substance is the primary corruption vector, so new information appends alongside old, and destructive consolidation requires a human in the loop.
 
-The maintenance lane runs unattended on a schedule and writes nothing outside `Queue/`. Dead-man monitoring watches the lane itself, so a silently stopped job surfaces as a finding rather than as months of nothing happening.
+The maintenance lane runs unattended on a schedule. A heartbeat check watches the lane itself, so a job that stops silently surfaces as a finding rather than as months of nothing happening.
 
 ## Customization
 
