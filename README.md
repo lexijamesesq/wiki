@@ -137,7 +137,7 @@ The system ships tuned for an Obsidian vault, a meeting registry, and the compan
 
 - **New meeting types:** the companion `/capture-meeting` skill gates autonomous filing on a registry. Copy [meeting-registry.sample.json](https://github.com/lexijamesesq/dotty/blob/main/.claude/skills/capture-meeting/meeting-registry.sample.json) from dotty, then add an entry to promote a meeting to dual-write.
 - **New tag namespaces:** `spec/tag-taxonomy.md` sets a growth threshold per namespace — some auto-create, some need confirmation, and some are procedural, requiring downstream consumers to be updated.
-- **Disposition tuning:** dotty's [calibration-surface.md](https://github.com/lexijamesesq/dotty/blob/main/.claude/skills/gatekeeper/calibration-surface.md) is the canonical home for the dimensions, thresholds, and disposition matrix. Amend there; every consumer skill references it rather than re-deriving its own copy.
+- **Disposition tuning:** [spec/calibration-surface.md](spec/calibration-surface.md) is the canonical home for the dimensions, thresholds, and disposition matrix. Amend there; every consumer skill references it rather than re-deriving its own copy.
 - **Without Obsidian:** the skills need wikilinks and frontmatter-driven tag queries, not Obsidian itself. A plain folder tree with the same structure works.
 
 ## Security
