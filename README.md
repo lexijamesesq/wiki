@@ -2,7 +2,7 @@ A Claude Code system that keeps a personal knowledge base in an Obsidian vault a
 
 ## Installation
 
-Four of the skills this system runs on ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo. Install both.
+Three of the skills this system runs on ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo; `/capture-meeting` ships here, vault-resident. Install both repos.
 
 Clone the repo, then set up the Claude Code directory:
 
@@ -51,7 +51,7 @@ cp CLAUDE.sample.md CLAUDE.md
 
 ### Ingress
 
-How content gets in. Every capture passes through the gatekeeper before anything is written. These four skills ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo, not here — install both.
+How content gets in. Every capture passes through the gatekeeper before anything is written. Three of these skills ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo; `/capture-meeting` ships in this repo at `claude/skills/capture-meeting/` (its consumer is the Pi lane, which resolves vault-resident skills).
 
 | Skill | What it does |
 |-------|--------------|
@@ -135,9 +135,9 @@ The maintenance lane runs unattended on a schedule. A heartbeat check watches th
 
 The system ships tuned for an Obsidian vault, a meeting registry, and the companion dotty skills. To adapt it:
 
-- **New meeting types:** the companion `/capture-meeting` skill gates autonomous filing on a registry. Copy [meeting-registry.sample.json](https://github.com/lexijamesesq/dotty/blob/main/.claude/skills/capture-meeting/meeting-registry.sample.json) from dotty, then add an entry to promote a meeting to dual-write.
+- **New meeting types:** the `/capture-meeting` skill gates autonomous filing on a registry. Copy [meeting-registry.sample.json](claude/skills/capture-meeting/meeting-registry.sample.json) from this repo, then add an entry to promote a meeting to dual-write.
 - **New tag namespaces:** `spec/tag-taxonomy.md` sets a growth threshold per namespace — some auto-create, some need confirmation, and some are procedural, requiring downstream consumers to be updated.
-- **Disposition tuning:** dotty's [calibration-surface.md](https://github.com/lexijamesesq/dotty/blob/main/.claude/skills/gatekeeper/calibration-surface.md) is the canonical home for the dimensions, thresholds, and disposition matrix. Amend there; every consumer skill references it rather than re-deriving its own copy.
+- **Disposition tuning:** [spec/calibration-surface.md](spec/calibration-surface.md) is the canonical home for the dimensions, thresholds, and disposition matrix. Amend there; every consumer skill references it rather than re-deriving its own copy.
 - **Without Obsidian:** the skills need wikilinks and frontmatter-driven tag queries, not Obsidian itself. A plain folder tree with the same structure works.
 
 ## Security
