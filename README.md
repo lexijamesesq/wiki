@@ -41,38 +41,40 @@ cp CLAUDE.sample.md CLAUDE.md
 - **Claude Code**, with this repo's skills installed as a project-level skills directory (`mv claude .claude`).
 - **An Obsidian vault**, or a plain folder tree. Wikilinks and frontmatter-driven tag queries are the real dependency, not Obsidian itself.
 - **Sibling content folders** — the skills expect `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, and `Queue/` beside this repo's tracked machinery. None are tracked here; they are your content.
-- **The companion [dotty](https://github.com/lexijamesesq/dotty) repo**, which ships the four global skills this system runs on. Install both.
+- **The companion [dotty](https://github.com/lexijamesesq/dotty) repo** — it ships the four ingress skills this system runs on, plus the lint engine the contracts feed. Install both.
 - **A session harness (optional)** — these skills run standalone. A broader orchestration layer can wrap them, but nothing here requires one beyond Claude Code itself.
 
 ## What's Included
 
-### Skills
+### Ingress
 
-| Skill | What it does |
-|---|---|
-| `/maintenance-triage` | Reads staged lint findings from the unattended maintenance lane, then splits deterministic envelope fixes from genuinely-stuck judgments that land in the queue. |
+How content gets in. Every capture passes through the gatekeeper before anything is written. These four skills ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo, not here — install both.
 
-### Companion skills
+| Artifact | Type | What it does |
+|----------|------|--------------|
+| `/wiki-intake` | Skill (dotty) | Classifies a capture's intent, resolves its destination, and hands it to the gatekeeper |
+| `/gatekeeper` | Skill (dotty) | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix |
+| `/capture-meeting` | Skill (dotty) | Captures a recurring meeting, gating autonomous filing on whether the source is registered |
+| `/queue` | Skill (dotty) | Creates pending-decision items and runs the menu-guided triage flow |
 
-These ship in [dotty](https://github.com/lexijamesesq/dotty), not here. The system needs all four.
+### Maintenance
 
-| Skill | What it does |
-|---|---|
-| `/gatekeeper` | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix. |
-| `/wiki-intake` | Classifies a knowledge-axis capture's intent, resolves its destination, and hands it to the gatekeeper. |
-| `/queue` | Creates pending-decision items and runs the menu-guided triage flow. |
-| `/capture-meeting` | Captures recurring meetings, gating autonomous filing on a registered-versus-unregistered trust distinction. |
+Runs unattended on a schedule, and writes nothing outside `Queue/`.
+
+| Artifact | Type | What it does |
+|----------|------|--------------|
+| `/maintenance-triage` | Skill | Reads staged lint findings, then splits deterministic envelope fixes from the judgments that must land in the queue |
 
 ### Contracts
 
 Each contract carries a Parsing Contract, so a lint engine derives its rules mechanically at runtime rather than hardcoding a second copy. That engine — the `/lint-knowledge` skill and its `filing-validator` agent — also ships in dotty.
 
-| Path | What it is |
-|---|---|
-| `spec/structural-contract.md` | Required frontmatter, tag validity, discoverability — the file envelope. |
-| `spec/tag-taxonomy.md` | Closed tag namespaces, growth thresholds, depth limits. |
-| `spec/handoff-contracts.md` | Cross-skill filing contracts — which skill owns which write. |
-| `spec/lint-surface.md` | Machine-parseable lint rules derived from the contracts above. |
+| Artifact | Type | What it does |
+|----------|------|--------------|
+| `spec/structural-contract.md` | Contract | Defines the file envelope: required frontmatter, valid tags, discoverability |
+| `spec/tag-taxonomy.md` | Contract | Closes the tag namespaces, and sets a growth threshold and depth limit for each |
+| `spec/handoff-contracts.md` | Contract | Says which skill owns which write, so two skills never file the same thing |
+| `spec/lint-surface.md` | Contract | Lists the lint rules the engine derives from the three contracts above |
 
 ## Configuration
 
@@ -127,6 +129,8 @@ The design bet: a wiki that reads at write-time — compiled, curated, kept "cle
 The maintenance lane runs unattended on a schedule and writes nothing outside `Queue/`. Dead-man monitoring watches the lane itself, so a silently stopped job surfaces as a finding rather than as months of nothing happening.
 
 ## Customization
+
+The system ships tuned for an Obsidian vault, a meeting registry, and the companion dotty skills. To adapt it:
 
 - **New meeting types:** the companion `/capture-meeting` skill gates autonomous filing on a registry. Copy [meeting-registry.sample.json](https://github.com/lexijamesesq/dotty/blob/main/.claude/skills/capture-meeting/meeting-registry.sample.json) from dotty, then add an entry to promote a meeting to dual-write.
 - **New tag namespaces:** `spec/tag-taxonomy.md` sets a growth threshold per namespace — some auto-create, some need confirmation, and some are procedural, requiring downstream consumers to be updated.
