@@ -40,19 +40,27 @@ cp CLAUDE.sample.md CLAUDE.md
 
 - **Claude Code**, with the skills under `claude/` installed as a project-level skills directory (`mv claude .claude`).
 - **An Obsidian vault** — or a plain folder tree; wikilinks and frontmatter-driven tag queries are the actual dependency, not Obsidian itself. Clone this repo in as `Wiki/` at your vault's root — this repo's own specs write fully-qualified paths like `{workspace_root}/Wiki/Knowledge/` and `{workspace_root}/Wiki/Queue/` (see `spec/handoff-contracts.md`), so those and this README's flat `Queue/` below (repo-root-relative) name the same folder once cloned in place. Set `workspace_root` per Required configuration, above. The skills expect `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, and `Queue/` folders alongside this repo's tracked machinery — none of those are tracked here; they're your content.
-- **A session harness (optional)** — these skills run standalone. A broader orchestration layer can wrap them with thin forwarders, but nothing here requires one beyond Claude Code itself.
+- **Companion skills** — this repo ships one skill (`/maintenance-triage`). The other skills that operate on this system — `/gatekeeper`, `/wiki-intake`, `/queue`, `/capture-meeting` — ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo as global Claude Code skills. Install both repos for the full system.
+- **A session harness (optional)** — these skills run standalone. A broader orchestration layer can wrap them, but nothing here requires one beyond Claude Code itself.
 
 ## What's Included
 
-### Skills
+### Skill
 
 | Skill | What it does |
 |---|---|
-| `/knowledge-integration` | The gatekeeper — the single router every candidate passes through before it's filed, queued, or discarded, via a mode × trust × kind disposition matrix. |
+| `/maintenance-triage` | Unattended maintenance-lane judgment pass — reads staged lint findings, splits deterministic envelope fixes from genuinely-stuck judgments that land in the queue. |
+
+### Companion skills (from [dotty](https://github.com/lexijamesesq/dotty))
+
+The full system uses these global skills, which ship in the companion repo:
+
+| Skill | What it does |
+|---|---|
+| `/gatekeeper` | The single router every candidate passes through before it's filed, queued, or discarded, via a mode x trust x kind disposition matrix. |
 | `/wiki-intake` | Single entry point for knowledge-axis captures — classifies intent, resolves destination, hands off to the gatekeeper. |
 | `/queue` | The operator-judgment queue — creates pending-decision items and runs the menu-guided triage flow. |
 | `/capture-meeting` | Structured capture for recurring meetings, with a registered/unregistered trust distinction that gates autonomous filing. |
-| `/maintenance-triage` | Unattended maintenance-lane triage — splits deterministic fixes from judgment calls that land in the queue. |
 
 ### Contracts
 
@@ -71,7 +79,7 @@ The system separates what you configure from what skills handle.
 
 **You configure:** `CLAUDE.md`, filled in from `CLAUDE.sample.md`'s `TODO:` markers — architecture doc link, intake skill name, size thresholds, automated-lane scope. `spec/tag-taxonomy.md`, if your own namespaces or growth thresholds differ from the defaults.
 
-**Skills handle:** Candidate disposition via the gatekeeper's mode × trust × kind matrix, tag-taxonomy and structural-contract enforcement, lint-rule derivation from each contract's own Parsing Contract, and dead-man monitoring for the maintenance lane.
+**Skills handle:** Candidate disposition via the gatekeeper's mode x trust x kind matrix, tag-taxonomy and structural-contract enforcement, lint-rule derivation from each contract's own Parsing Contract, and dead-man monitoring for the maintenance lane.
 
 See `CLAUDE.sample.md` for the full configuration contract with placeholder values.
 
@@ -109,9 +117,9 @@ The design bet: a wiki that reads at write-time — compiled, curated, kept "cle
 
 ## Customization
 
-- **New meeting types:** Copy `claude/skills/capture-meeting/meeting-registry.sample.json` to your own registry and add an entry to promote a meeting to dual-write.
+- **New meeting types:** The companion `/capture-meeting` skill uses a meeting registry to gate autonomous filing. Copy its sample registry and add an entry to promote a meeting to dual-write. See the [dotty](https://github.com/lexijamesesq/dotty) repo for details.
 - **New tag namespaces:** `spec/tag-taxonomy.md` documents growth thresholds per namespace — some auto-create, some need confirmation, some are procedural and require updating downstream consumers.
-- **Disposition judgment tuning:** `claude/skills/knowledge-integration/calibration-surface.md` is the canonical home for the dimensions, thresholds, and disposition matrix — amend there; every consumer skill references it rather than re-deriving its own copy.
+- **Disposition judgment tuning:** The companion `/gatekeeper` skill carries a calibration surface that defines the dimensions, thresholds, and disposition matrix. See the [dotty](https://github.com/lexijamesesq/dotty) repo for details.
 - **Without Obsidian:** The skills don't require Obsidian itself — wikilinks and frontmatter-driven tag queries are the actual dependency, so a plain folder tree with the same structure works.
 
 ## Security
