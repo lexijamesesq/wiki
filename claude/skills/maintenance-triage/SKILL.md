@@ -2,7 +2,7 @@
 name: maintenance-triage
 description: >-
   Judgment pass of the Pi maintenance lane. Reads the staged lint findings JSON,
-  runs the delta-scoped contradiction scan (lint-surface judgment pass), derives
+  runs the delta-scoped contradiction scan (knowledge-contract Part IV judgment pass), derives
   each finding's decisive action, and splits the results: deterministic envelope
   fixes become a fix plan for the gated model-free apply pass; genuinely-stuck
   judgments become Wiki/Queue/ items. When staging also carries pending Inbox/

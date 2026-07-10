@@ -149,7 +149,7 @@ Item kinds — TODO: define your own taxonomy. This repo's convention (kept mini
 When Claude needs information about Wiki's rules, structure, or state:
 
 1. **TODO: your architecture doc** — space structure, linking mechanisms, hub disposition, rejected alternatives
-2. **`spec/tag-taxonomy.md`** — closed tag namespaces, thresholds, depth limits, parsing contract
+2. **`spec/knowledge-contract.md` Part I** — closed tag namespaces, thresholds, depth limits, parsing contract
 3. **This `CLAUDE.md`** — stewardship rules, management triggers, decision authority
 4. **TODO: your migration/onboarding doc**, if you have one
 5. **Wiki's own content** — query via content/tag search
@@ -196,7 +196,7 @@ At point-of-use: check the domain's context page first (authority hierarchy). Fo
 | `Data/` | Structured per-item records |
 | `Contexts/` | Claude's durable working understanding + domain schema |
 | `Attachments/` | Binaries |
-| `spec/` | Canonical contract docs — `structural-contract.md`, `handoff-contracts.md`, `lint-surface.md`, `tag-taxonomy.md` — governed, lint-parsed. TODO: your instance-data roster (real names/employers, if your taxonomy has a `person/`-style namespace) belongs in a gitignored sibling file, never here. |
+| `spec/` | The canonical contract — `knowledge-contract.md` (Part I tags, Part II envelope, Part III filing handoffs, Part IV lint surface, Part V parsing contract) — governed, lint-parsed. TODO: your instance-data roster (real names/employers, if your taxonomy has a `person/`-style namespace) belongs in a gitignored sibling file, never here. |
 
 ---
 

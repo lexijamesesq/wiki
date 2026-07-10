@@ -76,7 +76,7 @@ plan's `created` field).
 Scope = `delta.changed ∪ delta.new`, `.md` files only, capped at 20
 (prioritize `CLAUDE.md` files, then `Knowledge/` paths, then the rest).
 
-Per lint-surface's judgment-pass contract:
+Per the knowledge-contract Part IV judgment-pass contract:
 
 1. Read each in-scope file (`mcp__obsidian__read_note`; batch with
    `read_multiple_notes` ≤ 10).

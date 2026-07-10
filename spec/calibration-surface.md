@@ -7,7 +7,7 @@ updated: '2026-07-10'
 ---
 # Calibration Surface — Knowledge-Ingress Judgment
 
-The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), capture-meeting (extraction guidance), `/wiki-intake` (knowledge branch), handoff-contracts §§4–5 — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
+The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), capture-meeting (extraction guidance), `/wiki-intake` (knowledge branch), knowledge-contract Part III §§4–5 — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
 
 ## §1 The four dimensions
 
@@ -237,4 +237,4 @@ Disposition: discard, reason duplicate — logged in the report, never a second 
 
 ## Amendment discipline
 
-This file changes only by operator-approved edit. Consumers reference sections by number (§1–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, capture-meeting, /wiki-intake, handoff-contracts §§4–5).
+This file changes only by operator-approved edit. Consumers reference sections by number (§1–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, capture-meeting, /wiki-intake, knowledge-contract Part III §§4–5).
