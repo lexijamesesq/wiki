@@ -122,6 +122,20 @@ Menu-guided triage of pending items, scoped or all.
 
 Content enters through one path and narrows. An intake skill classifies a capture's intent; the gatekeeper resolves it against a disposition matrix indexed by mode (interactive or automated), trust (registered or unregistered source), and kind; only then does a write happen. No extractor chooses its own destination, so a new capture surface never adds a new way to write to the vault.
 
+```
+  session captures     meetings (automated lane)     everything else
+     /capture              /capture-meeting            /wiki-intake
+         └──────────────────────┼─────────────────────────┘
+                                ▼
+                          /gatekeeper
+                   mode × trust × kind matrix
+          ┌─────────────────────┼─────────────────────┐
+          ▼                     ▼                     ▼
+        file                  queue                discard
+   Knowledge/ Data/       Queue/ — waits         logged, with
+   Contexts/ + logs        for a human            the reason
+```
+
 The contracts under `spec/` are the schema, and each publishes a Parsing Contract describing how to read it. The lint engine reads those at runtime and derives its rules from them, so a rule cannot disagree with the spec that produced it — there is only ever one copy.
 
 The design bet: a wiki that reads at write-time — compiled, curated, kept "clean" — drifts silently the moment a source changes underneath it, because nothing forces a re-check of the compilation. This system instead keeps faithful, source-attributed captures and synthesizes at query time, so every session load is a fresh read of current state rather than a cached summary. Mutation is append-biased by design: editing existing substance is the primary corruption vector, so new information appends alongside old, and destructive consolidation requires a human in the loop.
