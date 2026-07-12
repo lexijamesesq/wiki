@@ -81,7 +81,7 @@ Content matching a product area NOT in the registry's `product_areas` map no lon
 - V2: all sources in the staging payload are empty or null → report "no source content delivered" and exit.
 - Never create a standalone meeting file for an unregistered meeting absent an explicit interactive request.
 - Never write to Wiki/Queue/, Personal/Work, Linear, or non-log Knowledge destinations — dispositions belong to the gatekeeper.
-- Gatekeeper invocation fails → emit the extraction report with candidates intact and `dispositions` empty; report the error; automated mode: **heartbeat suppressed** — the dead-man's switch is the FAIL sentinel here (silence after a suppressed heartbeat is what surfaces the failure). Do not retry-loop; do not dispose of candidates yourself.
+- Gatekeeper invocation fails → emit the extraction report with candidates intact and `dispositions` empty; **the FIRST line of your final output must be exactly `FAIL: gatekeeper-unreachable`** (the dispatcher's critic gate greps this sentinel — models declare, scripts enforce); then report the error detail; automated mode: **heartbeat suppressed**. Do not retry-loop; do not dispose of candidates yourself.
 
 ## Navigation
 
@@ -100,7 +100,7 @@ Per invocation, source the content and select the tier (see Dispatch below), the
 
 1. **Source the content, in priority order:** JSON staging (`/tmp/pi-cc-staging/delivered-content.json`, V2) → markdown staging (`delivered-content.md`, V1) → `<delivered-content>` block in the prompt (interactive/router) → Drive fetch (registry has `drive_file_id`) → none (report "No meeting document received." and exit).
 2. **Select tier:** JSON staging — match `event_title` against registry `name` fields → Tier 1; else `attendees.length == 2` → Tier 2; else → Tier 3. Markdown/prompt staging — look up `$ARGUMENTS[0]` in the registry → matched → Tier 1 (V1); unmatched → Routed-Only Path.
-3. **V2 source priority within a tier:** `gemini_notes` (primary if present — already processed) > `granola_notes` (primary if no Gemini) > `agenda` (primary if neither; the only source type that gets format-specific parsing).
+3. **V2 source priority within a tier:** `granola_notes` (primary if present — transcript-derived) > `gemini_notes` (primary if no Granola) > `agenda` (fallback if neither; the only source type that gets format-specific parsing).
 
 ### Mode bias (applies to both branches — registered dual-write and routed-only)
 
@@ -113,7 +113,7 @@ A registered meeting arriving via the pipeline uses `registered-capture.md` with
 
 ### Candidate schema (emitted by both playbooks, Step 6b)
 
-Candidate schema: `../gatekeeper/SKILL.md` › Candidate schema (canonical). This skill adds `pinned: false` (no operator ask pins in pipeline context) and sources `scope_hint` from the registry's `area` field for registered meetings (null otherwise).
+Candidate schema: `dotty/.claude/skills/gatekeeper/SKILL.md` › Candidate schema (canonical). This skill adds `pinned: false` (no operator ask pins in pipeline context) and sources `scope_hint` from the registry's `area` field for registered meetings (null otherwise).
 
 Kind proposals: `Wiki/spec/calibration-surface.md` §3 (canonical definitions + signal mapping). One entry may yield multiple candidates of different kinds (duplication at extraction only, shared provenance). Entries that fail coherence are NOT dropped silently — emitted as `noise` so the extraction report accounts for every identified entry.
 
@@ -154,6 +154,6 @@ Entries for EXISTING targets never carry rendered full state (`{target, pre_stat
 ## References
 
 - `Wiki/spec/calibration-surface.md` §§1-2 — coherence dimensions + thresholds (canonical; cited here, not restated).
-- `../gatekeeper/SKILL.md` — the gatekeeper this skill hands candidates to.
+- `dotty/.claude/skills/gatekeeper/SKILL.md` — the gatekeeper this skill hands candidates to.
 - `Wiki/Data/meeting-registry.json` — meeting configuration.
 - `dotty/.claude/skills/sample-universe/universe.md` — Acorndyne, the narrative universe for worked examples.

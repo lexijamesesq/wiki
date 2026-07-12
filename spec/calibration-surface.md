@@ -7,7 +7,52 @@ updated: '2026-07-10'
 ---
 # Calibration Surface — Knowledge-Ingress Judgment
 
-The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), capture-meeting (extraction guidance), `/wiki-intake` (knowledge branch), knowledge-contract Part III §§4–5 — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
+The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): the governing disposition philosophy, kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), capture-meeting (extraction guidance), `/wiki-intake` (knowledge branch), knowledge-contract Part III §§4–5 — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
+
+## §0 Disposition philosophy (governing)
+
+**"A wrong note is worse than no note" — with *wrong* read broadly: false content AND
+noise that shouldn't have been kept.** The system offsets near-zero retention and
+competes with "ask a teammate" — retrieval must beat that or it isn't helping. What's
+kept had better be quality.
+
+Four principles, in order:
+
+1. **§0.1 — High bar, biased toward noise.** Doubtful durability or queryability →
+   discard, logged with reason. Improvement comes from clear keepers — decisions,
+   commitments, dates, named blockers — not from maybes.
+2. **§0.2 — What clears the bar files decisively.** Placement is a judgment call:
+   make it. Imperfect placement is repairable by the loop (lint, consolidation, queue
+   rulings); good content is never queue-parked on a placement fork.
+3. **§0.3 — Queue = escape hatch, not a norm.** Entry condition: *critically
+   important AND legitimately stuck*. "Uncertain" is not "stuck."
+4. **§0.4 — Fidelity is never traded for coverage.** Attributed claims over
+   synthesis; meaning-ambiguity discards (or queues if pinned/critical), never
+   guesses.
+
+**Why the noise bias is safe:** discards are logged with reasons (an auditable
+calibration signal) and sources persist upstream — a discard is recoverable; a false
+note is not.
+
+**Fidelity vs placement — the asymmetry behind §0.1 and §0.2:** wrong *content* is a
+systemic liability at any corpus size — false notes erode the archive's authority
+superlinearly; this is why append-bias exists and why clean-replace authority is
+earned last, via the validated-mutation path ([[integration-modes]] §5), not assumed.
+Wrong *placement* is individually tolerable and aggregate-bounded by the repair loop.
+Filed-but-imperfectly-placed beats unfiled: a mis-placed note is still reachable by
+content search and area tag; an unfiled one is gone. Over-filing's residual risk is
+carried by mandatory attribution + detection (knowledge-contract Part III §5), per
+the safety methodology's recover-don't-prevent doctrine for reversible writes.
+Aggregate placement quality still matters — the corpus is training signal for future
+judgment — so the repair loop is load-bearing, not optional; placement-repair findings
+feed calibration.
+
+**Context, not machinery:** recurring judgment failures (what is this / is it
+important / where does it go) are system-context gaps — missing or thin "what lives
+here" surfaces — fixed by enriching context, never by adding mechanics. Queue rate and
+queue-reason patterns are read as context-gap symptoms. (Verification gates — critic,
+the filing-time lint gate, authenticity validator — are not "mechanics" in this sense: they
+bound judgment, they never substitute for it.)
 
 ## §1 The four dimensions
 
@@ -30,7 +75,13 @@ Evaluate every candidate against these as reasoning context, not a mechanical ch
 
 **Mode bias at the gatekeeper** (extraction-layer discard-when-uncertain is unchanged and upstream of this):
 
-- **Automated** — precision-over-recall. Clear pass → proceed to routing. Clear fail → noise → discard (logged). Uncertain at the bar → **queue**, not discard — the gatekeeper's defined surface categories land in `Wiki/Queue/`, so borderline judgment is deferred to the operator, never silently lost.
+- **Automated** — high bar, biased toward noise (§0.1). Clear pass → proceed to
+  routing and file decisively. Clear fail → noise → discard (logged). Doubtful at the
+  bar → **discard, logged with reason** — not queue: the queue is not a
+  value-uncertainty parking lot, and borderline judgment deferred to triage is lost in
+  practice, while a logged discard is an auditable signal and the source persists
+  upstream. Queueing requires §0.3's entry condition: critically important AND
+  legitimately stuck.
 - **Interactive** — the operator is present. Clear pass → proceed. Clear fail → discard (borderline → ask). Uncertain → ask.
 
 ## §3 Kinds and destination classes
@@ -41,11 +92,15 @@ Each kind maps to exactly one destination class (spec §1, verbatim):
 |---|---|
 | durable-knowledge | Knowledge layer (project Knowledge/ or `{workspace_root}/Wiki/Knowledge/` by scope) |
 | meeting-log | registered meeting's per-area rolling log (`type/meeting-capture`) — Tier-1 dual-write branch only |
-| data-mutation | Wiki/Data/ correction chain (interactive-only execution; automated → queue) |
-| context-shift | `{workspace_root}/Wiki/Contexts/` domain context page (interactive/closeout autonomous; automated → queue) |
+| data-mutation | Wiki/Data/ correction chain (mode per [[integration-modes]] §4) |
+| context-shift | `{workspace_root}/Wiki/Contexts/` domain context page (mode per [[integration-modes]] §4) |
 | personal-action | Personal/Work domain-page task section (interactive-only append; automated → queue) |
 | project-work | Linear (interactive-only creation; automated → queue) |
 | noise | discard, logged |
+
+Each destination class also carries an **integration mode** — evolution or
+current-truth — governed by [[integration-modes]]; the §4 matrix's mutation-kind rows
+are its authority consequence.
 
 1:1 kind→class holds: context-shift targets `{workspace_root}/Wiki/Contexts` ONLY — project working-understanding is `/project-state`'s surface; pipeline candidates never target CLAUDE.md. One source item may yield multiple candidates of different kinds — **duplication happens at EXTRACTION only** (extractor emits both, shared provenance); the gatekeeper never splits a candidate.
 
@@ -87,7 +142,7 @@ Two orthogonal axes:
 
 | Kind | automated + registered | automated + unregistered | interactive + registered | interactive + unregistered |
 |---|---|---|---|---|
-| durable-knowledge | file (resolved-unique) / queue (else) | queue | file / ask (ambiguous) | surface in-conversation |
+| durable-knowledge | file (resolved-unique or defensible best home per §5) / queue (§0.3 only) / discard (logged) | queue | file / ask (ambiguous) | surface in-conversation |
 | meeting-log | file (registered playbook only) | n/a (no registry) | file | n/a |
 | data-mutation | queue | queue | execute chain ONLY on explicit operator mutation intent (the capture IS a correction statement — wiki-intake's existing pattern); extraction-*inferred* mutations → ask/confirm | surface |
 | context-shift | queue | queue | autonomous per update-on-shift discipline | surface |
@@ -95,7 +150,13 @@ Two orthogonal axes:
 | project-work | queue | queue | create per linear-discipline integrity-on-creation | surface |
 | noise | discard (logged) | discard (logged) | discard (logged; borderline → ask) | discard/ask |
 
-Consequences: the unattended pipeline **never** mutates existing substance, never writes human surfaces, never creates Linear issues, never runs the data-correction chain. Automated Linear creation is deliberately absent — queue-only loses nothing; the next session promotes. Interactive `surface in-conversation` outcomes resolve with the operator to a terminal disposition; an operator's "file it" on surfaced unregistered content is a user-initiated action.
+Consequences: the unattended pipeline **never** mutates existing substance, never writes human surfaces, never creates Linear issues, never runs the data-correction chain. Automated Linear creation is deliberately absent — queue-only loses nothing; the next session promotes. Interactive `surface in-conversation` outcomes resolve with the operator to a terminal disposition; an operator's "file it" on surfaced unregistered content is a user-initiated action. The data-mutation and context-shift automated cells are the integration-mode authority
+consequence ([[integration-modes]] §4); the validated-mutation path
+([[integration-modes]] §5) is designed to replace queue-by-default there — those
+automated + registered cells flip only by amendment here, after the lane's non-author
+acceptance. Bar-passing durable-knowledge that resolves *unresolved* (no defensible
+home even after probing): queue if §0.3 is met; else discard, logged with reason
+`placement-unresolved` (source persists upstream).
 
 ## §5 Destination resolution (durable-knowledge)
 
@@ -109,9 +170,29 @@ Judgment guidance:
 
 - **Match questions, not keywords.** A decoy doc sharing vocabulary with the candidate is not a home unless it answers the same question. Ask: "if a future session searched for the candidate's question, is THIS the doc it should land on?" Discrimination, not echo.
 - **Scope first.** Who consumes this — sessions of one project (→ project-hosted, subject to the `### Knowledge` opt-in gate) or any session touching a life/work domain (→ Wiki-hosted, `area/*` + `topic/*`)?
+  The opt-in gate constrains the project-hosted *path*, not filing itself: when the
+  right home is project-hosted but the project hasn't declared `### Knowledge`, file
+  to the Wiki-hosted domain home (no opt-in required) and queue the declaration
+  proposal separately — a missing declaration never black-holes content.
 - **Append-bias.** When a resolved-unique home exists, append to it; a near-duplicate new file is worse than a longer existing one.
 - **Collapse-bias on topics.** Prefer an existing `topic/*` over a near-synonym when placing a new file.
 - **Dated accretion is not contradiction.** A newer dated entry superseding an older dated entry in an accreting file (meeting logs, dated Knowledge sections) is the normal append pattern. A **contradiction** is an incompatible claim about the same fact with no supersession structure — that surfaces/queues as conflict.
+- **Probe the destination before resolving.** Before placing, read the candidate
+  domain's context page and scan its existing Knowledge topics — "what does this
+  location already treat as durable?" An unread destination is a guess; most
+  resolved-multiple forks collapse once the destination's self-description is loaded.
+- **Defensible best home (resolved-multiple, automated consequence — interactive asks
+  per the §4 matrix).** Good content is never queue-parked on a placement fork. Pick
+  the defensible best home, file there, and note the alternative home in the entry (a
+  searchable pointer). Default tiebreak: the any-session-reachable Wiki-hosted domain
+  home over a narrower project-hosted one. Queue only the rare true tie where
+  mis-placement would genuinely bury the content and §0.3 is met; otherwise file on
+  best judgment.
+- **Integration mode.** Load the destination's mode ([[integration-modes]] class
+  defaults + `integration:` frontmatter override) before composing the write:
+  evolution → dated, attributed append; current-truth → the mutation path (interactive
+  per the surface's own discipline; automated per the validated-mutation lane's
+  activation state).
 
 ## §6 Worked examples
 
@@ -204,15 +285,26 @@ Coherence: clear pass. Resolution: resolved-unique. Idempotency: no hash/attribu
 Matrix: automated + registered, resolved-unique → file. Disposition: file — write-plan append entry {target, pre_state_hash, append_suffix}; NO new file.
 </thinking>
 
-**A2 — resolved-multiple → queue**
+**A2 — resolved-multiple → file to the defensible best home, alternative noted**
 
-Candidate (durable-knowledge, registered, automated): a "Program Priorities Tracker" summary mixing org-initiative status, the operator's own professional-development notes, and team-process observations.
+Candidate (durable-knowledge, registered, automated): a "GMS Priorities Tracker"
+summary mixing org-initiative status, the operator's own professional-development
+notes, and team-process observations.
 
 <thinking>
-Coherence: passes (specific, durable, queryable) — the problem is placement, not quality.
-Search: three plausible homes at similar confidence — a Team project Knowledge/ doc, `{workspace_root}/Wiki/Knowledge/` under area/work, and an existing initiatives context page. No single doc answers the same question; content spans scopes.
-Resolution: resolved-multiple. Matrix: automated files only on resolved-unique.
-Disposition: queue — one disposition item, reasons [resolved-multiple], payload + all candidate homes + search evidence. Must NOT file confidently; a wrong confident home buries it.
+Coherence: passes (specific, durable, queryable) — the fork is placement, not quality.
+Search + probe: three plausible homes — a Team project Knowledge/ doc,
+`{workspace_root}/Wiki/Knowledge/` under area/work, and an initiatives context page.
+Probing them: the context page serves current working understanding, not dated
+synthesis; the Team project Knowledge/ serves that project's sessions only. The
+Wiki-hosted area/work home is any-session-reachable and answers the candidate's
+question.
+Resolution: resolved-multiple with a defensible best home (§5) — the Wiki-hosted home
+wins the tiebreak.
+Disposition: file — append to the area/work Knowledge doc with attribution, noting the
+alternative home considered (Team project Knowledge/) in the entry. §0.2: good content
+is never queue-parked on a placement fork; a mis-placed note is reachable and
+repairable, a queued one waits on triage that may never come.
 </thinking>
 
 **A3 — re-grade INTO durable-knowledge → forced queue**
@@ -235,6 +327,24 @@ Idempotency: target contains an entry matching this candidate's attribution+date
 Disposition: discard, reason duplicate — logged in the report, never a second append. Pipeline idempotency is n8n's job; this is the candidate-level backstop that keeps a double-delivery from becoming a double-append silently.
 </thinking>
 
+**A5 — doubtful at the bar → discard, logged**
+
+Candidate (durable-knowledge, registered, automated; source "GMS Delivery weekly sync
+2026-07-01"): `Team feels the GMS Delivery Settings rollout is ahead of schedule; no
+dates revised yet.`
+
+<thinking>
+Dimensions: specificity weak (no dates, numbers, or named decision), durability
+doubtful (pace sentiment, superseded the moment dates move), queryability doubtful —
+what question does "feels ahead" answer? Not a clear fail; a maybe.
+§0.1: improvement comes from clear keepers, not maybes. §2 automated bias: doubtful at
+the bar → discard, logged — not queue. Not critically important, so §0.3 doesn't
+apply. The source transcript persists; if dates actually move, THAT captures as a
+clear keeper.
+Disposition: discard, logged (reason: doubtful durability/queryability — pace
+sentiment without concrete claims).
+</thinking>
+
 ## Amendment discipline
 
-This file changes only by operator-approved edit. Consumers reference sections by number (§1–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, capture-meeting, /wiki-intake, knowledge-contract Part III §§4–5).
+This file changes only by operator-approved edit. Consumers reference sections by number (§0–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, capture-meeting, /wiki-intake, knowledge-contract Part III §§4–5).

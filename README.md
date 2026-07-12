@@ -70,12 +70,14 @@ The scheduled cleanup pass.
 
 ### Contracts
 
-Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `filing-validator` agent — ships in dotty.
+Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `lint.py` script, run periodically full-corpus or single-file at filing time (`--filing`) — ships in dotty.
 
 | Contract | What it does |
 |----------|--------------|
 | `spec/knowledge-contract.md` | The consolidated rulebook. Part I closes the tag namespaces with growth thresholds and depth limits; Part II defines the file envelope (required frontmatter, valid tags, discoverability); Part III says which skill owns which write, so two skills never file the same thing; Part IV lists the lint rules; Part V is the parsing contract the engine derives them from |
 | `spec/tag-taxonomy-rosters.md` | The real-name rosters (people, employers, area top-levels) — split from the contract so the public shape carries no PII |
+| `spec/calibration-surface.md` | The ingress judgment tables — disposition philosophy, the four dimensions, the mode × trust × kind matrix, destination resolution, worked examples |
+| `spec/integration-modes.md` | Per-destination write discipline — evolution vs current-truth, write shape × authority, and the activation-gated validated-mutation path |
 
 ## Configuration
 
