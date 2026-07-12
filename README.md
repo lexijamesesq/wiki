@@ -2,7 +2,7 @@ A Claude Code system that keeps a personal knowledge base in an Obsidian vault a
 
 ## Installation
 
-Three of the skills this system runs on ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo; `/capture-meeting` ships here, vault-resident. Install both repos.
+Three of the skills this system runs on (`/wiki-intake`, `/gatekeeper`, `/queue`) ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo; `/capture-meeting` and `/maintenance-triage` ship here, vault-resident. Install both repos.
 
 Clone the repo, then set up the Claude Code directory:
 
@@ -51,22 +51,22 @@ cp CLAUDE.sample.md CLAUDE.md
 
 ### Ingress
 
-How content gets in. Every capture passes through the gatekeeper before anything is written. Three of these skills ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo; `/capture-meeting` ships in this repo at `claude/skills/capture-meeting/` (its consumer is the Pi lane, which resolves vault-resident skills).
+How content gets in. Every capture passes through the gatekeeper before anything is written.
 
-| Skill | What it does |
-|-------|--------------|
-| `/wiki-intake` | Classifies a capture's intent and hands it to the gatekeeper |
-| `/gatekeeper` | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix |
-| `/capture-meeting` | Captures a recurring meeting, gating autonomous filing on whether the source is registered |
-| `/queue` | Creates pending-decision items and runs the menu-guided triage flow |
+| Skill | Ships in | What it does |
+|-------|----------|--------------|
+| `/wiki-intake` | [dotty](https://github.com/lexijamesesq/dotty) | Classifies a capture's intent and hands it to the gatekeeper |
+| `/gatekeeper` | [dotty](https://github.com/lexijamesesq/dotty) | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix |
+| `/capture-meeting` | **this repo** (`claude/skills/capture-meeting/` — its consumer is the Pi lane, which resolves vault-resident skills) | Captures a recurring meeting, gating autonomous filing on whether the source is registered |
+| `/queue` | [dotty](https://github.com/lexijamesesq/dotty) | Creates pending-decision items and runs the menu-guided triage flow |
 
 ### Maintenance
 
 The scheduled cleanup pass.
 
-| Skill | What it does |
-|-------|--------------|
-| `/maintenance-triage` | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you |
+| Skill | Ships in | What it does |
+|-------|----------|--------------|
+| `/maintenance-triage` | **this repo** (`claude/skills/maintenance-triage/`) | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you |
 
 ### Contracts
 
