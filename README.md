@@ -70,7 +70,7 @@ The scheduled cleanup pass.
 
 ### Contracts
 
-Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `filing-validator` agent — ships in dotty.
+Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `lint.py` script, run periodically full-corpus or single-file at filing time (`--filing`) — ships in dotty.
 
 | Contract | What it does |
 |----------|--------------|

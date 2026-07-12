@@ -248,7 +248,7 @@ Both are dates (`YYYY-MM-DD`). Freshness checks use `verified` when present, `up
 
 The contract's only body rule is the Invariant Core's single H1. Everything else about a file's body — its internal organization, how it mutates (overwrite / append / supersede), whether and how it goes stale — is **content architecture**, and is explicitly **out of scope**. It varies *within* every `type/` (one `type/knowledge` file is a decision chain, another a current-state snapshot, another an event series). None is mechanically checkable; none is governed here.
 
-- Mutation discipline (the overwrite / append / supersede decision) is a separate concern — see `target-architecture-v2.md` "Knowledge mutation discipline".
+- Mutation discipline (the overwrite / append / supersede decision) is a separate concern — canonical home: `integration-modes.md` (Wiki/spec); architectural narrative in `target-architecture-v2.md` "Knowledge mutation discipline".
 - Body-size and source-count heuristics (lint's `>150`-line and `>6`-source INFO flags) are lint's own QA heuristics, not contract rules. Lint may run checks beyond this contract; only the rules in the Parsing Contract are *contract* rules.
 
 ## Scope Boundaries
@@ -267,7 +267,7 @@ A file is in a **governed location** only if its vault path matches one of:
 | `Projects/<name>/Context/**` | Per-project Claude working-context docs |
 | `Wiki/Knowledge/**` | Wiki maintained narrative knowledge |
 | `Wiki/Contexts/**` | Wiki domain context docs |
-| `Wiki/spec/*.md` | Governed contract docs (this file + `tag-taxonomy-rosters.md`), depth-1 only |
+| `Wiki/spec/*.md` | Governed contract docs (this file + `tag-taxonomy-rosters.md` + `calibration-surface.md` + `integration-modes.md`), depth-1 only |
 
 Every other location is **ungoverned** and lint skips it entirely — no envelope checks, no tag-validity checks, no `no-type-tag` finding. This explicitly excludes:
 
@@ -351,11 +351,11 @@ Content (router-delivered or pasted) → `{workspace_root}/Wiki/Knowledge/`. Cov
 
 - **Destination:** `{workspace_root}/Wiki/Knowledge/{area}-{slug}.md` — Wiki-hosted modifier (`area/` scope, `topic/` required, tags-as-index).
 - **Enforcer:** `/wiki-intake`.
-- **Pre-file gate — coherence gate** (knowledge-intent only). Four criteria: self-contained, clear topic, additive, single-question-scoped (`single-question-scoped` is content architecture the envelope omits; the gate may use it as filing judgment though lint does not enforce it). **Decision rule:** all four pass → file; any fail → a `Wiki/Queue/` item, `queue-kind: disposition`.
+- **Pre-file gate — coherence gate** (knowledge-intent only). Four criteria: self-contained, clear topic, additive, single-question-scoped (`single-question-scoped` is content architecture the envelope omits; the gate may use it as filing judgment though lint does not enforce it). **Decision rule:** all four pass → file; fails resolve per the calibration surface (§0 disposition philosophy + §2 mode bias): fixable fails are fixed and filed, duplicates and noise discard (logged), genuinely-stuck fails → a `Wiki/Queue/` item, `queue-kind: disposition`.
 - **De-scoping (size heuristic):** the 150-line threshold is a lint **INFO heuristic, not a filing block**. Reconciling `/wiki-intake` must downgrade its 150-line halt to an advisory flag.
 - **Field derivation:** `area/` = authoritative classification (load the domain context page + Part I); `topic/` = collapse-bias; `sources` = capture origin (`inbox-capture`, a URL, or `user-stated`).
 - **Post-file:** no index step (tags-as-index). Duplicate scan — report overlap, do not block (append-bias).
-- **Validation:** *Today* — post-filing tag check. *Target* — filing-time envelope validation (**[new]**, not yet built). *Periodic* — lint.
+- **Validation:** *Today* — post-filing tag check. *Target* — filing-time envelope validation via `lint.py --filing` (**[new]**, built — reached via the shared gatekeeper write-execution path). *Periodic* — lint.
 
 ## §2 — Project knowledge filing
 
@@ -378,18 +378,18 @@ Knowledge produced during a live session (operator present) → `{Project}/Knowl
 - **Pre-file gate — coherence at interactive thresholds.** Did the session produce synthesis a future session would need, that would otherwise be lost to chat history? Each candidate passes the four dimensions at interactive thresholds (dimensions, thresholds, worked examples live in the gatekeeper's calibration surface — canonical home; referenced, not restated). An explicit operator "capture this" pins inclusion. **Decision rule:** pass → file; uncertain → surface as a candidate for the operator; fail unpinned → discard (logged); fail pinned → a `Wiki/Queue/` item, `queue-kind: disposition`, with note — never silent discard.
 - **Field derivation:** `sources` = the session (`AI research YYYY-MM-DD`; `user-stated` for user-provided facts); `project/` or `area/` per host destination; on the Wiki-hosted branch also `topic/` ≥1.
 - **Post-file:** `index.md` sync on project-hosted filings; `updated` bump on touched pages; the capture report lists filed / queued / discarded with reasons.
-- **Validation:** *Today* — filing-validator PASS per filed page (interactive mode may file-then-fix, cap 3). *Periodic* — lint.
+- **Validation:** *Today* — the filing-time lint gate (`lint.py --filing`) PASS per filed page (interactive mode may file-then-fix, cap 3). *Periodic* — lint.
 
 ## §5 — Automated capture
 
 Typed candidates from the unattended capture lane (Pi) → knowledge-layer files, no operator in the loop. Only two kinds produce files — `durable-knowledge` and `meeting-log`; the full kind→disposition matrix is defined in the ingress design (the automated column is the complete automated write authority). Every other disposition queues or discards.
 
-- **Destination:** `durable-knowledge` → project `Knowledge/` or `{workspace_root}/Wiki/Knowledge/` by scope, only on destination resolution = resolved-unique (resolved-multiple / unresolved → queue); `meeting-log` → the registered meeting's per-area rolling log (`type/meeting-capture` — out of scope per the Type Gate; the registered playbook owns its shape). Project-hosted resolutions honor §2's opt-in gate.
+- **Destination:** `durable-knowledge` → project `Knowledge/` or `{workspace_root}/Wiki/Knowledge/` by scope, on destination resolution per the calibration surface §5 (resolved-unique, or defensible best home with the alternative noted; unresolved → queue/discard per §0.3); `meeting-log` → the registered meeting's per-area rolling log (`type/meeting-capture` — out of scope per the Type Gate; the registered playbook owns its shape). Project-hosted resolutions honor §2's opt-in gate.
 - **Enforcer:** the gatekeeper, automated mode — router + gatekeeper for all candidate disposition.
 - **Pre-file gate — pre-commit write-plan validation.** The gatekeeper emits a write plan (new files: full composed content + enumerated content sources; existing targets: `{target, pre_state_hash, append_suffix}` only — whole-file overwrite structurally impossible); a context-free critic (rubric v2) validates the plan + composed artifacts before any vault write; apply is a deterministic script, not a model. **Decision rule:** PASS → apply; FAIL → nothing commits, plan + reasons → quarantine queue item, heartbeat suppressed.
 - **Field derivation:** attribution mandatory on every automated write **[new]** — `sources` carries `routine/<action> <run-id>` (Provenance) plus the human-readable source attribution; scope tag per resolution; `topic/` ≥1 on Wiki-hosted `durable-knowledge`.
-- **Post-file:** post-apply verify — filing-validator on new files; suffix-presence check on appends; FAIL → quarantine queue item, heartbeat suppressed, no further writes this run, no auto-revert. `index.md` sync on project-hosted filings. Every candidate ends as exactly one of filed / `Wiki/Queue/` item / logged discard.
-- **Validation:** *Today* — pre-commit critic + post-apply filing-validator. *Periodic* — lint.
+- **Post-file:** post-apply verify — `lint.py --filing` on new files; suffix-presence check on appends; FAIL → quarantine queue item, heartbeat suppressed, no further writes this run, no auto-revert. `index.md` sync on project-hosted filings. Every candidate ends as exactly one of filed / `Wiki/Queue/` item / logged discard.
+- **Validation:** *Today* — pre-commit critic + post-apply `lint.py --filing`. *Periodic* — lint.
 
 ---
 
@@ -401,7 +401,7 @@ The complete set of integrity checks that verify vault content against this cont
 
 A check runs at filing-time, periodically, or both. **Single-file-at-creation → filing-time; drift-over-time or corpus-scale → periodic.**
 
-- **Filing-time** — the `filing-validator` critic-subagent validates a filed file against Part II + the relevant Part III §. Single-file, cheap. Built (ships with `/lint-knowledge` in dotty).
+- **Filing-time** — `lint.py --filing` (the same script as the periodic mechanical pass, run single-file with `[tightening]` rules escalated to HIGH) validates a filed file against Part II + the relevant Part III §. PASS = zero HIGH findings. Single-file, cheap. Built (ships with `/lint-knowledge` in dotty).
 - **Periodic** — **two passes.** A **mechanical pass** (a script, no model) runs every deterministic check; a **judgment pass** (a model) runs the contradiction scan.
 
 Envelope-compliance checks run **both** — filing-time on the new file, and in the periodic mechanical pass as `[tightening]` rules escalate against the legacy corpus.
@@ -431,10 +431,10 @@ Source: **SC** = envelope (Part II) · **TT** = tags (Part I) · **HC** = filing
 |---|---|---|---|---|
 | Exactly one valid `type/` tag | Both | M | HIGH | ✓ |
 | ≥1 scope tag (`project/` or `area/`) | Both | M | HIGH | ✓ |
-| Scope tag matches destination | Both | M | HIGH | ✗ |
-| Exactly one `status/` tag | Both | M | HIGH `[tightening]` | ◐ (WARNING today) |
+| Scope tag matches destination | Both | M | HIGH | ✓ |
+| Exactly one `status/` tag | Both | M | HIGH `[tightening]` | ✓ |
 | `updated: YYYY-MM-DD` present | Both | M | HIGH | ✓ |
-| Exactly one H1 (`# Title`) | Both | M | HIGH `[tightening]` | ✗ |
+| Exactly one H1 (`# Title`) | Both | M | HIGH `[tightening]` | ✓ |
 | All tags valid per Part I | Both | M | per the Tag-taxonomy block | ✓ |
 
 These apply only to files in **governed scope** — the Location Gate is the outer filter. Within governed scope, the file's `type/` places it in an **Exemption tier**: fully-governed and *Invariant-core-only* types are held to the Invariant Core; *Structure-not-imposed* types get only tag-validity; *Out-of-scope* types get no check. The script derives the Location Gate globs and tier sets from the Scope Boundaries tables at runtime.
@@ -444,8 +444,8 @@ These apply only to files in **governed scope** — the Location Gate is the out
 | Check | Mode | Pass | Severity | Today |
 |---|---|---|---|---|
 | `type/knowledge` carries `sources` | Both | M | HIGH | ✓ |
-| `type/knowledge` Wiki-hosted carries `topic/` ≥1 | Both | M | HIGH `[tightening]` | ✗ |
-| `type/project-pointer` carries `project/` + `topic/` | Periodic | M | HIGH | ✗ |
+| `type/knowledge` Wiki-hosted carries `topic/` ≥1 | Both | M | HIGH `[tightening]` | ✓ |
+| `type/project-pointer` carries `project/` + `topic/` | Periodic | M | HIGH | ✓ |
 
 `type/project-pointer` is periodic-only: no filing handoff produces a pointer, so the filing-time critic never validates one. Per-type checks apply only to types in the Per-Type table; either Exemption tier is exempt from per-type additions.
 
@@ -468,8 +468,8 @@ These apply only to files in **governed scope** — the Location Gate is the out
 | Broken `[[wikilinks]]` | LINT | Periodic | M | MEDIUM | ✓ |
 | Cross-project references are wikilinks + resolve | LINT | Periodic | M | MEDIUM | ✗ |
 | Stub drift (`type/project-pointer` → missing project) | TT | Periodic | M | HIGH | ✓ |
-| Project-hosted file has an `index.md` entry | SC | Periodic | M | MEDIUM | ✗ |
-| No orphan `index.md` entries | LINT | Periodic | M | MEDIUM | ✗ |
+| Project-hosted file has an `index.md` entry | SC | Periodic | M | MEDIUM | ✓ |
+| No orphan `index.md` entries | LINT | Periodic | M | MEDIUM | ✓ |
 | Context-page coverage (`area/` with Knowledge but no Context) | SC | Periodic | M | WARNING | ✓ |
 | Stale-suspects targets exist (`stale_suspects` paths resolve) | LINT | Periodic | M | WARNING | ✓ |
 | Status coherence (scalar `status:` matches `status/` tag) | LINT | Periodic | M | HIGH | ✓ |
@@ -498,9 +498,9 @@ The sole judgment-pass checks — best-effort, not contract-derived, delta-scope
 
 | Check | Mode | Pass | Severity | Today |
 |---|---|---|---|---|
-| Filed file satisfies the full envelope (per the handoff's §) | Filing | — | HIGH | ✓ (`filing-validator`) |
+| Filed file satisfies the full envelope (per the handoff's §) | Filing | — | HIGH | ✓ (`lint.py --filing`, single-file) |
 
-Filing-time validation is the `filing-validator` critic-subagent — single-file, not part of the periodic split.
+Filing-time validation is `lint.py --filing` — single-file, not part of the periodic split; the same script as the periodic mechanical pass, filing mode.
 
 ## Cross-project-reference link-integrity
 
@@ -545,7 +545,7 @@ Skills resolve this contract by config key (global CLAUDE.md › Configuration).
 - `references.tag_taxonomy`, `references.structural_contract`, `references.handoff_contracts`, `references.lint_surface` → `Wiki/spec/knowledge-contract.md`
 - `tag-taxonomy-rosters.md` is unchanged and is NOT resolved by any of these keys — `lint.py` and `qa.py` locate it directly at `Wiki/spec/tag-taxonomy-rosters.md`.
 
-Primary consumers: `/lint-knowledge` + `lint.py` (Parts I–II Parsing Contract, periodic surface Part IV), `filing-validator` (Part II + the named Part III §, filing-time), `/wiki-intake` (§1), `router-spec.md` Knowledge Delivery (§2), `/knowledge-layer` query-and-file (§4), `/gatekeeper` (§§1/4/5), `/capture` (§4), `/queue` (Location Gate — queue is ungoverned), `/house-qa` (rosters split), `/sample-universe` (grandfathered `project/*` + `area/work/*` examples), `target-architecture-v2.md` (namespace definitions), project CLAUDE.md templates.
+Primary consumers: `/lint-knowledge` + `lint.py` (Parts I–II Parsing Contract, periodic surface Part IV; `--filing` mode is the filing-time surface, Part II + the named Part III §), `/wiki-intake` (§1), `router-spec.md` Knowledge Delivery (§2), `/knowledge-layer` query-and-file (§4), `/gatekeeper` (§§1/4/5), `/capture` (§4), `/queue` (Location Gate — queue is ungoverned), `/house-qa` (rosters split), `/sample-universe` (grandfathered `project/*` + `area/work/*` examples), `target-architecture-v2.md` (namespace definitions), project CLAUDE.md templates.
 
 ---
 
