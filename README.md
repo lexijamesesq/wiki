@@ -51,22 +51,19 @@ cp CLAUDE.sample.md CLAUDE.md
 
 ### Ingress
 
-How content gets in. Every capture passes through the gatekeeper before anything is written.
+How content gets in. Every capture passes through the gatekeeper before anything is written — the gatekeeper, `/wiki-intake`, and `/queue` ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo (see its README).
 
-| Skill | Ships in | What it does |
-|-------|----------|--------------|
-| `/wiki-intake` | [dotty](https://github.com/lexijamesesq/dotty) | Classifies a capture's intent and hands it to the gatekeeper |
-| `/gatekeeper` | [dotty](https://github.com/lexijamesesq/dotty) | Routes every candidate to a terminal disposition — file, queue, or discard — through a mode × trust × kind matrix |
-| `/capture-meeting` | **this repo** (`claude/skills/capture-meeting/` — its consumer is the Pi lane, which resolves vault-resident skills) | Captures a recurring meeting, gating autonomous filing on whether the source is registered |
-| `/queue` | [dotty](https://github.com/lexijamesesq/dotty) | Creates pending-decision items and runs the menu-guided triage flow |
+| Skill | What it does |
+|-------|--------------|
+| `/capture-meeting` | Captures a recurring meeting, gating autonomous filing on whether the source is registered. At `claude/skills/capture-meeting/` — its consumer is the Pi lane, which resolves vault-resident skills |
 
 ### Maintenance
 
 The scheduled cleanup pass.
 
-| Skill | Ships in | What it does |
-|-------|----------|--------------|
-| `/maintenance-triage` | **this repo** (`claude/skills/maintenance-triage/`) | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you |
+| Skill | What it does |
+|-------|--------------|
+| `/maintenance-triage` | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you. At `claude/skills/maintenance-triage/` |
 
 ### Contracts
 
