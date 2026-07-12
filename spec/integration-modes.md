@@ -100,8 +100,8 @@ Any leg FAILs → quarantine queue item carrying the plan + reasons (the unified
 
 **Deterministic apply (script, not model):** re-hash the target; apply `post_state`
 only on `pre_state` match; mismatch → abort that mutation (no write), queue item
-carrying the plan + reason `stale-pre-state`, continue other writes — the §5
-append-lane pattern (unified-ingress §5.3). Write attribution; store `pre_state` in
+carrying the plan + reason `stale-pre-state`, continue other writes — the
+append-lane pattern (unified-ingress §5). Write attribution; store `pre_state` in
 the run report → one-step revert. The revert script hash-checks the target against
 `post_state` before restoring `pre_state`; a target edited since the mutation
 quarantines instead of reverting. Post-apply verify: re-read the target; confirm
@@ -109,6 +109,14 @@ quarantines instead of reverting. Post-apply verify: re-read the target; confirm
 item naming expected-vs-found, heartbeat suppressed, no further writes this run, no
 auto-revert (revert is the operator's one command, from the stored `pre_state`).
 Detection: run report + write-volume alarm + heartbeat.
+
+**What this path removes (ratchet):** queue-by-default as the *terminal design* for
+automated current-truth candidates — a standing operator-attention tax; under the
+operator's baseline an untriaged queue is where content goes to die (the queue remains
+the validator-FAIL and genuinely-stuck surface). Also removed: the unmechanized
+earn-path via operator queue rulings — rulings become calibration data for the
+validator's rubric, not the mechanism itself — and the calibration matrix's two
+per-kind exception explanations, collapsed into one named property.
 
 **Staging:** activate on `data-mutation` first — typed records make all four legs
 strongest and mechanical-adjacent. `context-shift` follows only after the lane holds
@@ -138,19 +146,8 @@ list: unified-ingress §2 Consequences + §6 R6, calibration §4 Consequences,
 Wiki/CLAUDE.md Decision Authority (automated lanes), and the §3 lattice re-derivation
 (above).
 
-## §6 Ratchet — what this spec removes
-
-- Queue-by-default as the *terminal design* for automated current-truth candidates —
-  a standing operator-attention tax; under the operator's baseline an untriaged queue
-  is where content goes to die. The queue remains the validator-FAIL and
-  genuinely-stuck surface.
-- The unmechanized "earn-path via operator queue rulings": operator rulings become
-  calibration data for the validator's rubric, not the mechanism itself.
-- Two per-kind exception explanations in the calibration matrix (`data-mutation`,
-  `context-shift`) collapse into one named property.
-
 ## Amendment discipline
 
 This file changes only by operator-approved edit. Consumers reference sections by
-number (§1–§6); renumbering requires sweeping consumer references (calibration
+number (§1–§5); renumbering requires sweeping consumer references (calibration
 surface, gatekeeper, `/wiki-intake`, stewardship surfaces).

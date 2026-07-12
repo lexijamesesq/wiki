@@ -113,7 +113,7 @@ A registered meeting arriving via the pipeline uses `registered-capture.md` with
 
 ### Candidate schema (emitted by both playbooks, Step 6b)
 
-Candidate schema: `../gatekeeper/SKILL.md` › Candidate schema (canonical). This skill adds `pinned: false` (no operator ask pins in pipeline context) and sources `scope_hint` from the registry's `area` field for registered meetings (null otherwise).
+Candidate schema: `dotty/.claude/skills/gatekeeper/SKILL.md` › Candidate schema (canonical). This skill adds `pinned: false` (no operator ask pins in pipeline context) and sources `scope_hint` from the registry's `area` field for registered meetings (null otherwise).
 
 Kind proposals: `Wiki/spec/calibration-surface.md` §3 (canonical definitions + signal mapping). One entry may yield multiple candidates of different kinds (duplication at extraction only, shared provenance). Entries that fail coherence are NOT dropped silently — emitted as `noise` so the extraction report accounts for every identified entry.
 
@@ -154,6 +154,6 @@ Entries for EXISTING targets never carry rendered full state (`{target, pre_stat
 ## References
 
 - `Wiki/spec/calibration-surface.md` §§1-2 — coherence dimensions + thresholds (canonical; cited here, not restated).
-- `../gatekeeper/SKILL.md` — the gatekeeper this skill hands candidates to.
+- `dotty/.claude/skills/gatekeeper/SKILL.md` — the gatekeeper this skill hands candidates to.
 - `Wiki/Data/meeting-registry.json` — meeting configuration.
 - `dotty/.claude/skills/sample-universe/universe.md` — Acorndyne, the narrative universe for worked examples.

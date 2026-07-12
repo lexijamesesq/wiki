@@ -287,7 +287,7 @@ Matrix: automated + registered, resolved-unique → file. Disposition: file — 
 
 **A2 — resolved-multiple → file to the defensible best home, alternative noted**
 
-Candidate (durable-knowledge, registered, automated): a "Program Priorities Tracker"
+Candidate (durable-knowledge, registered, automated): a "GMS Priorities Tracker"
 summary mixing org-initiative status, the operator's own professional-development
 notes, and team-process observations.
 
