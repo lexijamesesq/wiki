@@ -52,35 +52,35 @@ cp CLAUDE.sample.md CLAUDE.md
 
 How content gets in. Every capture passes through the gatekeeper before anything is written.
 
-| Skill | What it does |
-|-------|--------------|
-| `/wiki-intake` | The single front door for Wiki-axis content — classifies intent and routes to the gatekeeper, the queue, or the data-correction path. At `claude/skills/wiki-intake/` |
-| `/gatekeeper` | Resolves every candidate to file, queue, or discard through the mode × trust × kind matrix — the only skill that writes into the knowledge layer. At `claude/skills/gatekeeper/` |
-| `/capture` | The mid-session capture verb — extracts knowledge candidates from the live conversation and hands every one to the gatekeeper. At `claude/skills/capture/` |
-| `/capture-meeting` | Captures a recurring meeting, gating autonomous filing on whether the source is registered. At `claude/skills/capture-meeting/` — its consumer is the Pi lane, which resolves vault-resident skills |
-| `/router` | Sorts Inbox captures and delivers each to its destination's intake. At `claude/skills/router/` |
-| `/queue` | Creates operator-judgment queue items and runs the menu-guided triage. At `claude/skills/queue/` |
+| Artifact | Type | What it does |
+|----------|------|--------------|
+| `/wiki-intake` | Skill | The single front door for Wiki-axis content — classifies intent and routes to the gatekeeper, the queue, or the data-correction path. At `claude/skills/wiki-intake/` |
+| `/gatekeeper` | Skill | Resolves every candidate to file, queue, or discard through the mode × trust × kind matrix — the only skill that writes into the knowledge layer. At `claude/skills/gatekeeper/` |
+| `/capture` | Skill | The mid-session capture verb — extracts knowledge candidates from the live conversation and hands every one to the gatekeeper. At `claude/skills/capture/` |
+| `/capture-meeting` | Skill | Captures a recurring meeting, gating autonomous filing on whether the source is registered. At `claude/skills/capture-meeting/` — its consumer is the Pi lane, which resolves vault-resident skills |
+| `/router` | Skill | Sorts Inbox captures and delivers each to its destination's intake. At `claude/skills/router/` |
+| `/queue` | Skill | Creates operator-judgment queue items and runs the menu-guided triage. At `claude/skills/queue/` |
 
 ### Maintenance
 
 The scheduled cleanup pass, plus the per-session maintenance operations.
 
-| Skill | What it does |
-|-------|--------------|
-| `/knowledge-layer` | The per-session domain expert — freshness scans, hygiene anti-pattern checks, envelope-enforced filing through the lint gate, index sync, hub cross-reference. At `claude/skills/knowledge-layer/` |
-| `/lint-knowledge` | The lint engine — derives its rules from the contracts at runtime, scans full-corpus on a schedule or single-file at filing time, and reports findings without auto-fixing. At `claude/skills/lint-knowledge/` |
-| `/maintenance-triage` | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you. At `claude/skills/maintenance-triage/` |
+| Artifact | Type | What it does |
+|----------|------|--------------|
+| `/knowledge-layer` | Skill | The per-session domain expert — freshness scans, hygiene anti-pattern checks, envelope-enforced filing through the lint gate, index sync, hub cross-reference. At `claude/skills/knowledge-layer/` |
+| `/lint-knowledge` | Skill + Script | The lint engine — derives its rules from the contracts at runtime, scans full-corpus on a schedule or single-file at filing time, and reports findings without auto-fixing. At `claude/skills/lint-knowledge/` |
+| `/maintenance-triage` | Skill | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you. At `claude/skills/maintenance-triage/` |
 
 ### Contracts
 
 Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `lint.py` script, run periodically full-corpus or single-file at filing time (`--filing`) — ships here, at `claude/skills/lint-knowledge/`.
 
-| Contract | What it does |
-|----------|--------------|
-| `spec/knowledge-contract.md` | The consolidated rulebook. Part I closes the tag namespaces with growth thresholds and depth limits; Part II defines the file envelope (required frontmatter, valid tags, discoverability); Part III says which skill owns which write, so two skills never file the same thing; Part IV lists the lint rules; Part V is the parsing contract the engine derives them from |
-| `spec/tag-taxonomy-rosters.md` | The real-name rosters (people, employers, area top-levels) — split from the contract so the public shape carries no PII |
-| `spec/calibration-surface.md` | The ingress judgment tables — disposition philosophy, the four dimensions, the mode × trust × kind matrix, destination resolution, worked examples |
-| `spec/integration-modes.md` | Per-destination write discipline — evolution vs current-truth, write shape × authority, and the activation-gated validated-mutation path |
+| Artifact | Type | What it does |
+|----------|------|--------------|
+| `spec/knowledge-contract.md` | Contract | The consolidated rulebook. Part I closes the tag namespaces with growth thresholds and depth limits; Part II defines the file envelope (required frontmatter, valid tags, discoverability); Part III says which skill owns which write, so two skills never file the same thing; Part IV lists the lint rules; Part V is the parsing contract the engine derives them from |
+| `spec/tag-taxonomy-rosters.md` | Roster (local, untracked) | The real-name rosters (people, employers, area top-levels) — split from the contract so the public shape carries no PII; gitignored, you create your own |
+| `spec/calibration-surface.md` | Contract | The ingress judgment tables — disposition philosophy, the four dimensions, the mode × trust × kind matrix, destination resolution, worked examples |
+| `spec/integration-modes.md` | Contract | Per-destination write discipline — evolution vs current-truth, write shape × authority, and the activation-gated validated-mutation path |
 
 ## Configuration
 
