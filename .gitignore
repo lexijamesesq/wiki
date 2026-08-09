@@ -37,8 +37,9 @@
 # === Unsanitized eval fixtures (HOLD status — real/unscrubbed content, per
 # {workspace_root}/System/Context/wiki-publication-boundary-map.md > Decisions #4) ===
 
-# === Transient markers (any depth is fine/intended for this one) ===
+# === Transient markers (any depth is fine/intended for these) ===
 .DS_Store
+__pycache__/
 
 # Evals never publish (no estate repo ships evals — operator convention)
 /Evals/
