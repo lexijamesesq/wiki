@@ -2,7 +2,7 @@ A Claude Code system that keeps a personal knowledge base in an Obsidian vault a
 
 ## Installation
 
-Three of the skills this system runs on (`/wiki-intake`, `/gatekeeper`, `/queue`) ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo; `/capture-meeting` and `/maintenance-triage` ship here, vault-resident. Install both repos.
+Every skill this system runs on ships here, vault-resident. The companion [dotty](https://github.com/lexijamesesq/dotty) repo carries the session harness that can wrap these skills; nothing here requires it.
 
 Clone the repo, then set up the Claude Code directory:
 
@@ -44,30 +44,36 @@ cp CLAUDE.sample.md CLAUDE.md
 - **Claude Code** — this repo's skills install as a project-level skills directory (`mv claude .claude`).
 - **An Obsidian vault** *(optional)* — the skills read wikilinks and frontmatter tag queries, which Obsidian provides.
 - **Sibling content folders** — the skills expect `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, and `Queue/` beside this repo's tracked machinery. None are tracked here; they are your content.
-- **The companion [dotty](https://github.com/lexijamesesq/dotty) repo** — it also ships the lint engine that reads the contracts under `spec/`.
-- **A session harness** *(optional)* — these skills run standalone. A broader orchestration layer can wrap them, but nothing here requires one beyond Claude Code itself.
+- **A session harness** *(optional)* — these skills run standalone. A broader orchestration layer — such as the companion [dotty](https://github.com/lexijamesesq/dotty) repo's session skills — can wrap them, but nothing here requires one beyond Claude Code itself.
 
 ## What's Included
 
 ### Ingress
 
-How content gets in. Every capture passes through the gatekeeper before anything is written — the gatekeeper, `/wiki-intake`, and `/queue` ship in the companion [dotty](https://github.com/lexijamesesq/dotty) repo (see its README).
+How content gets in. Every capture passes through the gatekeeper before anything is written.
 
 | Skill | What it does |
 |-------|--------------|
+| `/wiki-intake` | The single front door for Wiki-axis content — classifies intent and routes to the gatekeeper, the queue, or the data-correction path. At `claude/skills/wiki-intake/` |
+| `/gatekeeper` | Resolves every candidate to file, queue, or discard through the mode × trust × kind matrix — the only skill that writes into the knowledge layer. At `claude/skills/gatekeeper/` |
+| `/capture` | The mid-session capture verb — extracts knowledge candidates from the live conversation and hands every one to the gatekeeper. At `claude/skills/capture/` |
 | `/capture-meeting` | Captures a recurring meeting, gating autonomous filing on whether the source is registered. At `claude/skills/capture-meeting/` — its consumer is the Pi lane, which resolves vault-resident skills |
+| `/router` | Sorts Inbox captures and delivers each to its destination's intake. At `claude/skills/router/` |
+| `/queue` | Creates operator-judgment queue items and runs the menu-guided triage. At `claude/skills/queue/` |
 
 ### Maintenance
 
-The scheduled cleanup pass.
+The scheduled cleanup pass, plus the per-session maintenance operations.
 
 | Skill | What it does |
 |-------|--------------|
+| `/knowledge-layer` | The per-session domain expert — freshness scans, hygiene anti-pattern checks, envelope-enforced filing through the lint gate, index sync, hub cross-reference. At `claude/skills/knowledge-layer/` |
+| `/lint-knowledge` | The lint engine — derives its rules from the contracts at runtime, scans full-corpus on a schedule or single-file at filing time, and reports findings without auto-fixing. At `claude/skills/lint-knowledge/` |
 | `/maintenance-triage` | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you. At `claude/skills/maintenance-triage/` |
 
 ### Contracts
 
-Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `lint.py` script, run periodically full-corpus or single-file at filing time (`--filing`) — ships in dotty.
+Each contract declares how to read it, so the lint engine derives its rules from the spec at runtime. That engine — the `/lint-knowledge` skill and its `lint.py` script, run periodically full-corpus or single-file at filing time (`--filing`) — ships here, at `claude/skills/lint-knowledge/`.
 
 | Contract | What it does |
 |----------|--------------|
