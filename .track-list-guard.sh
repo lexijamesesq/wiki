@@ -22,7 +22,9 @@ ALLOW=(
   "CLAUDE.sample.md"
   ".pre-commit-config.yaml"
   ".gitleaks.toml"
+  ".gitleaks.ci.toml"
   ".track-list-guard.sh"
+  ".github"
 )
 
 is_allowed() {
