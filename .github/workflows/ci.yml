@@ -3,27 +3,39 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Wiki
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           path: Wiki
           fetch-depth: 0
 
-      # Pinned to a tagged release, mirroring the estate's tag-pinned deploy
-      # pattern (see LEX-694's Standing rules) — never `@main`. house-qa's
-      # qa.py lives only here, not in Wiki itself.
+      # PENDING (LEX-709): stub — dotty PR #168 (composite gitleaks-install
+      # action + CI hardening, https://github.com/lexijamesesq/dotty/pull/168)
+      # is open and green but not yet merged. Once it merges, replace this
+      # `ref:` with that merge commit's full SHA (never a pre-merge branch
+      # tip — a squash-merge produces a different commit than any branch
+      # commit, and a deleted branch's commits can become unreachable).
+      # house-qa's qa.py lives only in dotty, not Wiki itself.
       - name: Checkout dotty (pinned)
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: lexijamesesq/dotty
-          ref: v2026.07.11
+          ref: PENDING_DOTTY_PR_168_MERGE_SHA
           path: dotty
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.12'
 
@@ -82,24 +94,15 @@ jobs:
               sys.exit(1)
           PYEOF
 
-      # Base/public-safe rules only — see .gitleaks.ci.toml's own header for
-      # why this never extends the operator's PII rules in CI.
-      - name: Install gitleaks 8.30.1
-        run: |
-          set -euo pipefail
-          ver=8.30.1
-          base="https://github.com/gitleaks/gitleaks/releases/download/v${ver}"
-          tmp="$(mktemp -d)"
-          cd "$tmp"
-          tarball="gitleaks_${ver}_linux_x64.tar.gz"
-          curl -sSfL -o "$tarball" "${base}/${tarball}"
-          curl -sSfL -o checksums.txt "${base}/gitleaks_${ver}_checksums.txt"
-          line="$(grep -E "[[:space:]]${tarball}\$" checksums.txt)"
-          [ "$(printf '%s\n' "$line" | wc -l)" -eq 1 ]
-          printf '%s\n' "$line" | sha256sum -c -
-          tar -xzf "$tarball" gitleaks
-          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
-          gitleaks version
+      # Composite action from dotty (see the stubbed checkout above) —
+      # de-duplicates the curl+checksum+sha256sum install that used to be
+      # written out here verbatim (LEX-709). Base/public-safe rules only —
+      # see .gitleaks.ci.toml's own header for why this never extends the
+      # operator's PII rules in CI.
+      - name: Setup gitleaks
+        uses: ./dotty/.github/actions/setup-gitleaks
+        with:
+          version: '8.30.1'
 
       - name: Gitleaks scan (base rules, this PR's commits)
         working-directory: Wiki
