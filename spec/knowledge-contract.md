@@ -3,7 +3,7 @@ tags:
   - type/spec
   - project/system
   - status/active
-updated: 2026-07-09
+updated: 2026-07-26
 ---
 
 # Knowledge Contract
@@ -54,6 +54,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 | `type/spec` | Technical specification |
 | `type/agent-spec` | Agent definition |
 | `type/reference` | Stable reference material |
+| `type/methodology` | Sourced practitioner methodology — craft frameworks, operational method, technique. The operator says "methodology docs"; Claude searches this type. |
 | `type/log` | Append-only log (progress.md, etc.) |
 | `type/dashboard` | Bases view / dashboard page |
 | `type/claude-project` | Project CLAUDE.md |
@@ -205,6 +206,7 @@ Type-agnostic and destination-agnostic. Everything below adds to it.
 | `type/knowledge` | `topic/` — Wiki-hosted only (see Destination Modifiers) | Required |
 | `type/context` | — | Optional (Claude synthesis, not captured substance) |
 | `type/reference` | — | Optional |
+| `type/methodology` | `sources` | Required (sourced practitioner material, not model-generated) |
 | `type/spec` | — | Optional |
 | `type/agent-spec` | — | Optional |
 | `type/project-pointer` | `project/`, `topic/` | n/a |
