@@ -264,7 +264,7 @@ class TestStaleFile(unittest.TestCase):
 
     def test_stale_finding(self):
         checks = check_ids_for_file(self.data["findings"], "stale-file.md")
-        self.assertIn("stale", checks)
+        self.assertIn("deliberately-broken-for-lex-695-gate-verification", checks)
 
     def test_severity_warning(self):
         f = [x for x in findings_for_file(self.data["findings"], "stale-file.md")
