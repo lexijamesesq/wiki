@@ -10,8 +10,10 @@ Usage:
 
 from __future__ import annotations
 
+import datetime
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -31,6 +33,7 @@ import lint  # noqa: E402
 
 ALPHA_KNOWLEDGE = VAULT_DIR / "Projects" / "alpha" / "Knowledge"
 WIKI_KNOWLEDGE = VAULT_DIR / "Wiki" / "Knowledge"
+AGENTS_HAZEL = VAULT_DIR / "Agents" / "Hazel"
 
 
 def run_lint(scope_paths: list[str], extra_args: list[str] | None = None) -> dict:
@@ -72,10 +75,31 @@ def severities_for_file(findings: list[dict], filename: str) -> list[str]:
 
 
 class TestCleanFile(unittest.TestCase):
-    """clean-file.md should produce zero findings."""
+    """clean-file.md should produce zero findings.
+
+    `updated` can't be a static literal in the tracked fixture: lint.py's
+    freshness check compares against real datetime.date.today() with no
+    override, so a fixed date eventually crosses the 90-day stale threshold
+    and self-expires the test. Instead this rewrites `updated` to a date
+    close to real "today" in a throwaway copy of the fixture vault each run
+    (mirrors TestEmptyParseGuardBrokenContract's tmp_vault pattern below) —
+    never mutates the tracked fixture, so `git status` stays clean.
+    """
 
     def setUp(self):
-        self.data = run_lint([str(ALPHA_KNOWLEDGE / "clean-file.md")])
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+        tmp_vault = Path(self.tmpdir.name) / "vault"
+        shutil.copytree(str(VAULT_DIR), str(tmp_vault))
+        target = tmp_vault / "Projects" / "alpha" / "Knowledge" / "clean-file.md"
+        fresh_date = (datetime.date.today() - datetime.timedelta(days=10)).isoformat()
+        text = target.read_text(encoding="utf-8")
+        text, n = re.subn(r"(?m)^updated: .*$", f"updated: {fresh_date}", text, count=1)
+        assert n == 1, "clean-file.md fixture must carry a single `updated:` line to rewrite"
+        target.write_text(text, encoding="utf-8")
+        self.data = run_lint(
+            [str(target)], extra_args=["--vault-root", str(tmp_vault)]
+        )
 
     def test_no_findings(self):
         findings = findings_for_file(self.data["findings"], "clean-file.md")
@@ -1170,6 +1194,83 @@ class TestLocationGateArchiveFilename(unittest.TestCase):
             self.findings, [],
             f"*-archive.md file is excluded — expected zero findings, got "
             f"{[f['check'] for f in self.findings]}")
+
+
+class TestLocationGateAgentsKnowledgeGoverned(unittest.TestCase):
+    """Agents/<name>/Knowledge/** is governed. governed-agent-knowledge.md
+    deliberately omits status/ — the Invariant Core must actually fire here,
+    proving the Location Gate extension governs the file rather than
+    silently skipping it like an ungoverned location would. It also carries
+    `project/hazel` (the operator-ruled scope tag for this space, matching
+    its own Agents/Hazel/ folder) to prove enumerate_projects() recognizes
+    Agents/<Name>/ folders alongside Projects/<name>/ ones."""
+
+    def setUp(self):
+        self.data = run_lint([str(AGENTS_HAZEL)])
+        self.checks = check_ids_for_file(self.data["findings"], "governed-agent-knowledge.md")
+
+    def test_missing_status_tag_fires(self):
+        self.assertIn(
+            "missing-status-tag", self.checks,
+            f"Agents/Hazel/Knowledge file should be governed (Invariant Core "
+            f"enforced) — expected missing-status-tag, got {self.checks}")
+
+    def test_project_tag_matches_agents_folder(self):
+        self.assertNotIn(
+            "unknown-project-tag", self.checks,
+            f"`project/hazel` matches the Agents/Hazel/ folder — expected no "
+            f"unknown-project-tag, got {self.checks}")
+
+
+class TestUnrecognizedProjectTagStillFiresUnderAgents(unittest.TestCase):
+    """A project/ value matching neither a Projects/<name>/ nor an
+    Agents/<Name>/ folder must still fire unknown-project-tag — the Agents/
+    recognition is additive, not a blanket exemption."""
+
+    def setUp(self):
+        self.data = run_lint([str(AGENTS_HAZEL)])
+        self.findings = findings_for_file(self.data["findings"], "unrecognized-project-tag.md")
+        self.checks = [f["check"] for f in self.findings]
+
+    def test_unknown_project_tag_fires(self):
+        self.assertIn(
+            "unknown-project-tag", self.checks,
+            f"`project/nonexistent` matches no folder — expected "
+            f"unknown-project-tag, got {self.checks}")
+
+    def test_severity_high(self):
+        f = [x for x in self.findings if x["check"] == "unknown-project-tag"]
+        self.assertEqual(f[0]["severity"], "HIGH")
+
+
+class TestLocationGateAgentsRootOverviewUngoverned(unittest.TestCase):
+    """Agents/<name>/ root scaffolding (overview.md, area-*.md) stays
+    ungoverned — same missing-status/ defect as the Knowledge/ sibling above,
+    but zero findings expected since the Location Gate excludes the root."""
+
+    def setUp(self):
+        self.data = run_lint([str(AGENTS_HAZEL)])
+        self.findings = findings_for_file(self.data["findings"], "overview.md")
+
+    def test_zero_findings(self):
+        self.assertEqual(
+            self.findings, [],
+            f"Agents/<name>/overview.md is project scaffolding, ungoverned — "
+            f"expected zero findings, got {[f['check'] for f in self.findings]}")
+
+
+class TestLocationGateAgentsRootClaudeMdUngoverned(unittest.TestCase):
+    """Agents/<name>/CLAUDE.md — same root-level exclusion as overview.md."""
+
+    def setUp(self):
+        self.data = run_lint([str(AGENTS_HAZEL)])
+        self.findings = findings_for_file(self.data["findings"], "CLAUDE.md")
+
+    def test_zero_findings(self):
+        self.assertEqual(
+            self.findings, [],
+            f"Agents/<name>/CLAUDE.md is project scaffolding, ungoverned — "
+            f"expected zero findings, got {[f['check'] for f in self.findings]}")
 
 
 class TestTypeGateOutOfScopeType(unittest.TestCase):

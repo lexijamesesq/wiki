@@ -3,7 +3,7 @@ tags:
   - type/spec
   - project/system
   - status/active
-updated: 2026-07-09
+updated: 2026-07-26
 ---
 
 # Knowledge Contract
@@ -54,6 +54,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 | `type/spec` | Technical specification |
 | `type/agent-spec` | Agent definition |
 | `type/reference` | Stable reference material |
+| `type/methodology` | Sourced practitioner methodology — craft frameworks, operational method, technique. The operator says "methodology docs"; Claude searches this type. |
 | `type/log` | Append-only log (progress.md, etc.) |
 | `type/dashboard` | Bases view / dashboard page |
 | `type/claude-project` | Project CLAUDE.md |
@@ -205,6 +206,7 @@ Type-agnostic and destination-agnostic. Everything below adds to it.
 | `type/knowledge` | `topic/` — Wiki-hosted only (see Destination Modifiers) | Required |
 | `type/context` | — | Optional (Claude synthesis, not captured substance) |
 | `type/reference` | — | Optional |
+| `type/methodology` | `sources` | Required (sourced practitioner material, not model-generated) |
 | `type/spec` | — | Optional |
 | `type/agent-spec` | — | Optional |
 | `type/project-pointer` | `project/`, `topic/` | n/a |
@@ -265,6 +267,7 @@ A file is in a **governed location** only if its vault path matches one of:
 | `System/Context/**` | System-project Claude working-context docs |
 | `Projects/<name>/Knowledge/**` | Per-project knowledge-layer docs |
 | `Projects/<name>/Context/**` | Per-project Claude working-context docs |
+| `Agents/<name>/Knowledge/**` | Per-agent knowledge-layer docs (root-level `Agents/<name>/` files — `overview.md`, `area-*.md` — are project scaffolding, ungoverned) |
 | `Wiki/Knowledge/**` | Wiki maintained narrative knowledge |
 | `Wiki/Contexts/**` | Wiki domain context docs |
 | `Wiki/spec/*.md` | Governed contract docs (this file + `tag-taxonomy-rosters.md` + `calibration-surface.md` + `integration-modes.md`), depth-1 only |

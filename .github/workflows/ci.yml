@@ -1,0 +1,110 @@
+name: CI
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Wiki
+        uses: actions/checkout@v4
+        with:
+          path: Wiki
+          fetch-depth: 0
+
+      # Pinned to a tagged release, mirroring the estate's tag-pinned deploy
+      # pattern (see LEX-694's Standing rules) — never `@main`. house-qa's
+      # qa.py lives only here, not in Wiki itself.
+      - name: Checkout dotty (pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: lexijamesesq/dotty
+          ref: v2026.07.11
+          path: dotty
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run lint-knowledge tests
+        run: python3 Wiki/claude/skills/lint-knowledge/tests/run_tests.py
+
+      # house-qa check runs over the whole claude/skills tree for full
+      # reporting, but only FAILS the gate on findings in files this PR
+      # actually touches — mirroring /publish's own established pattern
+      # (gate-mechanical.sh Step 3: diff-scoped, never blocks on legacy
+      # debt it didn't introduce) and its tests/fixtures exemption (test
+      # fixture data isn't authored artifact content). See LEX-695's
+      # decision record for the pre-existing-debt count this was calibrated
+      # against.
+      - name: house-qa check (claude/skills, gated on changed files)
+        run: |
+          # qa.py's roster-name-leak check fails loud without a rosters file
+          # at Wiki/spec/tag-taxonomy-rosters.md. The real one is real-PII
+          # roster data and gitignored — it never exists in this checkout.
+          # This placeholder carries zero real names; roster-name-leak in CI
+          # can only ever catch its own synthetic tokens, never a real leak.
+          # See Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md's own header.
+          cp Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md Wiki/spec/tag-taxonomy-rosters.md
+          python3 dotty/.claude/skills/house-qa/qa.py Wiki/claude/skills \
+            --git-tracked-only --vault-root "$GITHUB_WORKSPACE" --json \
+            > house-qa-report.json
+          python3 - <<'PYEOF'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          report = json.load(open("house-qa-report.json"))
+          findings = report.get("findings", [])
+          for f in findings:
+              print(f"{f['severity']} {f['check']} {f['file']}: {f['detail'][:160]}")
+
+          base_sha = "${{ github.event.pull_request.base.sha }}"
+          head_sha = "${{ github.sha }}"
+          changed = subprocess.run(
+              ["git", "-C", "Wiki", "diff", "--name-only", base_sha, head_sha],
+              capture_output=True, text=True, check=True,
+          ).stdout.splitlines()
+          wiki_root = Path("Wiki").resolve()
+          changed_abs = {str((wiki_root / c).resolve()) for c in changed}
+
+          blocking = [
+              f for f in findings
+              if "/tests/fixtures/" not in f["file"]
+              and str(Path(f["file"]).resolve()) in changed_abs
+          ]
+          if blocking:
+              print("::error::house-qa findings in files this PR changed:")
+              for f in blocking:
+                  print(f"  {f['severity']} {f['check']} {f['file']}: {f['detail'][:160]}")
+              sys.exit(1)
+          PYEOF
+
+      # Base/public-safe rules only — see .gitleaks.ci.toml's own header for
+      # why this never extends the operator's PII rules in CI.
+      - name: Install gitleaks 8.30.1
+        run: |
+          set -euo pipefail
+          ver=8.30.1
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${ver}"
+          tmp="$(mktemp -d)"
+          cd "$tmp"
+          tarball="gitleaks_${ver}_linux_x64.tar.gz"
+          curl -sSfL -o "$tarball" "${base}/${tarball}"
+          curl -sSfL -o checksums.txt "${base}/gitleaks_${ver}_checksums.txt"
+          line="$(grep -E "[[:space:]]${tarball}\$" checksums.txt)"
+          [ "$(printf '%s\n' "$line" | wc -l)" -eq 1 ]
+          printf '%s\n' "$line" | sha256sum -c -
+          tar -xzf "$tarball" gitleaks
+          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: Gitleaks scan (base rules, this PR's commits)
+        working-directory: Wiki
+        run: |
+          gitleaks detect --source . \
+            --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.sha }}" \
+            --config .gitleaks.ci.toml \
+            --no-banner --redact --ignore-gitleaks-allow

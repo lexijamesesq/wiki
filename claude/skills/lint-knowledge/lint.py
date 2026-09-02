@@ -855,17 +855,27 @@ def build_vault_index(vault_root: Path) -> dict[str, Path]:
 
 
 def enumerate_projects(vault_root: Path) -> set[str]:
-    """Return kebab-cased project names from Projects/ folder + 'system'.
+    """Return kebab-cased project names from Projects/ folder + Agents/ folder
+    + 'system'.
 
     Fix (critic D): kebab-case only — raw-lowercase variant removed.
     The project/ tag taxonomy uses kebab-case (matching folder names normalised with
     re.sub(r'[\\s_]+', '-', name).lower()), so validating against raw-lowercase names
     was wrong and could silently accept tags that don't match any real folder.
+
+    Agents/<Name>/ folders are included alongside Projects/<name>/ (operator
+    ruling: an agent's knowledge home takes the scope tag `project/<name>`,
+    e.g. `project/hazel` for Agents/Hazel/) — same normalisation, same set,
+    so a governed Agents/<Name>/Knowledge/** file's project/ tag validates
+    against its own folder exactly like a Projects/<name>/Knowledge/** file's
+    does. No separate roster; the folder itself is the source of truth.
     """
-    projects_dir = vault_root / "Projects"
     names = {"system"}
-    if projects_dir.exists():
-        for entry in projects_dir.iterdir():
+    for top_name in ("Projects", "Agents"):
+        top_dir = vault_root / top_name
+        if not top_dir.exists():
+            continue
+        for entry in top_dir.iterdir():
             if entry.is_dir() and not entry.name.startswith("."):
                 # kebab-case only — do NOT also add raw entry.name.lower()
                 kname = re.sub(r"[\s_]+", "-", entry.name).lower()
@@ -1225,6 +1235,18 @@ def classify_destination(file_path: Path, vault_root: Path) -> str:
     is_governed_location() — the Location Gate — which is the outer filter.
     Wiki/Data is intentionally NOT 'wiki' here: it is domain content, out of
     governed scope entirely (see is_governed_location).
+
+    Agents/<name>/Knowledge/** is governed (see is_governed_location) but
+    deliberately falls through to 'other' here rather than 'project': the
+    'project' class's scope-destination-mismatch check requires a `project/`
+    tag whose value matches an existing `Projects/<name>/` folder (see
+    get_project_name_from_path / valid_projects), which has no Agents/
+    counterpart. Classifying Agents/ files as 'project' would silently
+    demand a tag-value convention nobody has designed yet. 'other' means
+    these files still get the universal Invariant Core (type/, status/,
+    updated, single H1, ≥1 project/-or-area/ scope tag, tag validity) but
+    skip the destination-specific scope-tag-value check until that design
+    lands.
     """
     try:
         rel = file_path.relative_to(vault_root)
@@ -1266,6 +1288,7 @@ def is_governed_location(file_path: Path, vault_root: Path) -> bool:
       - System/Context/**
       - Projects/<name>/Knowledge/**
       - Projects/<name>/Context/**
+      - Agents/<name>/Knowledge/**
       - Wiki/Knowledge/**
       - Wiki/Contexts/**
       - Wiki/spec/*.md         (governed contract docs, depth-1 .md only —
@@ -1308,6 +1331,16 @@ def is_governed_location(file_path: Path, vault_root: Path) -> bool:
     # --- Projects/<name>/{Knowledge,Context}/** ---
     if top == "Projects":
         if len(parts) >= 4 and parts[2] in ("Knowledge", "Context"):
+            return True
+        return False
+
+    # --- Agents/<name>/Knowledge/** ---
+    # Mirrors Projects/<name>/Knowledge/**: the per-agent root (overview.md,
+    # area-*.md, CLAUDE.md) is project scaffolding and stays ungoverned; only
+    # the Knowledge/ subfolder is governed. No Context/ counterpart exists yet
+    # for Agents/ — add one here if/when that shape is introduced.
+    if top == "Agents":
+        if len(parts) >= 4 and parts[2] == "Knowledge":
             return True
         return False
 
@@ -1939,8 +1972,10 @@ def _check_tag_validity(
                             "HIGH",
                             "unknown-project-tag",
                             rel_path,
-                            f"Unknown `project/` value `{tag}` — no matching `Projects/{first_seg}/` folder",
-                            "Create the project folder or fix the tag",
+                            f"Unknown `project/` value `{tag}` — no matching `Projects/{first_seg}/` "
+                            f"or `Agents/<Name>/` folder (valid_projects is sourced from both, "
+                            f"see enumerate_projects)",
+                            "Create the project or agent folder, or fix the tag",
                         )
                     )
 

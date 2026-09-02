@@ -3,7 +3,7 @@ tags:
   - type/spec
   - project/system
   - status/active
-updated: '2026-07-10'
+updated: '2026-07-14'
 ---
 # Calibration Surface — Knowledge-Ingress Judgment
 
@@ -157,6 +157,8 @@ automated + registered cells flip only by amendment here, after the lane's non-a
 acceptance. Bar-passing durable-knowledge that resolves *unresolved* (no defensible
 home even after probing): queue if §0.3 is met; else discard, logged with reason
 `placement-unresolved` (source persists upstream).
+
+**Queue-entry gate (universal, automated mode — amended 2026-07-14, operator-directed):** every 'queue' in the automated columns names where a candidate MAY land, never a guarantee — §0.3's entry condition governs entry: *critically important AND legitimately stuck*. An automated candidate whose cell reads queue but which does not clear §0.3 **discards, logged with all reasons** — recoverable by design: the source persists upstream (§0). Trust is unchanged by this gate: unregistered content still never files; the gate only decides queue-vs-discard. Exceptions that ALWAYS queue regardless of §0.3: pinned candidates (coherence-fail), quarantine items (validator/apply FAIL — a failed plan always surfaces), and within-group contradictions — these are the queue's escape-hatch purpose itself. While task extraction remains unbuilt (operator ruling 2026-07-10), automated `personal-action` and `project-work` candidates **discard, logged** — their cells flip by amendment when the substrate program's task-extraction rung activates. (Provenance of this amendment: first production flood, 52 queued/day vs the §7 fill-rate expectation of 0–5/day; `{workspace_root}/System/Context/` carries the incident analysis.)
 
 ## §5 Destination resolution (durable-knowledge)
 
@@ -343,6 +345,42 @@ apply. The source transcript persists; if dates actually move, THAT captures as 
 clear keeper.
 Disposition: discard, logged (reason: doubtful durability/queryability — pace
 sentiment without concrete claims).
+</thinking>
+
+**A6 — unregistered + critically important → queue**
+
+Candidate (durable-knowledge, unregistered, automated; source "unregistered strategy offsite 2026-07-13"): `Drey Council has reversed the standing decision to build GMS atop the Cache-to-Ledger migration; GMS will be rebuilt from scratch on a new platform, and the recorded CacheTrack-to-GMS integration target of 2028 is abandoned. Decided at the offsite; supersedes the recorded direction.`
+
+<thinking>
+Re-grade: durable-knowledge correct — a dated strategic decision reversing recorded direction, not a mutation to tracked Data/.
+Search: topic/gms + topic/ledger surface `cachetrack-gms-integration.md`, which records the standing 2028 direction — same question, and this candidate reverses it.
+Coherence: clear pass on all four — specific (named body, named reversal), durable (direction-setting), queryable, independent.
+Trust: unregistered — an unconfigured offsite, not operator-authored. The automated + unregistered durable-knowledge cell forbids filing outright; trust is a hard line and coherence does not lift it.
+§0.3 gate: the cell reads queue, but does it clear the entry condition? Critically important — YES: it reverses standing recorded direction, and a future session reading `cachetrack-gms-integration.md` would act on stale truth. Legitimately stuck — YES: filing is forbidden by trust, and a discard would lose a direction-reversal the operator must see; no autonomous path records it correctly.
+Disposition: queue — /queue create-item, disposition, reasons [unregistered-trust, direction-reversal], payload carrying the verbatim candidate + the superseded doc + search evidence.
+</thinking>
+
+**A7 — unregistered + specific-but-ordinary → discard, logged**
+
+Candidate (durable-knowledge, unregistered, automated; source "unregistered product-marketing sync 2026-07-13"): `The team settled on positioning CacheTrack's multi-signal (soil/competitor/yield) optimization as the wedge against single-signal competitors (AcornTracker, NutCache Pro, SquirrelSense) — "multi-signal, not location-only" as the one-line frame.`
+
+<thinking>
+Re-grade: durable-knowledge — a settled positioning finding that stands alone.
+Search: topic/cachetrack homes exist; this would append cleanly. This is NOT a noise case — it is specific (named frame, named competitors), independent, and plausibly queryable. Coherence: honest pass. The fork is trust + importance, not quality.
+Trust: unregistered — automated + unregistered durable-knowledge forbids filing.
+§0.3 gate: critically important? NO — a useful-but-ordinary positioning frame; nothing in the recorded corpus breaks or goes stale if it is not captured, and the source persists upstream for a later registered pass. Not critically-important-AND-stuck → the queue's entry condition is not met.
+Disposition: discard, logged — reasons [unregistered-trust, below-queue-entry-bar]. A discard is recoverable and the source persists upstream; the queue is not a value-uncertainty parking lot (§0.3, §2 automated bias).
+</thinking>
+
+**A8 — unregistered 1:1 + action item → discard (task extraction unbuilt)**
+
+Candidate (personal-action, unregistered, automated; source "Hazel ↔ Chip 1:1 2026-07-13"): `Hazel to escalate the Hollow EOL slip (FY27-Q2 → FY27-Q4) to the Drey Council before the next Canopy Triad Sync.`
+
+<thinking>
+Tier: a two-person 1:1 — the elevated bar applies (§2: ≥3 of 4 dimensions, stricter professional-context queryability).
+Re-grade: an owned action item — kind personal-action, not durable-knowledge.
+Mode automated, trust unregistered. The automated personal-action cell reads queue — but the §4 queue-entry gate routes automated personal-action to discard while task extraction is unbuilt: the operator ruled 2026-07-10 that task extraction is deliberately not built, so such items are DISCARDED, not queued, until it activates. (Trust is unregistered too — no filing regardless.)
+Disposition: discard, logged — reasons [task-extraction-unbuilt]. The cell flips to queue by amendment when the substrate program's task-extraction rung activates; until then the source persists upstream.
 </thinking>
 
 ## Amendment discipline
