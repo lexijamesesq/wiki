@@ -21,18 +21,15 @@ jobs:
           path: Wiki
           fetch-depth: 0
 
-      # PENDING (LEX-709): stub — dotty PR #168 (composite gitleaks-install
-      # action + CI hardening, https://github.com/lexijamesesq/dotty/pull/168)
-      # is open and green but not yet merged. Once it merges, replace this
-      # `ref:` with that merge commit's full SHA (never a pre-merge branch
-      # tip — a squash-merge produces a different commit than any branch
-      # commit, and a deleted branch's commits can become unreachable).
-      # house-qa's qa.py lives only in dotty, not Wiki itself.
+      # Pinned to dotty PR #168's merge commit (composite gitleaks-install
+      # action + CI hardening, https://github.com/lexijamesesq/dotty/pull/168,
+      # merged 2026-09-02) — never a floating tag or branch tip. house-qa's
+      # qa.py lives only in dotty, not Wiki itself.
       - name: Checkout dotty (pinned)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: lexijamesesq/dotty
-          ref: PENDING_DOTTY_PR_168_MERGE_SHA
+          ref: 1fe38aab22976e13e3361ac363fd7dd23e68eea2 # PR #168 merge commit
           path: dotty
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
