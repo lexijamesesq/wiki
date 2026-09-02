@@ -39,6 +39,19 @@ jobs:
       - name: Run lint-knowledge tests
         run: python3 Wiki/claude/skills/lint-knowledge/tests/run_tests.py
 
+      # Pinned to a real, current release commit — well past CVE-2025-30066
+      # (a 2025 supply-chain compromise where this action's OWN tags v1-
+      # v45.0.7 were retroactively rewritten to exfiltrate CI secrets across
+      # 23,000+ repos). That attack worked specifically because consumers
+      # floated on a tag; a SHA pin to an immutable commit is exactly the
+      # discipline this whole workflow now enforces everywhere else, and it
+      # closes off that attack class the same way here (LEX-709).
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
+        with:
+          path: Wiki
+
       # house-qa check runs over the whole claude/skills tree for full
       # reporting, but only FAILS the gate on findings in files this PR
       # actually touches — mirroring /publish's own established pattern
@@ -47,18 +60,9 @@ jobs:
       # fixture data isn't authored artifact content). See LEX-695's
       # decision record for the pre-existing-debt count this was calibrated
       # against.
-      #
-      # Changed-file computation stays inline `git diff` (below), not a
-      # pinned changed-files action (LEX-709 evaluated tj-actions/changed-
-      # files: CVE-2025-30066, CVSS 8.6 — a 2025 supply-chain compromise
-      # that retroactively rewrote its own tags v1-v45.0.7 to exfiltrate CI
-      # secrets across 23,000+ repos). Adding a dependency with that history
-      # for zero functional gain over a two-line subprocess call with no
-      # external attack surface is the wrong trade — even SHA-pinned to a
-      # fixed, post-fix commit, it's an unforced dependency this job doesn't
-      # need. Revisit only if a real gap in the inline diff surfaces (e.g.
-      # rename-detection semantics `git diff --name-only` doesn't cover).
       - name: house-qa check (claude/skills, gated on changed files)
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           # qa.py's roster-name-leak check fails loud without a rosters file
           # at Wiki/spec/tag-taxonomy-rosters.md. The real one is real-PII
@@ -72,7 +76,7 @@ jobs:
             > house-qa-report.json
           python3 - <<'PYEOF'
           import json
-          import subprocess
+          import os
           import sys
           from pathlib import Path
 
@@ -81,12 +85,10 @@ jobs:
           for f in findings:
               print(f"{f['severity']} {f['check']} {f['file']}: {f['detail'][:160]}")
 
-          base_sha = "${{ github.event.pull_request.base.sha }}"
-          head_sha = "${{ github.sha }}"
-          changed = subprocess.run(
-              ["git", "-C", "Wiki", "diff", "--name-only", base_sha, head_sha],
-              capture_output=True, text=True, check=True,
-          ).stdout.splitlines()
+          # tj-actions/changed-files' `all_changed_files` output: paths
+          # relative to `path: Wiki` (its own `diff_relative` behavior),
+          # space-separated by default.
+          changed = os.environ["ALL_CHANGED_FILES"].split()
           wiki_root = Path("Wiki").resolve()
           changed_abs = {str((wiki_root / c).resolve()) for c in changed}
 
