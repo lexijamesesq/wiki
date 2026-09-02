@@ -265,6 +265,7 @@ A file is in a **governed location** only if its vault path matches one of:
 | `System/Context/**` | System-project Claude working-context docs |
 | `Projects/<name>/Knowledge/**` | Per-project knowledge-layer docs |
 | `Projects/<name>/Context/**` | Per-project Claude working-context docs |
+| `Agents/<name>/Knowledge/**` | Per-agent knowledge-layer docs (root-level `Agents/<name>/` files — `overview.md`, `area-*.md` — are project scaffolding, ungoverned) |
 | `Wiki/Knowledge/**` | Wiki maintained narrative knowledge |
 | `Wiki/Contexts/**` | Wiki domain context docs |
 | `Wiki/spec/*.md` | Governed contract docs (this file + `tag-taxonomy-rosters.md` + `calibration-surface.md` + `integration-modes.md`), depth-1 only |
