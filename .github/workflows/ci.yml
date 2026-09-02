@@ -40,6 +40,13 @@ jobs:
       # against.
       - name: house-qa check (claude/skills, gated on changed files)
         run: |
+          # qa.py's roster-name-leak check fails loud without a rosters file
+          # at Wiki/spec/tag-taxonomy-rosters.md. The real one is real-PII
+          # roster data and gitignored — it never exists in this checkout.
+          # This placeholder carries zero real names; roster-name-leak in CI
+          # can only ever catch its own synthetic tokens, never a real leak.
+          # See Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md's own header.
+          cp Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md Wiki/spec/tag-taxonomy-rosters.md
           python3 dotty/.claude/skills/house-qa/qa.py Wiki/claude/skills \
             --git-tracked-only --vault-root "$GITHUB_WORKSPACE" --json \
             > house-qa-report.json
