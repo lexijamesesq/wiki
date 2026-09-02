@@ -10,8 +10,10 @@ Usage:
 
 from __future__ import annotations
 
+import datetime
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -72,10 +74,31 @@ def severities_for_file(findings: list[dict], filename: str) -> list[str]:
 
 
 class TestCleanFile(unittest.TestCase):
-    """clean-file.md should produce zero findings."""
+    """clean-file.md should produce zero findings.
+
+    `updated` can't be a static literal in the tracked fixture: lint.py's
+    freshness check compares against real datetime.date.today() with no
+    override, so a fixed date eventually crosses the 90-day stale threshold
+    and self-expires the test. Instead this rewrites `updated` to a date
+    close to real "today" in a throwaway copy of the fixture vault each run
+    (mirrors TestEmptyParseGuardBrokenContract's tmp_vault pattern below) —
+    never mutates the tracked fixture, so `git status` stays clean.
+    """
 
     def setUp(self):
-        self.data = run_lint([str(ALPHA_KNOWLEDGE / "clean-file.md")])
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+        tmp_vault = Path(self.tmpdir.name) / "vault"
+        shutil.copytree(str(VAULT_DIR), str(tmp_vault))
+        target = tmp_vault / "Projects" / "alpha" / "Knowledge" / "clean-file.md"
+        fresh_date = (datetime.date.today() - datetime.timedelta(days=10)).isoformat()
+        text = target.read_text(encoding="utf-8")
+        text, n = re.subn(r"(?m)^updated: .*$", f"updated: {fresh_date}", text, count=1)
+        assert n == 1, "clean-file.md fixture must carry a single `updated:` line to rewrite"
+        target.write_text(text, encoding="utf-8")
+        self.data = run_lint(
+            [str(target)], extra_args=["--vault-root", str(tmp_vault)]
+        )
 
     def test_no_findings(self):
         findings = findings_for_file(self.data["findings"], "clean-file.md")
