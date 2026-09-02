@@ -349,7 +349,7 @@ sentiment without concrete claims).
 
 **A6 — unregistered + critically important → queue**
 
-Candidate (durable-knowledge, unregistered, automated; source "unregistered strategy offsite 2026-07-13"): `The Drey Council has reversed the standing decision to build GMS atop the Cache-to-Ledger migration; GMS will be rebuilt from scratch on a new platform, and the recorded CacheTrack-to-GMS integration target of 2028 is abandoned. Decided at the offsite; supersedes the recorded direction.`
+Candidate (durable-knowledge, unregistered, automated; source "unregistered strategy offsite 2026-07-13"): `Drey Council has reversed the standing decision to build GMS atop the Cache-to-Ledger migration; GMS will be rebuilt from scratch on a new platform, and the recorded CacheTrack-to-GMS integration target of 2028 is abandoned. Decided at the offsite; supersedes the recorded direction.`
 
 <thinking>
 Re-grade: durable-knowledge correct — a dated strategic decision reversing recorded direction, not a mutation to tracked Data/.
