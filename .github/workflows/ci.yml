@@ -47,6 +47,17 @@ jobs:
       # fixture data isn't authored artifact content). See LEX-695's
       # decision record for the pre-existing-debt count this was calibrated
       # against.
+      #
+      # Changed-file computation stays inline `git diff` (below), not a
+      # pinned changed-files action (LEX-709 evaluated tj-actions/changed-
+      # files: CVE-2025-30066, CVSS 8.6 — a 2025 supply-chain compromise
+      # that retroactively rewrote its own tags v1-v45.0.7 to exfiltrate CI
+      # secrets across 23,000+ repos). Adding a dependency with that history
+      # for zero functional gain over a two-line subprocess call with no
+      # external attack surface is the wrong trade — even SHA-pinned to a
+      # fixed, post-fix commit, it's an unforced dependency this job doesn't
+      # need. Revisit only if a real gap in the inline diff surfaces (e.g.
+      # rename-detection semantics `git diff --name-only` doesn't cover).
       - name: house-qa check (claude/skills, gated on changed files)
         run: |
           # qa.py's roster-name-leak check fails loud without a rosters file
