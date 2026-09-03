@@ -10,7 +10,7 @@ Run the mechanical knowledge-integrity lint over the session's touched scope at 
 
 ## Protocol
 
-1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill). Resolve `--rosters-path` from the global CLAUDE.md's `references.tag_taxonomy_rosters` key, never omit it — the real `tag-taxonomy-rosters.md` no longer lives under `vault_root` at all (LEX-718: declared in dotty-private, blueprint-applied to a machine-fixed path), so an unflagged call falls back to `lint.py`'s own pre-key default and fails loud:
+1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill). Resolve `--rosters-path` from the global CLAUDE.md's `references.tag_taxonomy_rosters` key, never omit it — the real `tag-taxonomy-rosters.md` no longer lives under `vault_root` at all (declared in dotty-private, blueprint-applied to a machine-fixed path), so an unflagged call falls back to `lint.py`'s own pre-key default and fails loud:
 
    ```
    python3 <skills-dir>/lint-knowledge/lint.py --no-manifest --json \
