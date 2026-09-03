@@ -31,9 +31,6 @@
 # === Symlink (local infrastructure, not tracked) ===
 /.claude
 
-# === Operator PII rules (symlink -> ~/bin/dotty-private/gitleaks-operator-rules.toml) ===
-/.gitleaks-operator-rules.toml
-
 # === Unsanitized eval fixtures (HOLD status — real/unscrubbed content, per
 # {workspace_root}/System/Context/wiki-publication-boundary-map.md > Decisions #4) ===
 
