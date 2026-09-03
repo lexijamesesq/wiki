@@ -2,16 +2,14 @@
 #
 # CI runs in a public GitHub Actions environment: fork PRs never receive
 # secrets, and log/match context is visible to anyone who can view the repo.
-# The operator's PII-derived rules (`.gitleaks-operator-rules.toml`, a
-# gitignored local symlink) must never run here — that would itself be a
-# leak surface. This config extends ONLY gitleaks' own built-in default
-# ruleset (provider-shaped secrets: AWS keys, API tokens, private keys,
-# etc.). The local pre-push hook keeps scanning with the full operator-rules
-# chain via `.gitleaks.toml` — that hook remains the authoritative PII
-# choke; CI is deliberately the redacted, base-rules floor.
-#
-# Decision record: LEX-695 comment thread (design input relayed to LEX-703,
-# which owns the general fixed-path question for private repos).
+# The operator's PII-derived rules (resolved locally via the fixed installed
+# path at ~/.config/gitleaks/operator-rules.toml, a CI runner has none) must
+# never run here — that would itself be a leak surface. This config extends
+# ONLY gitleaks' own built-in default ruleset (provider-shaped secrets: AWS
+# keys, API tokens, private keys, etc.). The local pre-push hook keeps
+# scanning with the full operator-rules chain via `.gitleaks.toml` — that
+# hook remains the authoritative PII choke; CI is deliberately the
+# redacted, base-rules floor.
 
 title = "Wiki CI gitleaks config (base rules only, no operator PII)"
 
@@ -22,6 +20,6 @@ useDefault = true
 paths = [
   '''\.gitleaks\.toml$''',
   '''\.gitleaks\.ci\.toml$''',
-  '''CLAUDE\.sample\.md$''',
+  '''instance\.sample\.md$''',
   '''LICENSE$''',
 ]

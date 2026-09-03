@@ -37,7 +37,7 @@ jobs:
           python-version: '3.12'
 
       - name: Run lint-knowledge tests
-        run: python3 Wiki/claude/skills/lint-knowledge/tests/run_tests.py
+        run: python3 Wiki/.claude/skills/lint-knowledge/tests/run_tests.py
 
       # Pinned to a real, current release commit — well past CVE-2025-30066
       # (a 2025 supply-chain compromise where this action's OWN tags v1-
@@ -45,22 +45,22 @@ jobs:
       # 23,000+ repos). That attack worked specifically because consumers
       # floated on a tag; a SHA pin to an immutable commit is exactly the
       # discipline this whole workflow now enforces everywhere else, and it
-      # closes off that attack class the same way here (LEX-709).
+      # closes off that attack class the same way here.
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
           path: Wiki
 
-      # house-qa check runs over the whole claude/skills tree for full
+      # house-qa check runs over the whole .claude/skills tree for full
       # reporting, but only FAILS the gate on findings in files this PR
       # actually touches — mirroring /publish's own established pattern
       # (gate-mechanical.sh Step 3: diff-scoped, never blocks on legacy
       # debt it didn't introduce) and its tests/fixtures exemption (test
-      # fixture data isn't authored artifact content). See LEX-695's
-      # decision record for the pre-existing-debt count this was calibrated
-      # against.
-      - name: house-qa check (claude/skills, gated on changed files)
+      # fixture data isn't authored artifact content) — see the estate's
+      # Decisions record for the pre-existing-debt count this was
+      # calibrated against.
+      - name: house-qa check (.claude/skills, gated on changed files)
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
@@ -71,7 +71,7 @@ jobs:
           # can only ever catch its own synthetic tokens, never a real leak.
           # See Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md's own header.
           cp Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md Wiki/spec/tag-taxonomy-rosters.md
-          python3 dotty/.claude/skills/house-qa/qa.py Wiki/claude/skills \
+          python3 dotty/.claude/skills/house-qa/qa.py Wiki/.claude/skills \
             --git-tracked-only --vault-root "$GITHUB_WORKSPACE" --json \
             > house-qa-report.json
           python3 - <<'PYEOF'
@@ -106,7 +106,7 @@ jobs:
 
       # Composite action from dotty (see the stubbed checkout above) —
       # de-duplicates the curl+checksum+sha256sum install that used to be
-      # written out here verbatim (LEX-709). Base/public-safe rules only —
+      # written out here verbatim. Base/public-safe rules only —
       # see .gitleaks.ci.toml's own header for why this never extends the
       # operator's PII rules in CI.
       - name: Setup gitleaks

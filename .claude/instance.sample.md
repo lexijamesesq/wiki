@@ -13,7 +13,7 @@ Claude-optimized knowledge layer — query-time system with a thin durable conte
 
 This sidecar governs **how Wiki maintains itself as infrastructure** — never the topics or content inside it. Domain knowledge, per-domain working state, and topic data live in the relevant `Contexts/` page (or `Data/`), never here. TODO: link your own architecture doc for space structure, linking mechanisms, hub disposition, and rejected alternatives.
 
-TODO: set `workspace_root` (this vault's root path) in your global Claude Code config, not here — every `{workspace_root}` placeholder throughout this repo's specs and skills resolves against it, and this repo itself must be cloned in as `Wiki/` at that root for those placeholders to resolve correctly.
+TODO: set `workspace_root` (this vault's root path) in your global Claude Code config, not here — every `{workspace_root}` placeholder throughout this repo's specs and skills resolves against it, to find your vault's `Wiki/Knowledge/`, `Wiki/Data/`, etc. This repo's own checkout can live anywhere on disk; it doesn't need to sit inside your vault.
 
 ---
 
@@ -150,7 +150,7 @@ When Claude needs information about Wiki's rules, structure, or state:
 
 1. **TODO: your architecture doc** — space structure, linking mechanisms, hub disposition, rejected alternatives
 2. **`spec/knowledge-contract.md` Part I** — closed tag namespaces, thresholds, depth limits, parsing contract
-3. **This `CLAUDE.md`** — stewardship rules, management triggers, decision authority
+3. **This `.claude/instance.md`** — stewardship rules, management triggers, decision authority
 4. **TODO: your migration/onboarding doc**, if you have one
 5. **Wiki's own content** — query via content/tag search
 
@@ -190,7 +190,7 @@ At point-of-use: check the domain's context page first (authority hierarchy). Fo
 
 | File | Purpose |
 |---|---|
-| `CLAUDE.md` | This file — Wiki stewardship rules |
+| `.claude/instance.md` | This file — Wiki stewardship rules |
 | `Queue/` | Operator-judgment queue — one item file per pending judgment |
 | `Knowledge/` | Narrative knowledge, one topic per file |
 | `Data/` | Structured per-item records |
