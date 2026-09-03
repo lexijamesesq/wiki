@@ -10,11 +10,12 @@ Run the mechanical knowledge-integrity lint over the session's touched scope at 
 
 ## Protocol
 
-1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill):
+1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill). Resolve `--rosters-path` from the global CLAUDE.md's `references.tag_taxonomy_rosters` key, never omit it — the real `tag-taxonomy-rosters.md` no longer lives under `vault_root` at all (declared in dotty-private, blueprint-applied to a machine-fixed path), so an unflagged call falls back to `lint.py`'s own pre-key default and fails loud:
 
    ```
    python3 <skills-dir>/lint-knowledge/lint.py --no-manifest --json \
-       --vault-root <vault_root> <scope_paths...>
+       --vault-root <vault_root> --rosters-path <resolved from references.tag_taxonomy_rosters> \
+       <scope_paths...>
    ```
 
    `--no-manifest` is mandatory: a scope-lint is a stateless per-session pass and must not touch the periodic mode's manifest/delta state (non-overlap with `/lint-knowledge`).
