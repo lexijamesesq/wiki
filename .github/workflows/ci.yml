@@ -39,19 +39,6 @@ jobs:
       - name: Run lint-knowledge tests
         run: python3 Wiki/.claude/skills/lint-knowledge/tests/run_tests.py
 
-      # Pinned to a real, current release commit — well past CVE-2025-30066
-      # (a 2025 supply-chain compromise where this action's OWN tags v1-
-      # v45.0.7 were retroactively rewritten to exfiltrate CI secrets across
-      # 23,000+ repos). That attack worked specifically because consumers
-      # floated on a tag; a SHA pin to an immutable commit is exactly the
-      # discipline this whole workflow now enforces everywhere else, and it
-      # closes off that attack class the same way here.
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
-        with:
-          path: Wiki
-
       # house-qa check runs over the whole .claude/skills tree for full
       # reporting, but only FAILS the gate on findings in files this PR
       # actually touches — mirroring /publish's own established pattern
@@ -60,9 +47,10 @@ jobs:
       # fixture data isn't authored artifact content) — see the estate's
       # Decisions record for the pre-existing-debt count this was
       # calibrated against.
-      - name: house-qa check (.claude/skills, gated on changed files)
+      - name: house-qa check (.claude/skills, gated on genuinely-touched files)
         env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
           # qa.py's roster-name-leak check fails loud without a rosters file
           # at Wiki/spec/tag-taxonomy-rosters.md. The real one is real-PII
@@ -77,6 +65,7 @@ jobs:
           python3 - <<'PYEOF'
           import json
           import os
+          import subprocess
           import sys
           from pathlib import Path
 
@@ -85,20 +74,40 @@ jobs:
           for f in findings:
               print(f"{f['severity']} {f['check']} {f['file']}: {f['detail'][:160]}")
 
-          # tj-actions/changed-files' `all_changed_files` output: paths
-          # relative to `path: Wiki` (its own `diff_relative` behavior),
-          # space-separated by default.
-          changed = os.environ["ALL_CHANGED_FILES"].split()
+          # A whole-directory rename (e.g. claude/ -> .claude/) makes EVERY
+          # file's path change, so any diff scoped by path alone (including
+          # tj-actions/changed-files' default all_changed_files output, which
+          # does not distinguish a pure rename from real content edits) would
+          # list the entire pre-existing tree as "changed" — defeating the
+          # whole point of gating on this PR's own content. git's own rename
+          # detection (-M100: only an EXACT byte-for-byte match counts as a
+          # pure rename) is the one source of truth that actually separates
+          # "this path moved, nothing else" from "this file's content
+          # changed" — R100 stays excluded from the blocking set; anything
+          # else (A, M, or a rename below 100% similarity) still gates.
+          diff = subprocess.run(
+              ["git", "-C", "Wiki", "diff", "--name-status", "-M100",
+               "--diff-filter=d", f"{os.environ['BASE_SHA']}...{os.environ['HEAD_SHA']}"],
+              capture_output=True, text=True, check=True,
+          ).stdout
           wiki_root = Path("Wiki").resolve()
-          changed_abs = {str((wiki_root / c).resolve()) for c in changed}
+          touched_abs = set()
+          for line in diff.splitlines():
+              if not line.strip():
+                  continue
+              parts = line.split("\t")
+              status, paths = parts[0], parts[1:]
+              if status.startswith("R100"):
+                  continue  # pure rename, content unchanged — not touched
+              touched_abs.add(str((wiki_root / paths[-1]).resolve()))
 
           blocking = [
               f for f in findings
               if "/tests/fixtures/" not in f["file"]
-              and str(Path(f["file"]).resolve()) in changed_abs
+              and str(Path(f["file"]).resolve()) in touched_abs
           ]
           if blocking:
-              print("::error::house-qa findings in files this PR changed:")
+              print("::error::house-qa findings in files this PR genuinely touched:")
               for f in blocking:
                   print(f"  {f['severity']} {f['check']} {f['file']}: {f['detail'][:160]}")
               sys.exit(1)
