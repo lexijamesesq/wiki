@@ -124,7 +124,7 @@ The candidate schema, plus the `pinned` marker that carries the pinned rule:
 
 ## Write execution
 
-- **Interactive** (knowledge-contract Part III §4): file-then-fix. New files: write the full envelope, then run `python3 <skills-dir>/lint-knowledge/lint.py --filing --no-manifest --json --vault-root <vault-root> <target-path>` (sibling `lint-knowledge` skill — same skills directory as this skill). PASS = zero HIGH findings. FAIL → fix each HIGH finding, re-run; cap 3. Appends: idempotency-checked suffix with date attribution, `updated` bump, suffix-presence verify. Project-hosted filings: `index.md` sync (§4 post-file) — performed here, reported to the caller as done.
+- **Interactive** (knowledge-contract Part III §4): file-then-fix. New files: write the full envelope, then run `python3 <skills-dir>/lint-knowledge/lint.py --filing --no-manifest --json --vault-root <vault-root> --contract-path <contract-path> --rosters-path <rosters-path> <target-path>` (sibling `lint-knowledge` skill — same skills directory as this skill; `<contract-path>`/`<rosters-path>` from the global CLAUDE.md's `references.tag_taxonomy`/`references.tag_taxonomy_rosters` keys — the contract and rosters no longer live under the vault). PASS = zero HIGH findings. FAIL → fix each HIGH finding, re-run; cap 3. Appends: idempotency-checked suffix with date attribution, `updated` bump, suffix-presence verify. Project-hosted filings: `index.md` sync (§4 post-file) — performed here, reported to the caller as done.
 - **Automated** (knowledge-contract Part III §5): emit a pre-commit write plan — load `playbooks/automated-write-plan.md`. This skill NEVER applies the plan; in automated mode its only direct vault writes are `/queue create-item` files.
 
 ## Extraction report
