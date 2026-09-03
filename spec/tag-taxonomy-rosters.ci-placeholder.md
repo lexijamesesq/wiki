@@ -19,8 +19,7 @@ Consequence, by design: CI's roster-name-leak check only catches a leak of
 one of these synthetic placeholder tokens — it can never catch a real-name
 leak, because it never has the real roster. The local pre-push hook (which
 does have the real, gitignored file) stays the authoritative PII choke —
-same redacted-floor principle as `.gitleaks.ci.toml` for gitleaks. See
-LEX-695's decision record.
+same redacted-floor principle as `.gitleaks.ci.toml` for gitleaks.
 
 ## `person/` roster
 

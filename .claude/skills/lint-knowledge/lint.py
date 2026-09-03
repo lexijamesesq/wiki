@@ -2551,7 +2551,21 @@ def main() -> int:
         "--vault-root",
         default=os.environ.get("VAULT_ROOT"),
         required="VAULT_ROOT" not in os.environ,
-        help="Vault root for wikilink resolution and contract doc lookup. Set VAULT_ROOT env var or pass explicitly.",
+        help="Vault root for wikilink resolution. Set VAULT_ROOT env var or pass explicitly.",
+    )
+    parser.add_argument(
+        "--contract-path", default=None,
+        help="Explicit path to knowledge-contract.md. Resolve this from the global "
+             "CLAUDE.md's references.tag_taxonomy / references.structural_contract key "
+             "(both alias the same file), never hardcode it. Falls back to "
+             "<vault-root>/Wiki/spec/knowledge-contract.md when unset (pre-key behavior).",
+    )
+    parser.add_argument(
+        "--rosters-path", default=None,
+        help="Explicit path to tag-taxonomy-rosters.md. Resolve this from the global "
+             "CLAUDE.md's references.tag_taxonomy_rosters key, never hardcode it. Falls "
+             "back to <vault-root>/Wiki/spec/tag-taxonomy-rosters.md when unset "
+             "(pre-key behavior).",
     )
     parser.add_argument(
         "--filing",
@@ -2572,9 +2586,16 @@ def main() -> int:
 
     # Load contract docs. Both parsers read the SAME merged file — their
     # section headers are disjoint (Part I tags / Part II envelope).
-    taxonomy_path = vault_root / "Wiki" / "spec" / "knowledge-contract.md"
-    rosters_path = vault_root / "Wiki" / "spec" / "tag-taxonomy-rosters.md"
-    sc_path = vault_root / "Wiki" / "spec" / "knowledge-contract.md"
+    if args.contract_path:
+        taxonomy_path = Path(args.contract_path).expanduser().resolve()
+    else:
+        taxonomy_path = vault_root / "Wiki" / "spec" / "knowledge-contract.md"
+    sc_path = taxonomy_path
+
+    if args.rosters_path:
+        rosters_path = Path(args.rosters_path).expanduser().resolve()
+    else:
+        rosters_path = vault_root / "Wiki" / "spec" / "tag-taxonomy-rosters.md"
 
     if not taxonomy_path.exists():
         print(f"ERROR: knowledge-contract.md not found at {taxonomy_path}", file=sys.stderr)

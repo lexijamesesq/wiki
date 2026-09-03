@@ -11,15 +11,21 @@
 #
 # To add a new top-level path to the public Wiki repo: confirm it belongs
 # (machinery, not operator content), then add its name to ALLOW below.
+#
+# Kept, not retired, when this repo moved out of the vault (notes no longer
+# live beside this checkout at all): the guard's actual purpose was never
+# specifically "keep vault notes out" — it's general defense against ANY
+# undeclared top-level path landing here (a stray secrets file, a debug
+# script, an accidental tool-config directory), a purpose this repo needs
+# exactly as much post-move as before.
 set -euo pipefail
 
 ALLOW=(
-  "claude"
+  ".claude"
   "spec"
   ".gitignore"
   "README.md"
   "LICENSE"
-  "CLAUDE.sample.md"
   ".pre-commit-config.yaml"
   ".gitleaks.toml"
   ".gitleaks.ci.toml"
