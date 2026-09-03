@@ -40,13 +40,15 @@ jobs:
         run: python3 Wiki/.claude/skills/lint-knowledge/tests/run_tests.py
 
       # house-qa check runs over the whole .claude/skills tree for full
-      # reporting, but only FAILS the gate on findings in files this PR
-      # actually touches — mirroring /publish's own established pattern
-      # (gate-mechanical.sh Step 3: diff-scoped, never blocks on legacy
-      # debt it didn't introduce) and its tests/fixtures exemption (test
-      # fixture data isn't authored artifact content) — see the estate's
-      # Decisions record for the pre-existing-debt count this was
-      # calibrated against.
+      # reporting, but only FAILS the gate on HIGH findings in files this
+      # PR actually touches — mirroring /publish's own documented house-qa
+      # mechanical rule ("Zero HIGH, excluding tests/fixtures/") and its
+      # diff-scoped, don't-block-on-legacy-debt pattern (gate-mechanical.sh
+      # Step 3). WARNING/MEDIUM/INFO findings still print in full above,
+      # they just don't gate — touching a file at all (even one unrelated
+      # line) must not force fixing every pre-existing lower-severity
+      # finding in it. See the estate's Decisions record for the
+      # pre-existing-debt count this was calibrated against.
       - name: house-qa check (.claude/skills, gated on genuinely-touched files)
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -117,7 +119,8 @@ jobs:
 
           blocking = [
               f for f in findings
-              if "/tests/fixtures/" not in f["file"]
+              if f["severity"] == "HIGH"
+              and "/tests/fixtures/" not in f["file"]
               and str(Path(f["file"]).resolve()) in touched_abs
           ]
           if blocking:

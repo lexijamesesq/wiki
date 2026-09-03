@@ -26,6 +26,7 @@ ALLOW=(
   ".gitignore"
   "README.md"
   "LICENSE"
+  "CLAUDE.md"
   ".pre-commit-config.yaml"
   ".gitleaks.toml"
   ".gitleaks.ci.toml"
