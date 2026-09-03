@@ -80,13 +80,20 @@ jobs:
           # does not distinguish a pure rename from real content edits) would
           # list the entire pre-existing tree as "changed" — defeating the
           # whole point of gating on this PR's own content. git's own rename
-          # detection (-M100: only an EXACT byte-for-byte match counts as a
-          # pure rename) is the one source of truth that actually separates
-          # "this path moved, nothing else" from "this file's content
-          # changed" — R100 stays excluded from the blocking set; anything
-          # else (A, M, or a rename below 100% similarity) still gates.
+          # detection is the source of truth that actually separates "this
+          # path moved, nothing else" from "this file's content changed" —
+          # but the threshold flag needs the %-suffixed form: -M100 alone is
+          # NOT "100%", it's git's internal fractional scale (close to a 10%
+          # threshold); -M100% asks for exact-similarity-only detection. Git
+          # reports an exact match as status R100 regardless of the
+          # requested threshold, though "exact" here is a line-multiset
+          # comparison, not strict byte identity (reordered lines can also
+          # report R100) — harmless for this fiction scan, since reordering
+          # existing lines can't introduce a new proper noun. R100 is
+          # excluded from the blocking set below; anything else (A, M, or a
+          # rename under 100% similarity) still gates.
           diff = subprocess.run(
-              ["git", "-C", "Wiki", "diff", "--name-status", "-M100",
+              ["git", "-C", "Wiki", "diff", "--name-status", "-M100%",
                "--diff-filter=d", f"{os.environ['BASE_SHA']}...{os.environ['HEAD_SHA']}"],
               capture_output=True, text=True, check=True,
           ).stdout
@@ -97,8 +104,14 @@ jobs:
                   continue
               parts = line.split("\t")
               status, paths = parts[0], parts[1:]
-              if status.startswith("R100"):
-                  continue  # pure rename, content unchanged — not touched
+              # A file moving OUT of an exempt directory (tests/fixtures/,
+              # per this step's own blocking filter below) must still be
+              # scanned even if R100 — its exemption depends on PATH, not
+              # content, so a pure rename crossing that boundary needs
+              # re-evaluating under its new path.
+              old_path_abs = str((wiki_root / paths[0]).resolve())
+              if status.startswith("R100") and "/tests/fixtures/" not in old_path_abs:
+                  continue
               touched_abs.add(str((wiki_root / paths[-1]).resolve()))
 
           blocking = [
