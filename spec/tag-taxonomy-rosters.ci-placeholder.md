@@ -5,15 +5,19 @@ tags:
 description: CI-only stand-in for the gitignored, PII-bearing
   tag-taxonomy-rosters.md — carries zero real names, exists only to satisfy
   house-qa's roster-name-leak floor check in public CI.
-updated: 2026-09-01
+updated: 2026-09-03
 ---
 # Tag Taxonomy — Rosters (CI placeholder)
 
-**This file carries zero real names.** The real `tag-taxonomy-rosters.md` holds
-real person/employer names (PII) and is gitignored — it never exists in a
-public CI checkout. house-qa's `qa.py` fails loud without a rosters file at
-`Wiki/spec/tag-taxonomy-rosters.md` (roster-name-leak's data source), so the
-CI workflow copies this file into that path before running the check.
+**This file carries zero real names.** The real roster (person/employer names,
+PII) is declared in `dotty-private`'s repo root and blueprint-applied to
+`${XDG_CONFIG_HOME:-$HOME/.config}/estate/tag-taxonomy-rosters.md` on every
+machine (`references.tag_taxonomy_rosters`, LEX-718 Piece B) — this repo no
+longer carries a real copy at all, gitignored or otherwise. house-qa's `qa.py`
+fails loud without a rosters file at its resolved `--rosters-path`, so the CI
+workflow copies this file into the pre-key fallback path
+(`Wiki/spec/tag-taxonomy-rosters.md`) before running the check, for
+environments (like CI) that cannot reach the real fixed path.
 
 Consequence, by design: CI's roster-name-leak check only catches a leak of
 one of these synthetic placeholder tokens — it can never catch a real-name
