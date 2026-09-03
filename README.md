@@ -16,7 +16,7 @@ cp .claude/instance.sample.md .claude/instance.md
 
 | Field | Location | What to set |
 |-------|----------|-------------|
-| `workspace_root` | Global Claude Code config | Your vault's root path. Every `{workspace_root}` placeholder in this repo's skills resolves against it, to find your vault's `Wiki/Knowledge/`, `Wiki/Data/`, etc. — independent of where this repo itself is checked out. |
+| `workspace_root` | Global Claude Code config | Your vault's root path. Every `{workspace_root}` placeholder in this repo's skills resolves against it, to find your vault's `{workspace_root}/Wiki/Knowledge/`, `{workspace_root}/Wiki/Data/`, etc. — independent of where this repo itself is checked out. |
 | Architecture doc link | .claude/instance.md > Header | Your own architecture doc — space structure, linking mechanisms, hub disposition |
 | Human-facing surface | .claude/instance.md > Design Philosophy | The surface you browse by hand |
 | Stewardship trigger | .claude/instance.md > Human-Facing Page Stewardship | What causes Claude to re-check those pages for stale facts |
