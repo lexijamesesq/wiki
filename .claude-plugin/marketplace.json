@@ -1,0 +1,15 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "wiki",
+  "owner": { "name": "Lexi James", "url": "https://github.com/lexijamesesq" },
+  "metadata": { "description": "Operator-owned marketplace for the wiki knowledge-machinery plugin." },
+  "plugins": [
+    {
+      "name": "wiki",
+      "source": "./",
+      "description": "Knowledge-layer skills for an Obsidian-vault wiki: capture routing, gatekeeping, lint, maintenance, queue, and project creation.",
+      "license": "MIT",
+      "repository": "https://github.com/lexijamesesq/wiki"
+    }
+  ]
+}

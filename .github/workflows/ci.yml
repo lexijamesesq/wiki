@@ -23,14 +23,36 @@ jobs:
 
       # Pinned to dotty PR #168's merge commit (composite gitleaks-install
       # action + CI hardening, https://github.com/lexijamesesq/dotty/pull/168,
-      # merged 2026-09-02) — never a floating tag or branch tip. house-qa's
-      # qa.py lives only in dotty, not Wiki itself.
-      - name: Checkout dotty (pinned)
+      # merged 2026-09-02) — never a floating tag or branch tip. Only the
+      # setup-gitleaks composite is consumed from this checkout now.
+      - name: Checkout dotty (pinned, for the setup-gitleaks composite)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: lexijamesesq/dotty
           ref: 1fe38aab22976e13e3361ac363fd7dd23e68eea2 # PR #168 merge commit
           path: dotty
+
+      # house-qa's qa.py ships in the work-lifecycle plugin repo (its dotty
+      # copy is retired by the harness cutover). Pinned to a main commit, never
+      # a branch tip; bump the SHA deliberately when qa.py changes.
+      - name: Checkout work-lifecycle (pinned, for house-qa's qa.py)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: lexijamesesq/work-lifecycle
+          ref: dd06aa58c8c007ef4229d62d0b976162c62a902f # main, 2026-09-03
+          path: work-lifecycle
+
+      # This repo root is the `wiki` plugin (marketplace + plugin manifest under
+      # .claude-plugin/, skills served from .claude/skills via the manifest's
+      # `skills` field). --strict turns manifest warnings into failures.
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '22'
+      - name: Install Claude Code CLI 2.1.259
+        run: npm install -g @anthropic-ai/claude-code@2.1.259
+      - name: claude plugin validate --strict
+        working-directory: Wiki
+        run: claude plugin validate --strict .
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -61,7 +83,7 @@ jobs:
           # can only ever catch its own synthetic tokens, never a real leak.
           # See Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md's own header.
           cp Wiki/spec/tag-taxonomy-rosters.ci-placeholder.md Wiki/spec/tag-taxonomy-rosters.md
-          python3 dotty/.claude/skills/house-qa/qa.py Wiki/.claude/skills \
+          python3 work-lifecycle/plugins/work-lifecycle/skills/house-qa/qa.py Wiki/.claude/skills \
             --git-tracked-only --vault-root "$GITHUB_WORKSPACE" --json \
             > house-qa-report.json
           python3 - <<'PYEOF'

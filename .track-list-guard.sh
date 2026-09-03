@@ -22,6 +22,8 @@ set -euo pipefail
 
 ALLOW=(
   ".claude"
+  ".claude-plugin"
+  ".house-qa.json"
   "spec"
   ".gitignore"
   "README.md"

@@ -6,6 +6,16 @@ This repo carries the machinery only — the skills, the contracts they derive l
 
 Clone the repo. `.claude/` ships tracked and committed — review its contents (see Security below) before opening the directory in Claude Code.
 
+**Or install it as a Claude Code plugin.** This repo root is also the `wiki` plugin — the same skills, served to every session in a profile from Claude Code's plugin cache instead of from a checkout:
+
+```
+claude plugin marketplace add lexijamesesq/wiki
+claude plugin install wiki@wiki
+claude plugin enable wiki@wiki
+```
+
+The manifest lives at `.claude-plugin/` and points the plugin at `.claude/skills/`, so the skills stay where the project-level layout, the CI, and the scheduled lane already read them. A plugin install copies the tracked tree into the cache; editing this checkout changes nothing a session loads until `claude plugin update wiki@wiki` runs.
+
 Copy the sample config and fill in your values:
 
 ```
@@ -37,7 +47,7 @@ cp .claude/instance.sample.md .claude/instance.md
 
 ### Dependencies
 
-- **Claude Code** — this repo's skills install as a project-level skills directory (`.claude/`, tracked and committed).
+- **Claude Code** — this repo's skills install as a project-level skills directory (`.claude/`, tracked and committed) or as the `wiki` plugin (see Installation).
 - **An Obsidian vault** *(optional)* — the skills read wikilinks and frontmatter tag queries, which Obsidian provides.
 - **Vault content folders** — the skills expect `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, and `Queue/` under `{workspace_root}/Wiki/` in your vault. None are tracked here; they are your content, and this repo doesn't need to live next to them.
 - **A session harness** *(optional)* — these skills run standalone. A broader orchestration layer — such as the companion [dotty](https://github.com/lexijamesesq/dotty) repo's session skills — can wrap them, but nothing here requires one beyond Claude Code itself.
@@ -66,6 +76,7 @@ The scheduled cleanup pass, plus the per-session maintenance operations.
 | `/knowledge-layer` | Skill | The per-session domain expert — freshness scans, hygiene anti-pattern checks, envelope-enforced filing through the lint gate, index sync, hub cross-reference. At `.claude/skills/knowledge-layer/` |
 | `/lint-knowledge` | Skill + Script | The lint engine — derives its rules from the contracts at runtime, scans full-corpus on a schedule or single-file at filing time, and reports findings without auto-fixing. At `.claude/skills/lint-knowledge/` |
 | `/maintenance-triage` | Skill | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you. At `.claude/skills/maintenance-triage/` |
+| `/new-project` | Skill | Stands up a new project or hub against the knowledge contract — the CLAUDE.md pair, the `Knowledge/` index, the Linear project. At `.claude/skills/new-project/` |
 
 ### Contracts
 

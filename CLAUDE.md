@@ -32,7 +32,7 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 
 ## CI
 
-`.github/workflows/ci.yml`, required via the "Protect main" ruleset: the `lint-knowledge` test suite, house-qa's mechanical check (`qa.py`, scoped to `.claude/skills`, gated on this PR's changed files — pre-existing debt never blocks), and gitleaks (full outgoing PR-range scan via dotty's shared `setup-gitleaks` composite action, base rules only + `--redact` — public repo, the operator's PII ruleset never reaches CI). All three required to merge.
+`.github/workflows/ci.yml`, required via the "Protect main" ruleset: `claude plugin validate --strict` on the plugin manifests, the `lint-knowledge` test suite, house-qa's mechanical check (`qa.py` from the pinned `work-lifecycle` plugin repo, scoped to `.claude/skills`, gated on this PR's changed files — pre-existing debt never blocks), and gitleaks (full outgoing PR-range scan via dotty's shared `setup-gitleaks` composite action, base rules only + `--redact` — public repo, the operator's PII ruleset never reaches CI). All four required to merge.
 
 ## Conventions
 
@@ -47,7 +47,9 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 | File | Purpose |
 |------|---------|
 | `.claude/instance.sample.md` | Configuration contract template — copy to `.claude/instance.md` and fill in your instance's values |
-| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), and maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`) skills |
+| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`), and project-creation (`new-project`) skills |
+| `.claude-plugin/` | The `wiki` marketplace and plugin manifests — this repo root is the plugin; `plugin.json`'s `skills` field points at `.claude/skills/` |
+| `.house-qa.json` | house-qa's repo-local exemplar set: skills here grade against this corpus's own `SKILL.md` median, not the harness's |
 | `spec/knowledge-contract.md` | The consolidated rulebook — tag namespaces, file envelope, write ownership, lint rules, parsing contract |
 | `spec/tag-taxonomy-rosters.md` | Real-name rosters, gitignored — every fork creates its own |
 | `spec/calibration-surface.md`, `spec/integration-modes.md` | Ingress judgment tables and per-destination write discipline |
