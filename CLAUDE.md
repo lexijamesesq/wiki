@@ -47,7 +47,7 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 | File | Purpose |
 |------|---------|
 | `.claude/instance.sample.md` | Configuration contract template — copy to `.claude/instance.md` and fill in your instance's values |
-| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`), and project-creation (`new-project`) skills |
+| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), and maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`) skills |
 | `.claude-plugin/` | The `wiki` marketplace and plugin manifests — this repo root is the plugin; `plugin.json`'s `skills` field points at `.claude/skills/` |
 | `.house-qa.json` | house-qa's repo-local exemplar set: skills here grade against this corpus's own `SKILL.md` median, not the harness's |
 | `spec/knowledge-contract.md` | The consolidated rulebook — tag namespaces, file envelope, write ownership, lint rules, parsing contract |
