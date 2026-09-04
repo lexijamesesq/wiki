@@ -27,6 +27,7 @@ The manifest lives at `.claude-plugin/` and points the plugin at `.claude/skills
 | Field | Location | What to set |
 |-------|----------|-------------|
 | `workspace_root` | Global Claude Code config | Your vault's root path. Every `{workspace_root}` placeholder in this repo's skills resolves against it, to find your vault's `{workspace_root}/Wiki/Knowledge/`, `{workspace_root}/Wiki/Data/`, etc. — independent of where this repo itself is checked out. |
+| `references.*` keys | Global Claude Code config | Where the contracts live: `references.tag_taxonomy` / `references.structural_contract` / `references.handoff_contracts` / `references.lint_surface` (four aliases, one file — `spec/knowledge-contract.md` in your checkout) and `references.tag_taxonomy_rosters` (your gitignored roster). `lint.py`, house-qa's `qa.py`, and the ingress/gatekeeping skills read them at runtime, from a checkout or from the plugin cache alike. |
 | Architecture doc link | .claude/instance.md > Header | Your own architecture doc — space structure, linking mechanisms, hub disposition |
 | Human-facing surface | .claude/instance.md > Design Philosophy | The surface you browse by hand |
 | Stewardship trigger | .claude/instance.md > Human-Facing Page Stewardship | What causes Claude to re-check those pages for stale facts |
@@ -79,7 +80,7 @@ The scheduled cleanup pass, plus the per-session maintenance operations.
 
 ### Project creation
 
-Standing up a new project or hub against the contract, so its knowledge home is filed the same way from day one.
+So a new project's knowledge home is filed the same way from day one.
 
 | Artifact | Type | What it does |
 |----------|------|--------------|
