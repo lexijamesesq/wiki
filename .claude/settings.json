@@ -1,0 +1,14 @@
+{
+  "enabledPlugins": {
+    "work-lifecycle@work-lifecycle": true,
+    "estate-hooks@work-lifecycle": true
+  },
+  "extraKnownMarketplaces": {
+    "work-lifecycle": {
+      "source": {
+        "source": "github",
+        "repo": "lexijamesesq/work-lifecycle"
+      }
+    }
+  }
+}
