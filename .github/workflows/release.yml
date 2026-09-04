@@ -1,0 +1,61 @@
+name: Release
+
+# Separate file from ci.yml on purpose: ci.yml's `gate` job is
+# pull_request-only and computes BASE_SHA from the PR event; adding a
+# push trigger to that same file would make that scoping vacuous on a
+# push event. See work-lifecycle's CI.md for the full design (this repo
+# points there for the plugin-channel scheme).
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Keyed on the commit SHA, not the branch — GitHub's default queue
+  # holds one pending run per group and *replaces* it, which could
+  # silently drop a version-bump's release run in favor of a later
+  # no-bump push.
+  group: release-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  release-tag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          path: Wiki
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Checkout work-lifecycle (pinned, for the release scripts)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: lexijamesesq/work-lifecycle
+          ref: da3609c4bd67f830eb4f9a278c48f3010c9683a4 # main, 2026-09-04
+          path: work-lifecycle
+
+      # claude plugin tag creates an annotated tag (-m), which needs a
+      # committer identity; a fresh runner checkout has none configured.
+      - name: Configure git identity for the release commit
+        working-directory: Wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '22'
+      - name: Install Claude Code CLI 2.1.259
+        run: npm install -g @anthropic-ai/claude-code@2.1.259
+
+      - name: Tag and release the wiki plugin
+        working-directory: Wiki
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash ../work-lifecycle/.github/scripts/tag-plugin-release.sh . wiki
