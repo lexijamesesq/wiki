@@ -84,7 +84,6 @@ So a new project's knowledge home is filed the same way from day one.
 
 | Artifact | Type | What it does |
 |----------|------|--------------|
-| `/new-project` | Skill | Stands up a new project or hub against the knowledge contract — the CLAUDE.md pair, the `Knowledge/` index, the Linear project. At `.claude/skills/new-project/` |
 
 ### Contracts
 
