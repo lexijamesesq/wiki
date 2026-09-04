@@ -24,7 +24,7 @@ pieces, split across files on purpose:
 - `release.yml` is a **separate file**, `push`-triggered only. Adding a
   push trigger to `ci.yml` itself would make `gate`'s `BASE_SHA` scoping
   (computed from the PR event) vacuous on a push event — this repo's own
-  version of the gotcha work-lifecycle's `CI.md` names for dotty-private.
+  version of the gotcha dotty-private's `CI.md` names for itself.
   Cuts the tag + GitHub Release once a version lands untagged.
 
 Both jobs invoke `work-lifecycle`'s `check-plugin-version.sh` /
