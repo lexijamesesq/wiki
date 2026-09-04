@@ -21,7 +21,7 @@ See `.claude/instance.sample.md` for the full configuration contract (architectu
 
 ## Configuration
 
-Skills read instance-specific values from `.claude/instance.md`'s Configuration section by key name, not hardcoded. `spec/knowledge-contract.md` (tag taxonomy, envelope rules) and `spec/tag-taxonomy-rosters.md` (real person/employer names, gitignored — every fork creates its own) are resolved by three consumers via config key, never a hardcoded path: `references.tag_taxonomy` / `references.structural_contract` / `references.handoff_contracts` / `references.lint_surface` (four aliases, one file) and `references.tag_taxonomy_rosters`, both in the global Claude Code Configuration block — set once, consumed by `lint.py`, `qa.py`, and the three ingress/gatekeeping skills. `spec/tag-taxonomy-rosters.md` itself is gitignored; a CI-safe placeholder (`spec/tag-taxonomy-rosters.ci-placeholder.md`) stands in for it in CI.
+Skills read instance-specific values from `.claude/instance.md`'s Configuration section by key name, not hardcoded. `spec/knowledge-contract.md` (tag taxonomy, envelope rules) and `spec/tag-taxonomy-rosters.md` (real person/employer names, gitignored — every fork creates its own) are resolved by three consumers via config key, never a hardcoded path: `references.tag_taxonomy` / `references.structural_contract` / `references.handoff_contracts` / `references.lint_surface` (four aliases, one file) and `references.tag_taxonomy_rosters`, both in the global Claude Code Configuration block — set once, consumed by `lint.py`, by house-qa's `qa.py` (which ships in the `work-lifecycle` plugin repo, not here), and by the three ingress/gatekeeping skills. `spec/tag-taxonomy-rosters.md` itself is gitignored; a CI-safe placeholder (`spec/tag-taxonomy-rosters.ci-placeholder.md`) stands in for it in CI.
 
 ## Build / Test
 
@@ -32,7 +32,7 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 
 ## CI
 
-`.github/workflows/ci.yml`, required via the "Protect main" ruleset: the `lint-knowledge` test suite, house-qa's mechanical check (`qa.py`, scoped to `.claude/skills`, gated on this PR's changed files — pre-existing debt never blocks), and gitleaks (full outgoing PR-range scan via dotty's shared `setup-gitleaks` composite action, base rules only + `--redact` — public repo, the operator's PII ruleset never reaches CI). All three required to merge.
+`.github/workflows/ci.yml`, required via the "Protect main" ruleset: `claude plugin validate --strict` on the plugin manifests, the `lint-knowledge` test suite, house-qa's mechanical check (`qa.py` from the pinned `work-lifecycle` plugin repo, scoped to `.claude/skills`, gated on this PR's changed files — pre-existing debt never blocks), and gitleaks (full outgoing PR-range scan via dotty's shared `setup-gitleaks` composite action, base rules only + `--redact` — public repo, the operator's PII ruleset never reaches CI). All four required to merge.
 
 ## Conventions
 
@@ -40,14 +40,16 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 - Instance-specific values are always config keys, never hardcoded — a skill that hardcodes a path breaks for every other fork.
 - `.track-list-guard.sh` (a pre-commit hook, not a `.gitignore` pattern) fails the commit if any staged path's top-level component isn't on its explicit allow-list — general drift defense against an undeclared new top-level path landing here, independent of and in addition to `.gitignore`.
 - Commits: gitleaks-staged/-pre-push/-commit-msg (dotty's exported hooks) gate every commit and push locally; CI re-proves the outgoing PR range independently.
-- This repo is a shared-skill source consumed by the `wiki` plugin — a skill/agent rename or removal here can break that consumer; check before renaming.
+- This repo root is the published `wiki` plugin: a skill rename or removal here changes what every installed consumer loads on its next `claude plugin update wiki@wiki`; check before renaming.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `.claude/instance.sample.md` | Configuration contract template — copy to `.claude/instance.md` and fill in your instance's values |
-| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), and maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`) skills |
+| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`), and project-creation (`new-project`) skills |
+| `.claude-plugin/` | The `wiki` marketplace and plugin manifests — this repo root is the plugin; `plugin.json`'s `skills` field points at `.claude/skills/` |
+| `.house-qa.json` | house-qa's repo-local exemplar set: skills here grade against this corpus's own `SKILL.md` median, not the harness's |
 | `spec/knowledge-contract.md` | The consolidated rulebook — tag namespaces, file envelope, write ownership, lint rules, parsing contract |
 | `spec/tag-taxonomy-rosters.md` | Real-name rosters, gitignored — every fork creates its own |
 | `spec/calibration-surface.md`, `spec/integration-modes.md` | Ingress judgment tables and per-destination write discipline |

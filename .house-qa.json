@@ -1,0 +1,5 @@
+{
+  "exemplars": {
+    "skill-md": [".claude/skills/*/SKILL.md"]
+  }
+}
