@@ -61,7 +61,7 @@ This skill owns extraction only — it never disposes of a candidate itself:
 - No standalone `meeting-*.md` for an unregistered meeting absent an explicit operator meeting-record request.
 - Candidate count reconciles with dispositions in the extraction report; `last_captured` accurately reflects what was processed.
 
-**Strategic context.** One of the ingress design's extraction front-ends, alongside `/capture` (mid-session) and `/wiki-intake` (knowledge branch) — all three hand typed candidates to the one gatekeeper. Worked examples in this family use the Acorndyne universe (`dotty/.claude/skills/sample-universe/universe.md`) for narrative consistency.
+**Strategic context.** One of the ingress design's extraction front-ends, alongside `/capture` (mid-session) and `/wiki-intake` (knowledge branch) — all three hand typed candidates to the one gatekeeper. Worked examples in this family use the Acorndyne universe (`plugins/work-lifecycle/skills/sample-universe/universe.md` in the work-lifecycle plugin repo (https://github.com/lexijamesesq/work-lifecycle)) for narrative consistency.
 
 **Constraints.**
 - **Hard:** never dispose of a candidate itself (no Wiki/Queue/, Personal/Work, Linear, or non-log Knowledge writes); never create a standalone meeting file for an unregistered meeting without an explicit interactive request; never modify existing dated sections in a rolling log (prepend only); never summarize/synthesize rolling-log entries (format normalization only — candidate `content` may be context-enriched, never interpreted).
@@ -113,7 +113,7 @@ A registered meeting arriving via the pipeline uses `registered-capture.md` with
 
 ### Candidate schema (emitted by both playbooks, Step 6b)
 
-Candidate schema: `dotty/.claude/skills/gatekeeper/SKILL.md` › Candidate schema (canonical). This skill adds `pinned: false` (no operator ask pins in pipeline context) and sources `scope_hint` from the registry's `area` field for registered meetings (null otherwise).
+Candidate schema: `.claude/skills/gatekeeper/SKILL.md` › Candidate schema (canonical). This skill adds `pinned: false` (no operator ask pins in pipeline context) and sources `scope_hint` from the registry's `area` field for registered meetings (null otherwise).
 
 Kind proposals: `Wiki/spec/calibration-surface.md` §3 (canonical definitions + signal mapping). One entry may yield multiple candidates of different kinds (duplication at extraction only, shared provenance). Entries that fail coherence are NOT dropped silently — emitted as `noise` so the extraction report accounts for every identified entry.
 
@@ -154,6 +154,6 @@ Entries for EXISTING targets never carry rendered full state (`{target, pre_stat
 ## References
 
 - `Wiki/spec/calibration-surface.md` §§1-2 — coherence dimensions + thresholds (canonical; cited here, not restated).
-- `dotty/.claude/skills/gatekeeper/SKILL.md` — the gatekeeper this skill hands candidates to.
+- `.claude/skills/gatekeeper/SKILL.md` — the gatekeeper this skill hands candidates to.
 - `Wiki/Data/meeting-registry.json` — meeting configuration.
-- `dotty/.claude/skills/sample-universe/universe.md` — Acorndyne, the narrative universe for worked examples.
+- `plugins/work-lifecycle/skills/sample-universe/universe.md` in the work-lifecycle plugin repo (https://github.com/lexijamesesq/work-lifecycle) — Acorndyne, the narrative universe for worked examples.

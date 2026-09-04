@@ -198,7 +198,7 @@ Judgment guidance:
 
 ## §6 Worked examples
 
-Worked examples use Acorndyne — the vault's canonical fictional-company universe (`dotty/.claude/skills/sample-universe/universe.md`) — for narrative consistency across the knowledge-ingress skill family. The `<thinking>` traces demonstrate the reasoning style. Interactive first, then automated.
+Worked examples use Acorndyne — the vault's canonical fictional-company universe (`plugins/work-lifecycle/skills/sample-universe/universe.md` in the work-lifecycle plugin repo (https://github.com/lexijamesesq/work-lifecycle)) — for narrative consistency across the knowledge-ingress skill family. The `<thinking>` traces demonstrate the reasoning style. Interactive first, then automated.
 
 ### Interactive
 
