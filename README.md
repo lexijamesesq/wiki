@@ -6,6 +6,12 @@ This repo carries the machinery only — the skills, the contracts they derive l
 
 Clone the repo. `.claude/` ships tracked and committed — review its contents (see Security below) before opening the directory in Claude Code.
 
+Copy the sample config and fill in your values:
+
+```
+cp .claude/instance.sample.md .claude/instance.md
+```
+
 **Or install it as a Claude Code plugin.** This repo root is also the `wiki` plugin — the same skills, served to every session in a profile from Claude Code's plugin cache instead of from a checkout:
 
 ```
@@ -14,13 +20,7 @@ claude plugin install wiki@wiki
 claude plugin enable wiki@wiki
 ```
 
-The manifest lives at `.claude-plugin/` and points the plugin at `.claude/skills/`, so the skills stay where the project-level layout, the CI, and the scheduled lane already read them. A plugin install copies the tracked tree into the cache; editing this checkout changes nothing a session loads until `claude plugin update wiki@wiki` runs.
-
-Copy the sample config and fill in your values:
-
-```
-cp .claude/instance.sample.md .claude/instance.md
-```
+The manifest lives at `.claude-plugin/` and points the plugin at `.claude/skills/`, so the skills stay where the project-level layout, the CI, and the scheduled lane already read them. A plugin install copies the tracked tree into the cache; editing this checkout changes nothing a session loads until `claude plugin update wiki@wiki` runs. The plugin ships the skills only: the values they resolve at runtime (`{workspace_root}` and the `references.*` keys) come from your global Claude Code Configuration block, not from the cache, and `.claude/instance.md` — the stewardship rules for a checkout-scoped session — is gitignored and stays with a checkout.
 
 ### Required configuration
 
@@ -76,6 +76,13 @@ The scheduled cleanup pass, plus the per-session maintenance operations.
 | `/knowledge-layer` | Skill | The per-session domain expert — freshness scans, hygiene anti-pattern checks, envelope-enforced filing through the lint gate, index sync, hub cross-reference. At `.claude/skills/knowledge-layer/` |
 | `/lint-knowledge` | Skill + Script | The lint engine — derives its rules from the contracts at runtime, scans full-corpus on a schedule or single-file at filing time, and reports findings without auto-fixing. At `.claude/skills/lint-knowledge/` |
 | `/maintenance-triage` | Skill | Reads staged lint findings, then separates the mechanical fixes it can apply from the judgments that must wait for you. At `.claude/skills/maintenance-triage/` |
+
+### Project creation
+
+Standing up a new project or hub against the contract, so its knowledge home is filed the same way from day one.
+
+| Artifact | Type | What it does |
+|----------|------|--------------|
 | `/new-project` | Skill | Stands up a new project or hub against the knowledge contract — the CLAUDE.md pair, the `Knowledge/` index, the Linear project. At `.claude/skills/new-project/` |
 
 ### Contracts
