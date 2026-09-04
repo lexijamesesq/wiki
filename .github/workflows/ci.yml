@@ -169,3 +169,32 @@ jobs:
             --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.sha }}" \
             --config .gitleaks.ci.toml \
             --no-banner --redact --ignore-gitleaks-allow
+
+  release-check:
+    # PR-time check, no writes. Required by this repo's branch-protection
+    # ruleset (appended alongside this job, strict). Independent of `gate`
+    # — a separate job, not touching gate's own trigger or BASE_SHA
+    # scoping. Deliberately no `paths:` filter on the workflow — a
+    # path-skipped required check stays "Pending" forever and blocks
+    # every PR (GitHub docs).
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          path: Wiki
+          fetch-depth: 0
+          fetch-tags: true
+
+      # check-plugin-version.sh lives in work-lifecycle, same pin
+      # convention this file already uses for qa.py.
+      - name: Checkout work-lifecycle (pinned, for the release scripts)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: lexijamesesq/work-lifecycle
+          ref: da3609c4bd67f830eb4f9a278c48f3010c9683a4 # main, 2026-09-04
+          path: work-lifecycle
+
+      - name: Check plugin version discipline
+        working-directory: Wiki
+        run: bash ../work-lifecycle/.github/scripts/check-plugin-version.sh . wiki
