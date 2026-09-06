@@ -192,7 +192,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: lexijamesesq/work-lifecycle
-          ref: da3609c4bd67f830eb4f9a278c48f3010c9683a4 # main, 2026-09-04
+          ref: 52f574b7ef6681ead191dfd48c61511d82f2cdb7 # main, 2026-09-06 -- excludes .pre-commit-config.yaml from the plugin-content diff
           path: work-lifecycle
 
       - name: Check plugin version discipline
