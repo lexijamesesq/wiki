@@ -1,0 +1,59 @@
+{
+  "exemptions": [
+    {
+      "path": "\\.house-code\\.json",
+      "rule": "vault-path-leak",
+      "reason": "this file's own declared entries below necessarily name the vault-path-shaped fixture paths they exempt"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/lint\\.py",
+      "rule": "vault-path-leak",
+      "reason": "this is wiki's own vault-path classification engine (the Location Gate) — it names the bare governed-directory shapes as the classification patterns themselves, the same way house-code.py names its own patterns"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/run_tests\\.py",
+      "rule": "vault-path-leak",
+      "reason": "exercises lint.py's own vault-path classification; docstrings and assertion messages reference the same path shapes lint.py defines, not a leaked location"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Projects/alpha/Knowledge/cross-project-bare-path\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving lint.py's cross-project-bare-path detection"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Wiki/Knowledge/finance-no-context\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving lint.py's Location Gate classification for a Wiki/Knowledge file"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Wiki/Knowledge/out-of-scope-type-data\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving lint.py's out-of-scope type-tag detection for a Wiki/Knowledge file"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Projects/alpha/Knowledge/prose-bare-path\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving lint.py's bare-path-in-prose detection"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Wiki/spec/knowledge-contract\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture: a Test Fixture copy of the knowledge-contract shape, used to prove lint.py's Wiki/spec classification, not the real spec document"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Wiki/Knowledge/wiki-clean\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving a clean Wiki/Knowledge file produces no findings"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Projects/alpha/Knowledge/code-context-bare-path-in-code\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving lint.py does not flag a bare path inside a code block"
+    },
+    {
+      "path": "\\.claude/skills/lint-knowledge/tests/fixtures/vault/Projects/alpha/Knowledge/folder-qualified-valid\\.md",
+      "rule": "vault-path-leak",
+      "reason": "deliberate fixture proving lint.py's folder-qualified-reference validation"
+    }
+  ]
+}
