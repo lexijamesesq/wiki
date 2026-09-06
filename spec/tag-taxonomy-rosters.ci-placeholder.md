@@ -12,7 +12,7 @@ updated: 2026-09-03
 **This file carries zero real names.** The real roster (person/employer names,
 PII) is declared in `dotty-private`'s repo root and blueprint-applied to
 `${XDG_CONFIG_HOME:-$HOME/.config}/estate/tag-taxonomy-rosters.md` on every
-machine (`references.tag_taxonomy_rosters`, LEX-718 Piece B) — this repo no
+machine (`references.tag_taxonomy_rosters`) — this repo no
 longer carries a real copy at all, gitignored or otherwise. house-qa's `qa.py`
 fails loud without a rosters file at its resolved `--rosters-path`, so the CI
 workflow copies this file into the pre-key fallback path
