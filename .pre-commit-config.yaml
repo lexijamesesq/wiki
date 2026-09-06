@@ -12,6 +12,10 @@ repos:
       - id: gitleaks-staged
       - id: gitleaks-pre-push
       - id: gitleaks-commit-msg
+      - id: house-code
+      - id: house-scaffold-no-tracked-scratch
+      - id: house-scaffold-sample-shape
+      - id: house-scaffold-sample-placeholder
 
   - repo: local
     hooks:

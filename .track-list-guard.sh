@@ -24,6 +24,7 @@ ALLOW=(
   ".claude"
   ".claude-plugin"
   ".house-qa.json"
+  ".house-code.json"
   "spec"
   ".gitignore"
   "README.md"

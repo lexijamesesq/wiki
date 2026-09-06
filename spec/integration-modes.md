@@ -40,9 +40,9 @@ Derived from the architecture, not new policy:
 
 | Destination class | Serves | Encoded where |
 |---|---|---|
-| Wiki/Knowledge + project Knowledge/ | evolution | append-bias mutation discipline; consolidation human-approved |
+| {workspace_root}/Wiki/Knowledge + project Knowledge/ | evolution | append-bias mutation discipline; consolidation human-approved |
 | Registered meeting logs | evolution | rolling log by construction (`type/meeting-capture`) |
-| Wiki/Contexts | current-truth | update-on-shift; authority hierarchy (context page wins conflicts) |
+| {workspace_root}/Wiki/Contexts | current-truth | update-on-shift; authority hierarchy (context page wins conflicts) |
 | Wiki/Data | current-truth | typed records of tracked state; correction chain |
 | Personal/Work pages | current-truth | stewardship patches facts in place; structure human-owned |
 
