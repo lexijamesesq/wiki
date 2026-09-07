@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout Wiki
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: Wiki
           fetch-depth: 0
@@ -44,7 +44,7 @@ jobs:
       # merged 2026-09-02) — never a floating tag or branch tip. Only the
       # setup-gitleaks composite is consumed from this checkout now.
       - name: Checkout dotty (pinned, for the setup-gitleaks composite)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: lexijamesesq/dotty
           ref: 1fe38aab22976e13e3361ac363fd7dd23e68eea2 # PR #168 merge commit
@@ -54,7 +54,7 @@ jobs:
       # copy is retired by the harness cutover). Pinned to a main commit, never
       # a branch tip; bump the SHA deliberately when qa.py changes.
       - name: Checkout work-lifecycle (pinned, for house-qa's qa.py)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: lexijamesesq/work-lifecycle
           ref: dd06aa58c8c007ef4229d62d0b976162c62a902f # main, 2026-09-03
@@ -63,7 +63,7 @@ jobs:
       # This repo root is the `wiki` plugin (marketplace + plugin manifest under
       # .claude-plugin/, skills served from .claude/skills via the manifest's
       # `skills` field). --strict turns manifest warnings into failures.
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
       - name: Install Claude Code CLI 2.1.259
@@ -198,7 +198,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: Wiki
           fetch-depth: 0
@@ -207,7 +207,7 @@ jobs:
       # check-plugin-version.sh lives in work-lifecycle, same pin
       # convention this file already uses for qa.py.
       - name: Checkout work-lifecycle (pinned, for the release scripts)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: lexijamesesq/work-lifecycle
           ref: a6bbeab70dba8aa6dfe26eedf0ee24c5d0f9e472 # main, 2026-09-06 -- excludes the whole .github/ directory, not one file at a time
