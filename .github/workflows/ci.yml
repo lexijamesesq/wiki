@@ -56,7 +56,7 @@ jobs:
       - name: Checkout work-lifecycle (pinned, for house-qa's qa.py)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: lexijamesesq/work-lifecycle
+          repository: lexijamesesq/core-skills
           ref: dd06aa58c8c007ef4229d62d0b976162c62a902f # main, 2026-09-03
           path: work-lifecycle
 
@@ -209,7 +209,7 @@ jobs:
       - name: Checkout work-lifecycle (pinned, for the release scripts)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: lexijamesesq/work-lifecycle
+          repository: lexijamesesq/core-skills
           ref: a6bbeab70dba8aa6dfe26eedf0ee24c5d0f9e472 # main, 2026-09-06 -- excludes the whole .github/ directory, not one file at a time
           path: work-lifecycle
 

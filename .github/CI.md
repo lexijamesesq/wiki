@@ -11,8 +11,8 @@ what's specific to it.
 — `claude plugin validate --strict`, lint-knowledge tests, diff-scoped
 house-qa, a base-rules gitleaks scan. Unchanged by the release job below.
 
-**Release job — see work-lifecycle's `CI.md` for the full design** (this
-repo publishes one plugin, `wiki`, from its own root; work-lifecycle
+**Release job — see core-skills' `CI.md` for the full design** (this
+repo publishes one plugin, `wiki`, from its own root; core-skills
 publishes two from its `plugins/` tree — the mechanism is identical). Two
 pieces, split across files on purpose:
 
@@ -27,7 +27,7 @@ pieces, split across files on purpose:
   version of the gotcha dotty-private's `CI.md` names for itself.
   Cuts the tag + GitHub Release once a version lands untagged.
 
-Both jobs invoke `work-lifecycle`'s `check-plugin-version.sh` /
+Both jobs invoke `core-skills`'s `check-plugin-version.sh` /
 `tag-plugin-release.sh` from a pinned checkout — same convention this
 repo already uses for `qa.py` (see `ci.yml`) — rather than duplicating
 the scripts here.
