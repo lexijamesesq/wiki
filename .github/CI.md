@@ -8,8 +8,10 @@ what's specific to it.
 ## Decisions specific to this repo
 
 **`gate` (`ci.yml`, `pull_request`) is the pre-existing conformance check**
-— `claude plugin validate --strict`, lint-knowledge tests, diff-scoped
-house-qa, a base-rules gitleaks scan. Unchanged by the release job below.
+— `claude plugin validate --strict`, lint-knowledge tests, a base-rules
+gitleaks scan — alongside `universal-ci` (this repo's caller into the
+estate's shared `estate-ci.yml`, covering gitleaks/house-code/house-scaffold
+via the standard pre-commit chain). Unchanged by the release job below.
 
 **Release job — see core-skills' `CI.md` for the full design** (this
 repo publishes one plugin, `wiki`, from its own root; core-skills
@@ -28,8 +30,7 @@ pieces, split across files on purpose:
   Cuts the tag + GitHub Release once a version lands untagged.
 
 Both jobs invoke `core-skills`'s `check-plugin-version.sh` /
-`tag-plugin-release.sh` from a pinned checkout — same convention this
-repo already uses for `qa.py` (see `ci.yml`) — rather than duplicating
+`tag-plugin-release.sh` from a pinned checkout rather than duplicating
 the scripts here.
 
 **First-release baseline:** `wiki--v0.1.0` — already reflects real,
