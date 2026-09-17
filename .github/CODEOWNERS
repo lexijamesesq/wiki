@@ -23,7 +23,6 @@
 /.gitleaks.toml                @lexijamesesq
 /.gitleaks.ci.toml             @lexijamesesq
 /.house-code.json              @lexijamesesq
-/.house-qa.json                @lexijamesesq
 
 # --- Governance, policy & identity ---
 /.claude/settings.json         @lexijamesesq
