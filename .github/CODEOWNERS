@@ -1,6 +1,46 @@
-# Default: every path waits for the operator's review.
-* @lexijamesesq
-# Unattended paths: a pattern with no owner clears ownership for it.
+# CODEOWNERS — coverage model (un-inverted).
+#
+# DEFAULT = UNOWNED: any path not matched below needs no code-owner review, so a
+# low-risk deterministic PR (and a Margot LOW-risk verdict) can merge without the
+# operator. There is deliberately NO `* @owner` catch-all — the wiki's knowledge
+# content and docs flow unattended.
+#
+# OWNED (listed below) = the safety / identity / gate machinery: a judgment change
+# there must have a human. The branch ruleset requires code-owner review (with 0
+# baseline approvals), so touching an owned path holds the PR for @lexijamesesq;
+# touching only unowned paths does not.
+#
+# When adding a path: uncertain -> OWNED (under-coverage — an owned path left
+# unowned — is the dangerous direction). Anchored patterns (/path/ or /file) over
+# bare names.
 
-/README.md
-/LICENSE
+# --- Gate machinery (CI/gate/hook chain and its configs) ---
+/.github/workflows/            @lexijamesesq
+/.github/dependabot.yml        @lexijamesesq
+/.pre-commit-config.yaml       @lexijamesesq
+
+# --- Gate/lint configs that can DISABLE a check (gate self-protection) ---
+/.gitleaks.toml                @lexijamesesq
+/.gitleaks.ci.toml             @lexijamesesq
+/.house-code.json              @lexijamesesq
+/.house-qa.json                @lexijamesesq
+
+# --- Governance, policy & identity ---
+/.claude/settings.json         @lexijamesesq
+/.github/CODEOWNERS            @lexijamesesq
+/.claude-plugin/marketplace.json   @lexijamesesq
+/.claude-plugin/plugin.json    @lexijamesesq
+
+# --- Knowledge-gate machinery (the lint/gatekeeper guarding the vault contract) ---
+/.track-list-guard.sh          @lexijamesesq
+/.claude/skills/lint-knowledge/lint.py    @lexijamesesq
+/.claude/skills/lint-knowledge/tests/     @lexijamesesq
+/.claude/skills/gatekeeper/    @lexijamesesq
+
+# --- The knowledge contract / calibration specs (policy) ---
+/spec/knowledge-contract.md    @lexijamesesq
+/spec/calibration-surface.md   @lexijamesesq
+/spec/integration-modes.md     @lexijamesesq
+
+# UNOWNED by default (flow without the operator): README.md, LICENSE, the
+# knowledge/vault content, the other .claude/skills/, and docs/cosmetic files.
