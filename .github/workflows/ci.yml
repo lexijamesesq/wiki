@@ -114,10 +114,8 @@ jobs:
           repository: lexijamesesq/core-skills
           # Moved off 2026-09-06: that commit predates the line adding renovate.json
           # to the exclude list, so this repo read the estate's new dependency-bot
-          # config as plugin content and failed release-check on it. Pinned at
-          # core-skills#79's head so THIS PR's CI proves the fix; bump to the merge
-          # commit once it lands.
-          ref: 45db9b8151d97aaac338a979ebccd2a859d8b85c # core-skills#79 head -- adds renovate.json to the plugin-version exclude list
+          # config as plugin content and failed release-check on it.
+          ref: a51c53b55b5c386f9efd52d6a8605073e21b91fe # core-skills#79 merge commit -- adds renovate.json to the plugin-version exclude list
           path: work-lifecycle
 
       - name: Check plugin version discipline
