@@ -112,7 +112,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: lexijamesesq/core-skills
-          ref: a6bbeab70dba8aa6dfe26eedf0ee24c5d0f9e472 # main, 2026-09-06 -- excludes the whole .github/ directory, not one file at a time
+          # Moved off 2026-09-06: that commit predates the line adding renovate.json
+          # to the exclude list, so this repo read the estate's new dependency-bot
+          # config as plugin content and failed release-check on it. Pinned at
+          # core-skills#79's head so THIS PR's CI proves the fix; bump to the merge
+          # commit once it lands.
+          ref: 45db9b8151d97aaac338a979ebccd2a859d8b85c # core-skills#79 head -- adds renovate.json to the plugin-version exclude list
           path: work-lifecycle
 
       - name: Check plugin version discipline
