@@ -14,9 +14,9 @@ concurrency:
 
 jobs:
   universal-ci:
-    uses: lexijamesesq/dotty/.github/workflows/estate-ci.yml@v2026.09.18
+    uses: lexijamesesq/dotty/.github/workflows/estate-ci.yml@v1
     with:
-      dotty_ref: v2026.09.18
+      dotty_ref: v1
 
   all-checks-passed:
     needs: [universal-ci, gate, release-check]
@@ -112,7 +112,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: lexijamesesq/core-skills
-          ref: a6bbeab70dba8aa6dfe26eedf0ee24c5d0f9e472 # main, 2026-09-06 -- excludes the whole .github/ directory, not one file at a time
+          # Moved off 2026-09-06: that commit predates the line adding renovate.json
+          # to the exclude list, so this repo read the estate's new dependency-bot
+          # config as plugin content and failed release-check on it.
+          ref: a51c53b55b5c386f9efd52d6a8605073e21b91fe # core-skills#79 merge commit -- adds renovate.json to the plugin-version exclude list
           path: work-lifecycle
 
       - name: Check plugin version discipline
