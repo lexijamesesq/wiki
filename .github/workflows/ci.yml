@@ -112,10 +112,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: lexijamesesq/core-skills
-          # Moved off 2026-09-06: that commit predates the line adding renovate.json
-          # to the exclude list, so this repo read the estate's new dependency-bot
-          # config as plugin content and failed release-check on it.
-          ref: a51c53b55b5c386f9efd52d6a8605073e21b91fe # core-skills#79 merge commit -- adds renovate.json to the plugin-version exclude list
+          # Bumped for the estate pre-commit-suite rollout: this pin must carry
+          # the exclusion for .yamllint.yaml/.markdownlint.yaml (the lint configs
+          # the suite adds at the repo root), or release-check reads them as
+          # plugin content and fails — the same class of miss renovate.json hit.
+          ref: 59d39a0dcaba796d937c7649b96c935246796e7c # core-skills#90 merge commit -- adds .yamllint.yaml/.markdownlint.yaml to the plugin-version exclude list
           path: work-lifecycle
 
       - name: Check plugin version discipline
