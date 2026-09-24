@@ -20,7 +20,7 @@ Lint is the mechanical verification layer — **the executable form of the contr
 
 ## Architecture — two passes
 
-The periodic surface splits in two, and this skill orchestrates both (see `{workspace_root}/Wiki/spec/knowledge-contract.md § Part IV` › "Periodic mode"):
+The periodic surface splits in two, and this skill orchestrates both (see `knowledge-contract.md § Part IV` › "Periodic mode" — path from `references.lint_surface`):
 
 - **Mechanical pass** — the bundled `lint.py` script runs every deterministic check (envelope, tags, links, index integrity, freshness, topic consolidation). No model, read-only, runs full-corpus, costs ~nothing. It derives its rule *values* at runtime from the contracts' Parsing Contracts — it holds no hardcoded vocabulary or limit.
 - **Judgment pass** — the model runs the one genuine-judgment check: the contradiction scan (and, for hub/subproject scopes, the hub cross-reference). **Delta-scoped** — only files changed since the last run. This is the sole component that costs model tokens.
@@ -44,7 +44,7 @@ The skill's job: resolve the scope, run the script, run the delta-scoped judgmen
 ## Decision Authority
 
 | Decision | Authority |
-|---|---|
+| --- | --- |
 | Scanning, classifying, and reporting findings | Autonomous |
 | Fixing any finding | **Never** — lint reports, caller fixes |
 | Determining severity levels for known check types | Autonomous (per `knowledge-contract.md § Part IV`) |
@@ -53,17 +53,17 @@ The skill's job: resolve the scope, run the script, run the delta-scoped judgmen
 
 ## Referenced docs
 
-- **Lint surface spec** — `{workspace_root}/Wiki/spec/knowledge-contract.md § Part IV`. The canonical inventory: every check, its rule source, pass (mechanical/judgment), mode, severity. Defer to it for what checks exist and at what severity.
-- **Structural contract** — `{workspace_root}/Wiki/spec/knowledge-contract.md § Part II`. Governs the file envelope. `lint.py` parses its **Parsing Contract** at runtime — do not restate its rules here.
-- **Tag taxonomy** — path configured in global CLAUDE.md > Configuration > `references.tag_taxonomy`. `lint.py` parses it at runtime for namespace/vocabulary/depth rules. The `person/` and `area/work/` instance vocabularies (real names/employers) are PII-excluded from this doc and parsed instead from the sibling `tag-taxonomy-rosters.md`, same directory, same runtime-parsing discipline.
-- **Filing-handoff contracts** — `{workspace_root}/Wiki/spec/knowledge-contract.md § Part III`. Context only: filing-time validation is `lint.py --filing` (same script, filing mode), invoked directly by filing skills — not orchestrated by this skill. This skill is the periodic implementer.
+- **Lint surface spec** — `knowledge-contract.md § Part IV`, at the path configured in global CLAUDE.md > Configuration > `references.lint_surface`. The canonical inventory: every check, its rule source, pass (mechanical/judgment), mode, severity. Defer to it for what checks exist and at what severity.
+- **Structural contract** — `knowledge-contract.md § Part II`, at the path configured in `references.structural_contract`. Governs the file envelope. `lint.py` parses its **Parsing Contract** at runtime — do not restate its rules here.
+- **Tag taxonomy** — path configured in global CLAUDE.md > Configuration > `references.tag_taxonomy`. `lint.py` parses it at runtime for namespace/vocabulary/depth rules. The `person/` and `area/work/` instance vocabularies (real names/employers) are PII-excluded from this doc and parsed instead from `tag-taxonomy-rosters.md`, at the path configured in `references.tag_taxonomy_rosters` (not necessarily the contract's directory), same runtime-parsing discipline.
+- **Filing-handoff contracts** — `knowledge-contract.md § Part III`, at the path configured in `references.handoff_contracts`. Context only: filing-time validation is `lint.py --filing` (same script, filing mode), invoked directly by filing skills — not orchestrated by this skill. This skill is the periodic implementer.
 
 ## Scope and flags
 
 **Scope modes** (one required):
 
 | Invocation | Scope paths passed to `lint.py` |
-|---|---|
+| --- | --- |
 | `/lint-knowledge` | Auto-detect: current project's Knowledge layer (from cwd's `CLAUDE.md`). No project context → error. |
 | `/lint-knowledge {project}` | The named project's Knowledge layer |
 | `/lint-knowledge --scope wiki` | `{workspace_root}/Wiki/Knowledge/` + `{workspace_root}/Wiki/Contexts/` |
@@ -77,7 +77,7 @@ For a project whose Knowledge layer is a flat root (e.g. System: docs at `{works
 **Flags:**
 
 | Flag | Effect |
-|---|---|
+| --- | --- |
 | `--mechanical-only` | Run only the script (Step 1). Skip the judgment pass. Pure deterministic pass, zero model cost. |
 | `--full` | Run the judgment pass over the **entire** scope, not just the delta set. For first runs, migration-validation one-offs, and on-demand deep checks. |
 
@@ -91,9 +91,13 @@ Resolve the scope mode to one or more absolute directory paths, and resolve the 
 
 Run the bundled script (it sits next to this `SKILL.md`):
 
+```bash
+python3 <skill-base-dir>/lint.py <scope-path> [<scope-path> ...] --json --vault-root <vault-root> \
+    --contract-path <resolved from references.tag_taxonomy> \
+    --rosters-path <resolved from references.tag_taxonomy_rosters>
 ```
-python3 <skill-base-dir>/lint.py <scope-path> [<scope-path> ...] --json --vault-root <vault-root>
-```
+
+Resolve both paths from the global CLAUDE.md Configuration block; never omit either flag. The contract and rosters no longer live under the vault, so an unflagged call falls back to `lint.py`'s pre-key default (`<vault-root>/Wiki/spec/`) and exits non-zero.
 
 The script walks the scope, runs every mechanical check, computes the changed-since-last-run delta against its manifest, and emits JSON: `findings`, `delta` (`changed` / `new` / `deleted`), `scanned`, `summary`. It is read-only and uses no model.
 
@@ -124,7 +128,7 @@ Report; never resolve.
 
 Merge the script's mechanical findings (Step 1) and the judgment findings (Step 2) into one report. Organize by **severity first**, then category within severity:
 
-```
+```markdown
 ## Lint Report — {scope}
 Passes: mechanical{, judgment (delta: N files){, widened by CLAUDE.md}}
 Scanned: {N files}   Delta since last run: {changed C, new N, deleted D}

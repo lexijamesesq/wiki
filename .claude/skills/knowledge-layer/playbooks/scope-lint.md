@@ -10,11 +10,12 @@ Run the mechanical knowledge-integrity lint over the session's touched scope at 
 
 ## Protocol
 
-1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill). Resolve `--rosters-path` from the global CLAUDE.md's `references.tag_taxonomy_rosters` key, never omit it — the real `tag-taxonomy-rosters.md` no longer lives under `vault_root` at all (declared in dotty-private, blueprint-applied to a machine-fixed path), so an unflagged call falls back to `lint.py`'s own pre-key default and fails loud:
+1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill). Resolve `--contract-path` from the global CLAUDE.md's `references.tag_taxonomy` key and `--rosters-path` from its `references.tag_taxonomy_rosters` key, never omit either — neither `knowledge-contract.md` nor the real `tag-taxonomy-rosters.md` lives under `vault_root` any more (the contract ships in the wiki repo's `spec/`; the real rosters are declared in dotty-private, blueprint-applied to a machine-fixed path), so an unflagged call falls back to `lint.py`'s own pre-key default and fails loud:
 
-   ```
+   ```bash
    python3 <skills-dir>/lint-knowledge/lint.py --no-manifest --json \
-       --vault-root <vault_root> --rosters-path <resolved from references.tag_taxonomy_rosters> \
+       --vault-root <vault_root> --contract-path <resolved from references.tag_taxonomy> \
+       --rosters-path <resolved from references.tag_taxonomy_rosters> \
        <scope_paths...>
    ```
 

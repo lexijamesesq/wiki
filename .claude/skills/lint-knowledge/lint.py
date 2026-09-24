@@ -9,7 +9,7 @@ Derives rule values at runtime from:
 Never hardcodes vocabulary values. Read-only. No model. No network.
 Exit 0 on successful run (findings are data). Non-zero only on script-level failure.
 
-Spec: {workspace_root}/Wiki/spec/knowledge-contract.md § Part IV
+Spec: knowledge-contract.md § Part IV (path via --contract-path, resolved from references.lint_surface)
 """
 
 # Defer annotation evaluation (PEP 563) so PEP 604 unions (`X | None`) and other
@@ -32,6 +32,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Frontmatter parser (no PyYAML — stdlib only)
 # ---------------------------------------------------------------------------
+
 
 def _parse_flow_list(value_str: str) -> list[str]:
     """Parse a flow-style YAML list: ["a","b"] or [a, b]."""
@@ -112,20 +113,20 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
                 while i < len(fm_lines) and re.match(r"^\s+-\s+", fm_lines[i]):
                     tag_val = re.sub(r"^\s+-\s+", "", fm_lines[i]).strip()
                     # strip quotes
-                    tag_val = tag_val.strip('"\'')
+                    tag_val = tag_val.strip("\"'")
                     if tag_val:
                         tags.append(tag_val)
                     i += 1
                 fm["tags"] = tags
             else:
                 # single-value tags: (unusual but handle)
-                fm["tags"] = [value.strip('"\'')]
+                fm["tags"] = [value.strip("\"'")]
                 i += 1
         elif key in ("updated", "verified"):
-            fm[key] = value.strip('"\'') if value else None
+            fm[key] = value.strip("\"'") if value else None
             i += 1
         elif key == "status":
-            fm["status"] = value.strip('"\'') if value else None
+            fm["status"] = value.strip("\"'") if value else None
             i += 1
         elif key == "sources":
             if value.startswith("["):
@@ -134,14 +135,14 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
                 srcs = []
                 i += 1
                 while i < len(fm_lines) and re.match(r"^\s+-\s+", fm_lines[i]):
-                    src_val = re.sub(r"^\s+-\s+", "", fm_lines[i]).strip().strip('"\'')
+                    src_val = re.sub(r"^\s+-\s+", "", fm_lines[i]).strip().strip("\"'")
                     if src_val:
                         srcs.append(src_val)
                     i += 1
                 fm["sources"] = srcs
                 continue
             else:
-                fm["sources"] = [value.strip('"\'')]
+                fm["sources"] = [value.strip("\"'")]
             i += 1
         elif key == "stale_suspects":
             if value.startswith("["):
@@ -150,14 +151,14 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
                 suspects = []
                 i += 1
                 while i < len(fm_lines) and re.match(r"^\s+-\s+", fm_lines[i]):
-                    s = re.sub(r"^\s+-\s+", "", fm_lines[i]).strip().strip('"\'')
+                    s = re.sub(r"^\s+-\s+", "", fm_lines[i]).strip().strip("\"'")
                     if s:
                         suspects.append(s)
                     i += 1
                 fm["stale_suspects"] = suspects
                 continue
             else:
-                fm["stale_suspects"] = [value.strip('"\'')]
+                fm["stale_suspects"] = [value.strip("\"'")]
             i += 1
         else:
             i += 1
@@ -169,7 +170,10 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
 # Contract parser — tag-taxonomy.md
 # ---------------------------------------------------------------------------
 
-def _extract_table_column(text: str, section_header: str, col_index: int = 0) -> list[str]:
+
+def _extract_table_column(
+    text: str, section_header: str, col_index: int = 0
+) -> list[str]:
     """
     Find the section starting with `section_header` and return col_index values
     from all data rows of the first markdown table found.
@@ -185,8 +189,14 @@ def _extract_table_column(text: str, section_header: str, col_index: int = 0) ->
     section_start = m.end()
     # Find next section of same or higher level
     level = len(re.match(r"^(#{1,4})", m.group()).group(1))
-    next_sec = re.search(r"^#{1," + str(level) + r"}\s+", text[section_start:], re.MULTILINE)
-    section_text = text[section_start : section_start + next_sec.start()] if next_sec else text[section_start:]
+    next_sec = re.search(
+        r"^#{1," + str(level) + r"}\s+", text[section_start:], re.MULTILINE
+    )
+    section_text = (
+        text[section_start : section_start + next_sec.start()]
+        if next_sec
+        else text[section_start:]
+    )
 
     return _extract_table_col_from_text(section_text, col_index)
 
@@ -495,13 +505,19 @@ def _parse_roster_line(text: str, label: str, floor: int) -> list:
         raise ValueError(
             f"roster line '{label} ...:' is missing or was reformatted off its own "
             f"line (same-line capture found no inline values) — coverage would "
-            f"silently vanish. Restore the single comma-joined line.")
-    values = [v.strip().strip(".") for v in re.split(r",\s*", m.group(1)) if v.strip().strip(".")]
+            f"silently vanish. Restore the single comma-joined line."
+        )
+    values = [
+        v.strip().strip(".")
+        for v in re.split(r",\s*", m.group(1))
+        if v.strip().strip(".")
+    ]
     if len(values) < floor:
         raise ValueError(
             f"roster line '{label} ...:' parsed to only {len(values)} value(s) "
             f"(floor {floor}) — the line was likely reformatted/truncated and coverage "
-            f"would silently shrink. Restore the single comma-joined line.")
+            f"would silently shrink. Restore the single comma-joined line."
+        )
     return values
 
 
@@ -537,7 +553,9 @@ def parse_tag_rosters(path: Path) -> dict:
     # Values are tag segments already in their on-tag form (e.g. "field_notes"),
     # so preserved verbatim — not lowercased or space-to-hyphen normalized like
     # the name rosters above.)
-    area_top_levels = set(_parse_roster_line(text, "Current top-levels", ROSTER_MIN_AREA))
+    area_top_levels = set(
+        _parse_roster_line(text, "Current top-levels", ROSTER_MIN_AREA)
+    )
     result["area_top_levels"] = area_top_levels
 
     # ---- area/work/ roster ---- (same shape, "Current employers ...: a, b, c")
@@ -553,6 +571,7 @@ def parse_tag_rosters(path: Path) -> dict:
 # ---------------------------------------------------------------------------
 # Contract parser — structural-contract.md
 # ---------------------------------------------------------------------------
+
 
 def _parse_section_text(text: str, section_header: str) -> str:
     """Return the text of a ## section (from header end to next ## header)."""
@@ -664,7 +683,9 @@ def parse_structural_contract(path: Path) -> dict:
             topic_unconditional = False
             if extra_raw not in ("—", "-", ""):
                 # Does the cell reference "Wiki-hosted" in any form?
-                wiki_qualified = bool(re.search(r"wiki.hosted", extra_raw, re.IGNORECASE))
+                wiki_qualified = bool(
+                    re.search(r"wiki.hosted", extra_raw, re.IGNORECASE)
+                )
                 for tok in re.findall(r"`?(\w[\w/-]+)`?", extra_raw):
                     if "/" in tok and not tok.endswith("-"):
                         bare = tok.rstrip("/")
@@ -729,7 +750,7 @@ def parse_structural_contract(path: Path) -> dict:
             f"Cannot find 'Location Gate' table in '## Scope Boundaries' of {path}. "
             "This table is required by the Parsing Contract."
         )
-    lg_text = sb_text[lg_m.start():]
+    lg_text = sb_text[lg_m.start() :]
     governed_globs: list[str] = []
     for cols in _parse_table_rows(lg_text):
         if not cols:
@@ -758,7 +779,7 @@ def parse_structural_contract(path: Path) -> dict:
             "contains the Exemption tiers table with the Invariant-core-only, "
             "Structure-not-imposed, and Out-of-scope rows."
         )
-    et_text = sb_text[et_m.start():]
+    et_text = sb_text[et_m.start() :]
 
     invariant_core_only: set[str] = set()
     structure_not_imposed: set[str] = set()
@@ -780,9 +801,16 @@ def parse_structural_contract(path: Path) -> dict:
         tier_lower = tier_cell.lower()
         if "out of scope" in tier_lower or "out-of-scope" in tier_lower:
             out_of_scope_types.update(extracted)
-        elif "structure-not-imposed" in tier_lower or "structure not imposed" in tier_lower:
+        elif (
+            "structure-not-imposed" in tier_lower
+            or "structure not imposed" in tier_lower
+        ):
             structure_not_imposed.update(extracted)
-        elif "invariant-core-only" in tier_lower or "invariant core only" in tier_lower or "invariant-core" in tier_lower:
+        elif (
+            "invariant-core-only" in tier_lower
+            or "invariant core only" in tier_lower
+            or "invariant-core" in tier_lower
+        ):
             invariant_core_only.update(extracted)
         # "fully governed" row: type/ values are implied by the Per-Type table — no set needed.
 
@@ -818,6 +846,7 @@ def parse_structural_contract(path: Path) -> dict:
 # ---------------------------------------------------------------------------
 # Vault index — enumerate files, wikilink targets
 # ---------------------------------------------------------------------------
+
 
 def build_vault_index(vault_root: Path) -> dict[str, Path]:
     """
@@ -891,6 +920,7 @@ def kebab(name: str) -> str:
 # Code-context stripping — prevents false positives on pattern scans
 # ---------------------------------------------------------------------------
 
+
 def strip_code_context(body: str) -> str:
     """Return a view of body with Markdown code context neutralised.
 
@@ -923,7 +953,6 @@ def strip_code_context(body: str) -> str:
 
     for line in lines:
         stripped = line.rstrip("\n\r")
-        stripped_s = stripped.strip()
 
         if not in_fence:
             # Detect opening fence: line stripped starts with 3+ ` or ~
@@ -934,14 +963,22 @@ def strip_code_context(body: str) -> str:
                 # ignoring count so "```" closes "````" — use the char type.
                 fence_char = fence_m.group(2)[0]  # '`' or '~'
                 # Emit blank line (preserve line count)
-                result.append(re.sub(r"[^\n\r]", " ", line).rstrip() + "\n" if line.endswith(("\n", "\r")) else " " * len(line))
+                result.append(
+                    re.sub(r"[^\n\r]", " ", line).rstrip() + "\n"
+                    if line.endswith(("\n", "\r"))
+                    else " " * len(line)
+                )
                 continue
 
             # Not in a fence: strip inline code spans on this line
             result.append(_strip_inline_code(line))
         else:
             # Inside a fence: replace with blank, watch for closing fence
-            result.append(re.sub(r"[^\n\r]", " ", line).rstrip() + "\n" if line.endswith(("\n", "\r")) else " " * len(line))
+            result.append(
+                re.sub(r"[^\n\r]", " ", line).rstrip() + "\n"
+                if line.endswith(("\n", "\r"))
+                else " " * len(line)
+            )
             # Closing fence: same char type, ≥3 of them, nothing else on the line
             if re.match(r"^\s*" + re.escape(fence_char) + r"{3,}\s*$", stripped):
                 in_fence = False
@@ -974,13 +1011,19 @@ def _strip_inline_code(line: str) -> str:
         out = []
         i = 0
         while i < len(content):
-            if content[i:i + n_ticks] == delim and (i == 0 or content[i - 1] != "`"):
+            if content[i : i + n_ticks] == delim and (i == 0 or content[i - 1] != "`"):
                 # Check it's not a longer run (e.g. ``` when n_ticks=2)
-                if (i == 0 or content[i - 1] != "`") and (i + n_ticks >= len(content) or content[i + n_ticks] != "`"):
+                if (i == 0 or content[i - 1] != "`") and (
+                    i + n_ticks >= len(content) or content[i + n_ticks] != "`"
+                ):
                     # Find closing delimiter
                     close = content.find(delim, i + n_ticks)
                     # Closing must also not be part of a longer run
-                    while close != -1 and close + n_ticks < len(content) and content[close + n_ticks] == "`":
+                    while (
+                        close != -1
+                        and close + n_ticks < len(content)
+                        and content[close + n_ticks] == "`"
+                    ):
                         close = content.find(delim, close + 1)
                     if close != -1:
                         # Replace the entire span (delimiters + content) with spaces
@@ -1012,7 +1055,9 @@ def extract_wikilinks(body: str) -> list[str]:
     return [m.group(1).strip() for m in WIKILINK_RE.finditer(body)]
 
 
-def resolve_wikilink(target: str, vault_index: dict[str, Path], vault_root: Path) -> bool:
+def resolve_wikilink(
+    target: str, vault_index: dict[str, Path], vault_root: Path
+) -> bool:
     """Return True if the wikilink target resolves to an existing file.
 
     Implements Obsidian's resolution rules:
@@ -1102,6 +1147,7 @@ def find_rename_candidate(target: str, vault_index: dict[str, Path]) -> Path | N
 # Topic consolidation — Jaccard 3-gram + same-stem
 # ---------------------------------------------------------------------------
 
+
 def _trigrams(s: str) -> set[str]:
     s = s.lower()
     return {s[i : i + 3] for i in range(len(s) - 2)} if len(s) >= 3 else set()
@@ -1117,7 +1163,7 @@ def find_topic_consolidation_candidates(
     # deduplicate
     unique = list(set(topic_tags))
     # Extract the value part
-    values = [t[len("topic/"):] for t in unique]
+    values = [t[len("topic/") :] for t in unique]
     candidates = []
     seen = set()
 
@@ -1165,7 +1211,7 @@ def find_topic_consolidation_candidates(
         if len(group) >= 3:
             group_tags = [f"topic/{v}" for v in sorted(group)]
             for i, ta in enumerate(group_tags):
-                for tb in group_tags[i + 1:]:
+                for tb in group_tags[i + 1 :]:
                     pair = tuple(sorted([ta[6:], tb[6:]]))
                     if pair not in seen:
                         seen.add(pair)
@@ -1179,6 +1225,7 @@ def find_topic_consolidation_candidates(
 # SHA-256 file hashing
 # ---------------------------------------------------------------------------
 
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
@@ -1190,6 +1237,7 @@ def sha256_file(path: Path) -> str:
 # ---------------------------------------------------------------------------
 # Manifest
 # ---------------------------------------------------------------------------
+
 
 def manifest_path(state_dir: Path, scope_paths: list[Path]) -> Path:
     key = hashlib.sha256(
@@ -1220,6 +1268,7 @@ def save_manifest(mpath: Path, files: dict[str, str]) -> None:
 # ---------------------------------------------------------------------------
 # Destination classification
 # ---------------------------------------------------------------------------
+
 
 def classify_destination(file_path: Path, vault_root: Path) -> str:
     """
@@ -1433,8 +1482,14 @@ def _is_valid_sources_value(v) -> bool:
     return False
 
 
-def make_finding(severity: str, check: str, file_rel: str, detail: str, suggestion: str = "",
-                 tightening: bool = False) -> dict:
+def make_finding(
+    severity: str,
+    check: str,
+    file_rel: str,
+    detail: str,
+    suggestion: str = "",
+    tightening: bool = False,
+) -> dict:
     f = {
         "severity": severity,
         "check": check,
@@ -1461,7 +1516,9 @@ def lint_file(
     try:
         text = file_path.read_text(encoding="utf-8")
     except Exception as e:
-        return [make_finding("HIGH", "read-error", str(file_path), f"Cannot read file: {e}")]
+        return [
+            make_finding("HIGH", "read-error", str(file_path), f"Cannot read file: {e}")
+        ]
 
     try:
         rel_path = str(file_path.relative_to(vault_root))
@@ -1535,18 +1592,11 @@ def lint_file(
     #   - Default (any closed-vocab type/ not in either tier nor per-type): Invariant-core-only.
     # Note: multiple-type-tags check stays universal (sanity check, fires before tier logic).
     structure_not_imposed = sc["structure_not_imposed"]
-    invariant_core_only = sc["invariant_core_only"]
 
     is_structure_not_imposed = type_val in structure_not_imposed
     is_in_per_type = type_val in sc["per_type"]
     # Fully governed = explicitly listed in per_type table (not exempted)
     is_fully_governed = is_in_per_type and not is_structure_not_imposed
-    # Invariant-core-only = explicitly in invariant_core_only set, OR default (not in per_type
-    # and not in structure_not_imposed)
-    is_invariant_core_only = (
-        type_val in invariant_core_only
-        or (not is_fully_governed and not is_structure_not_imposed)
-    )
 
     # --- Tag validity (all tags) — runs for ALL tiers ---
     _check_tag_validity(tags, rel_path, valid_projects, taxonomy, findings)
@@ -1660,7 +1710,11 @@ def lint_file(
         # predates the Provenance vocabulary (Migration Legacy, Part II) and would
         # flood on `--filing`-free runs. Applies only where the type carries sources
         # (Required or Optional) and the file actually has a sources array.
-        if filing and pt["sources"] in ("Required", "Optional") and fm["sources"] is not None:
+        if (
+            filing
+            and pt["sources"] in ("Required", "Optional")
+            and fm["sources"] is not None
+        ):
             for v in fm["sources"]:
                 if not _is_valid_sources_value(v):
                     findings.append(
@@ -1705,7 +1759,11 @@ def lint_file(
 
         # Extra required tags (e.g. project/ for type/project-pointer)
         for required_tag_prefix in pt.get("extra_tags", []):
-            matching = [t for t in tags if t.startswith(required_tag_prefix + "/") or t == required_tag_prefix]
+            matching = [
+                t
+                for t in tags
+                if t.startswith(required_tag_prefix + "/") or t == required_tag_prefix
+            ]
             if not matching:
                 check_id = f"missing-{required_tag_prefix.split('/')[-1]}-tag"
                 findings.append(
@@ -1722,7 +1780,7 @@ def lint_file(
         if "project" in pt.get("extra_tags", []):
             proj_tags = [t for t in tags if t.startswith("project/")]
             for pt_tag in proj_tags:
-                proj_name = pt_tag[len("project/"):]
+                proj_name = pt_tag[len("project/") :]
                 if "/" in proj_name:
                     continue  # grandfathered deep tags
                 projects_dir = vault_root / "Projects"
@@ -1747,7 +1805,9 @@ def lint_file(
     # Uses body_clean: fenced code blocks and inline code spans are blanked out so
     # bash [[ ... ]] conditionals and [[placeholder]] examples in code are not
     # extracted as wikilinks, and bare Projects/... paths in code are not flagged.
-    _check_wikilinks(body_clean, rel_path, vault_root, vault_index, valid_projects, findings)
+    _check_wikilinks(
+        body_clean, rel_path, vault_root, vault_index, valid_projects, findings
+    )
 
     # --- Index entry for project-hosted files ---
     if dest == "project" and file_path.name != "index.md":
@@ -1815,7 +1875,9 @@ def _check_updated(fm: dict, rel_path: str, findings: list) -> None:
             )
 
 
-def _check_single_h1(body: str, rel_path: str, findings: list, tightening: bool = False) -> None:
+def _check_single_h1(
+    body: str, rel_path: str, findings: list, tightening: bool = False
+) -> None:
     """Check exactly one H1. tightening=True marks this as a [tightening] rule (fix F)."""
     h1_matches = re.findall(r"^# .+", body, re.MULTILINE)
     if len(h1_matches) == 0:
@@ -1914,7 +1976,7 @@ def _check_tag_validity(
                         "tag-depth-exceeded",
                         rel_path,
                         f"Tag `{tag}` has depth {actual_depth}, exceeds max {max_depth} for namespace `{ns}`",
-                        f"Split into multiple tags across namespaces",
+                        "Split into multiple tags across namespaces",
                     )
                 )
 
@@ -1960,7 +2022,6 @@ def _check_tag_validity(
 
         # Closed vocab: project/
         elif ns == "project":
-            proj_name = "/".join(parts[1:])
             # Check if grandfathered
             is_grandfathered = any(tag.startswith(gp) for gp in grandfathered)
             if not is_grandfathered:
@@ -2062,13 +2123,15 @@ def _check_wikilinks(
                         "broken-wikilink",
                         rel_path,
                         f"Broken wikilink `[[{target}]]` — target not found in vault",
-                        f"Create the target note or fix the link text",
+                        "Create the target note or fix the link text",
                     )
                 )
         else:
             # Cross-project reference check
             # Is the target in a different project?
-            _check_cross_project_link(target, rel_path, vault_root, vault_index, valid_projects, findings)
+            _check_cross_project_link(
+                target, rel_path, vault_root, vault_index, valid_projects, findings
+            )
 
     # Also check for bare path-shaped cross-project references (not wikilinks)
     # Pattern: Projects/Other/... in text but NOT inside [[...]]
@@ -2148,7 +2211,9 @@ def _check_cross_project_link(
             pass
 
 
-def _check_status_coherence(fm: dict, tags: list[str], rel_path: str, findings: list) -> None:
+def _check_status_coherence(
+    fm: dict, tags: list[str], rel_path: str, findings: list
+) -> None:
     """If both scalar status: and status/ tag exist, they must match."""
     scalar_status = fm.get("status")
     if not scalar_status:
@@ -2156,7 +2221,7 @@ def _check_status_coherence(fm: dict, tags: list[str], rel_path: str, findings: 
     status_tags = [t for t in tags if t.startswith("status/")]
     if not status_tags:
         return
-    status_tag_val = status_tags[0][len("status/"):]
+    status_tag_val = status_tags[0][len("status/") :]
     if scalar_status.lower() != status_tag_val.lower():
         findings.append(
             make_finding(
@@ -2164,12 +2229,14 @@ def _check_status_coherence(fm: dict, tags: list[str], rel_path: str, findings: 
                 "status-coherence",
                 rel_path,
                 f"Scalar `status: {scalar_status}` conflicts with `status/` tag `{status_tags[0]}`",
-                f"Remove the scalar `status:` field (use only the tag)",
+                "Remove the scalar `status:` field (use only the tag)",
             )
         )
 
 
-def _check_freshness(fm: dict, rel_path: str, today: datetime.date, findings: list) -> None:
+def _check_freshness(
+    fm: dict, rel_path: str, today: datetime.date, findings: list
+) -> None:
     """Stale (>90 days) and unverified checks."""
     STALE_DAYS = 90
     updated_str = fm.get("updated")
@@ -2238,6 +2305,7 @@ def _check_stale_suspects(
 # Corpus-scale checks
 # ---------------------------------------------------------------------------
 
+
 def check_orphan_index_entries(
     scope_files: list[Path],
     vault_root: Path,
@@ -2248,7 +2316,8 @@ def check_orphan_index_entries(
     # Only index.md files in governed locations are checked — an index in an
     # ungoverned folder (operational/raw scratch) is out of scope.
     index_files = [
-        f for f in scope_files
+        f
+        for f in scope_files
         if f.name == "index.md" and is_governed_location(f, vault_root)
     ]
     for idx_path in index_files:
@@ -2280,7 +2349,6 @@ def check_context_page_coverage(
     Wiki/Contexts/{domain}-context.md exists.
     """
     findings = []
-    contexts_dir = vault_root / "Wiki" / "Contexts"
 
     # Collect area/ namespaces that have Knowledge files
     area_namespaces: set[str] = set()
@@ -2289,7 +2357,11 @@ def check_context_page_coverage(
             rel_parts = f.relative_to(vault_root).parts
         except ValueError:
             continue
-        if len(rel_parts) >= 2 and rel_parts[0] == "Wiki" and rel_parts[1] == "Knowledge":
+        if (
+            len(rel_parts) >= 2
+            and rel_parts[0] == "Wiki"
+            and rel_parts[1] == "Knowledge"
+        ):
             try:
                 text = f.read_text(encoding="utf-8")
                 fm, _ = parse_frontmatter(text)
@@ -2345,6 +2417,7 @@ def check_topic_consolidation(all_files_findings_tags: list[list[str]]) -> list[
 # ---------------------------------------------------------------------------
 # Main lint runner
 # ---------------------------------------------------------------------------
+
 
 def walk_scope(scope_paths: list[Path]) -> list[Path]:
     """Return all .md files under the given scope directories."""
@@ -2423,7 +2496,16 @@ def run_lint(
     all_tags_by_file: list[list[str]] = []
 
     for f in scope_files:
-        file_findings = lint_file(f, vault_root, vault_index, valid_projects, taxonomy, sc, today, filing=filing)
+        file_findings = lint_file(
+            f,
+            vault_root,
+            vault_index,
+            valid_projects,
+            taxonomy,
+            sc,
+            today,
+            filing=filing,
+        )
         all_findings.extend(file_findings)
         # Collect tags for corpus checks — only from governed-location files, so
         # topic-consolidation candidates aren't drawn from ungoverned domain
@@ -2438,8 +2520,12 @@ def run_lint(
             all_tags_by_file.append([])
 
     # Corpus-scale checks
-    all_findings.extend(check_orphan_index_entries(scope_files, vault_root, vault_index))
-    all_findings.extend(check_context_page_coverage(scope_files, vault_root, vault_index, taxonomy))
+    all_findings.extend(
+        check_orphan_index_entries(scope_files, vault_root, vault_index)
+    )
+    all_findings.extend(
+        check_context_page_coverage(scope_files, vault_root, vault_index, taxonomy)
+    )
     all_findings.extend(check_topic_consolidation(all_tags_by_file))
 
     # --- Filing-mode severity escalation ---
@@ -2463,7 +2549,9 @@ def run_lint(
     return {
         "scope": scope_strs,
         "scanned": scanned,
-        "delta": delta if not no_manifest else {"changed": None, "new": None, "deleted": None},
+        "delta": delta
+        if not no_manifest
+        else {"changed": None, "new": None, "deleted": None},
         "findings": all_findings,
         "summary": {**summary, "clean": clean},
     }
@@ -2472,6 +2560,7 @@ def run_lint(
 # ---------------------------------------------------------------------------
 # Output formatters
 # ---------------------------------------------------------------------------
+
 
 def format_text(result: dict) -> str:
     lines = []
@@ -2492,9 +2581,9 @@ def format_text(result: dict) -> str:
             group = [f for f in findings if f["severity"] == severity]
             if not group:
                 continue
-            lines.append(f"{'='*60}")
+            lines.append(f"{'=' * 60}")
             lines.append(f"{severity} ({len(group)} findings)")
-            lines.append(f"{'='*60}")
+            lines.append(f"{'=' * 60}")
             for finding in group:
                 lines.append(f"  [{finding['check']}] {finding['file']}")
                 lines.append(f"    {finding['detail']}")
@@ -2503,9 +2592,9 @@ def format_text(result: dict) -> str:
             lines.append("")
 
     s = result["summary"]
-    lines.append(f"{'='*60}")
+    lines.append(f"{'=' * 60}")
     lines.append("Summary")
-    lines.append(f"{'='*60}")
+    lines.append(f"{'=' * 60}")
     lines.append(
         f"  HIGH={s['HIGH']}  MEDIUM={s['MEDIUM']}  WARNING={s['WARNING']}  INFO={s['INFO']}  clean={s['clean']}/{result['scanned']}"
     )
@@ -2515,6 +2604,7 @@ def format_text(result: dict) -> str:
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -2554,18 +2644,20 @@ def main() -> int:
         help="Vault root for wikilink resolution. Set VAULT_ROOT env var or pass explicitly.",
     )
     parser.add_argument(
-        "--contract-path", default=None,
+        "--contract-path",
+        default=None,
         help="Explicit path to knowledge-contract.md. Resolve this from the global "
-             "CLAUDE.md's references.tag_taxonomy / references.structural_contract key "
-             "(both alias the same file), never hardcode it. Falls back to "
-             "<vault-root>/Wiki/spec/knowledge-contract.md when unset (pre-key behavior).",
+        "CLAUDE.md's references.tag_taxonomy / references.structural_contract key "
+        "(both alias the same file), never hardcode it. Falls back to "
+        "<vault-root>/Wiki/spec/knowledge-contract.md when unset (pre-key behavior).",
     )
     parser.add_argument(
-        "--rosters-path", default=None,
+        "--rosters-path",
+        default=None,
         help="Explicit path to tag-taxonomy-rosters.md. Resolve this from the global "
-             "CLAUDE.md's references.tag_taxonomy_rosters key, never hardcode it. Falls "
-             "back to <vault-root>/Wiki/spec/tag-taxonomy-rosters.md when unset "
-             "(pre-key behavior).",
+        "CLAUDE.md's references.tag_taxonomy_rosters key, never hardcode it. Falls "
+        "back to <vault-root>/Wiki/spec/tag-taxonomy-rosters.md when unset "
+        "(pre-key behavior).",
     )
     parser.add_argument(
         "--filing",
@@ -2598,10 +2690,16 @@ def main() -> int:
         rosters_path = vault_root / "Wiki" / "spec" / "tag-taxonomy-rosters.md"
 
     if not taxonomy_path.exists():
-        print(f"ERROR: knowledge-contract.md not found at {taxonomy_path}", file=sys.stderr)
+        print(
+            f"ERROR: knowledge-contract.md not found at {taxonomy_path}",
+            file=sys.stderr,
+        )
         return 2
     if not rosters_path.exists():
-        print(f"ERROR: tag-taxonomy-rosters.md not found at {rosters_path}", file=sys.stderr)
+        print(
+            f"ERROR: tag-taxonomy-rosters.md not found at {rosters_path}",
+            file=sys.stderr,
+        )
         return 2
     if not sc_path.exists():
         print(f"ERROR: knowledge-contract.md not found at {sc_path}", file=sys.stderr)
@@ -2628,7 +2726,10 @@ def main() -> int:
     try:
         sc = parse_structural_contract(sc_path)
     except ValueError as e:
-        print(f"ERROR parsing knowledge-contract.md (envelope rules): {e}", file=sys.stderr)
+        print(
+            f"ERROR parsing knowledge-contract.md (envelope rules): {e}",
+            file=sys.stderr,
+        )
         return 2
 
     # Resolve scope paths
@@ -2655,6 +2756,7 @@ def main() -> int:
         )
     except Exception as e:
         import traceback
+
         print(f"ERROR during lint run: {e}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
         return 1
