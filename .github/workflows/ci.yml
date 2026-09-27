@@ -87,8 +87,7 @@ jobs:
     # a mechanical PR (a Renovate bump inside a plugin) can still need one.
     # PR-time check, no writes. Required by this repo's branch-protection
     # ruleset (appended alongside this job, strict). Independent of `gate`
-    # — a separate job, not touching gate's own trigger or BASE_SHA
-    # scoping. Deliberately no `paths:` filter on the workflow — a
+    # — a separate job. Deliberately no `paths:` filter on the workflow — a
     # path-skipped required check stays "Pending" forever and blocks
     # every PR (GitHub docs).
     runs-on: ubuntu-latest

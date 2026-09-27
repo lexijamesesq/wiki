@@ -13,7 +13,7 @@ The machinery half of a personal knowledge-base system: capture routing (`/wiki-
 
 Clone the repo. `.claude/` ships tracked and committed — review its contents (see Security below) before opening the directory in Claude Code. Copy the instance config sample and fill in your own values:
 
-```
+```bash
 cp .claude/instance.sample.md .claude/instance.md
 ```
 
@@ -32,7 +32,7 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 
 ## CI
 
-`.github/workflows/ci.yml`, required via the "Protect main" ruleset: the estate's universal core lane (`estate-ci.yml` — gitleaks, house-code, house-scaffold, and the rest of the shared pre-commit chain), plus this repo's own `gate` job (`claude plugin validate --strict` on the plugin manifests, the `lint-knowledge` test suite, and a gitleaks scan) and `release-check` (plugin version discipline). All required to merge via `all-checks-passed`.
+`.github/workflows/ci.yml`, required via the "Protect main" ruleset: the estate's shared `floor` job (`estate-ci.yml` — the shared pre-commit chain, house-code, house-scaffold), plus this repo's own `gate` job (`claude plugin validate --strict` on the plugin manifests and the `lint-knowledge` test suite) and `release-check` (plugin version discipline). All required to merge via `all-checks-passed`. PR-time secret scanning is the trusted lane's `trusted-scan` (`gate.yml`), a separate required check.
 
 ## Conventions
 
@@ -45,7 +45,7 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 ## Key Files
 
 | File | Purpose |
-|------|---------|
+| ---- | ------- |
 | `.claude/instance.sample.md` | Configuration contract template — copy to `.claude/instance.md` and fill in your instance's values |
 | `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `capture-meeting`, `router`, `queue`), gatekeeping (`gatekeeper`), and maintenance (`knowledge-layer`, `lint-knowledge`, `maintenance-triage`) skills |
 | `.claude-plugin/` | The `wiki` marketplace and plugin manifests — this repo root is the plugin; `plugin.json`'s `skills` field points at `.claude/skills/` |

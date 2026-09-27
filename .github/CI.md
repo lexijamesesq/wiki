@@ -8,10 +8,10 @@ what's specific to it.
 ## Decisions specific to this repo
 
 **`gate` (`ci.yml`, `pull_request`) is the pre-existing conformance check**
-— `claude plugin validate --strict`, lint-knowledge tests, a base-rules
-gitleaks scan — alongside `universal-ci` (this repo's caller into the
-estate's shared `estate-ci.yml`, covering gitleaks/house-code/house-scaffold
-via the standard pre-commit chain). Unchanged by the release job below.
+— `claude plugin validate --strict` and the lint-knowledge tests —
+alongside `floor` (this repo's caller into the estate's shared
+`estate-ci.yml`, the standard pre-commit chain). PR-time secret scanning is
+the trusted lane's `trusted-scan` (`gate.yml`), not a job here.
 
 **Release job — see core-skills' `CI.md` for the full design** (this
 repo publishes one plugin, `wiki`, from its own root; core-skills
@@ -23,11 +23,8 @@ pieces, split across files on purpose:
   branch-protection ruleset (appended to its existing `gate` requirement,
   strict). Compares the plugin's tree against its highest existing tag;
   fails loud if content changed with no version bump.
-- `release.yml` is a **separate file**, `push`-triggered only. Adding a
-  push trigger to `ci.yml` itself would make `gate`'s `BASE_SHA` scoping
-  (computed from the PR event) vacuous on a push event — this repo's own
-  version of the gotcha dotty-private's `CI.md` names for itself.
-  Cuts the tag + GitHub Release once a version lands untagged.
+- `release.yml` is a **separate file**, `push`-triggered only, and
+  cuts the tag + GitHub Release once a version lands untagged.
 
 Both jobs invoke `core-skills`'s `check-plugin-version.sh` /
 `tag-plugin-release.sh` from a pinned checkout rather than duplicating
