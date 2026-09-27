@@ -32,7 +32,7 @@ pre-commit run --all-files                                  # gitleaks-staged + 
 
 ## CI
 
-`.github/workflows/ci.yml`, required via the "Protect main" ruleset: the estate's shared `floor` job (`estate-ci.yml` — the shared pre-commit chain, house-code, house-scaffold), plus this repo's own `gate` job (`claude plugin validate --strict` on the plugin manifests and the `lint-knowledge` test suite) and `release-check` (plugin version discipline). All required to merge via `all-checks-passed`. PR-time secret scanning is the trusted lane's `trusted-scan` (`gate.yml`), a separate required check.
+`.github/workflows/ci.yml`, required via the "Protect main" ruleset: the estate's shared `floor` job (`estate-ci.yml` — the shared pre-commit chain, house-code, house-scaffold), plus this repo's own `gate` job (`claude plugin validate --strict` on the plugin manifests and the `lint-knowledge` test suite) and `release-check` (plugin version discipline). The ruleset requires each job's check directly (`ci / checks`, `ci / gate`, `ci / release-check`); a new job needs its check added to the ruleset in dotty's `rulesets/default-branch.json`. PR-time secret scanning is the trusted lane's `trusted-scan` (`gate.yml`), a separate required check.
 
 ## Conventions
 
