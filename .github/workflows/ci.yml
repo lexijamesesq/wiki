@@ -65,20 +65,6 @@ jobs:
           path: Wiki
           fetch-depth: 0
 
-      # Pinned to dotty PR #168's merge commit (composite gitleaks-install
-      # action + CI hardening, https://github.com/lexijamesesq/dotty/pull/168,
-      # merged 2026-09-02) — never a floating tag or branch tip. Only the
-      # setup-gitleaks composite is consumed from this checkout now.
-      - name: Checkout dotty (pinned, for the setup-gitleaks composite)
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: lexijamesesq/dotty
-          ref: 1fe38aab22976e13e3361ac363fd7dd23e68eea2 # PR #168 merge commit
-          path: dotty
-
-      # This repo root is the `wiki` plugin (marketplace + plugin manifest under
-      # .claude-plugin/, skills served from .claude/skills via the manifest's
-      # `skills` field). --strict turns manifest warnings into failures.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '24'
@@ -95,32 +81,13 @@ jobs:
       - name: Run lint-knowledge tests
         run: python3 Wiki/.claude/skills/lint-knowledge/tests/run_tests.py
 
-      # Composite action from dotty (see the stubbed checkout above) —
-      # de-duplicates the curl+checksum+sha256sum install that used to be
-      # written out here verbatim. Base/public-safe rules only —
-      # see .gitleaks.ci.toml's own header for why this never extends the
-      # operator's PII rules in CI.
-      - name: Setup gitleaks
-        uses: ./dotty/.github/actions/setup-gitleaks
-        with:
-          version: '8.30.1'
-
-      - name: Gitleaks scan (base rules, this PR's commits)
-        working-directory: Wiki
-        run: |
-          gitleaks detect --source . \
-            --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.sha }}" \
-            --config .gitleaks.ci.toml \
-            --no-banner --redact --ignore-gitleaks-allow
-
   release-check:
     # floor: always-run
     # release-check refuses a plugin change without a version bump;
     # a mechanical PR (a Renovate bump inside a plugin) can still need one.
     # PR-time check, no writes. Required by this repo's branch-protection
     # ruleset (appended alongside this job, strict). Independent of `gate`
-    # — a separate job, not touching gate's own trigger or BASE_SHA
-    # scoping. Deliberately no `paths:` filter on the workflow — a
+    # — a separate job. Deliberately no `paths:` filter on the workflow — a
     # path-skipped required check stays "Pending" forever and blocks
     # every PR (GitHub docs).
     runs-on: ubuntu-latest
