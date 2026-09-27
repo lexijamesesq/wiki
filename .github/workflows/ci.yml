@@ -114,8 +114,9 @@ jobs:
             --no-banner --redact --ignore-gitleaks-allow
 
   release-check:
-    needs: [floor]
-    if: ${{ needs.floor.outputs.mechanical != 'true' }}
+    # floor: always-run
+    # release-check refuses a plugin change without a version bump;
+    # a mechanical PR (a Renovate bump inside a plugin) can still need one.
     # PR-time check, no writes. Required by this repo's branch-protection
     # ruleset (appended alongside this job, strict). Independent of `gate`
     # — a separate job, not touching gate's own trigger or BASE_SHA
