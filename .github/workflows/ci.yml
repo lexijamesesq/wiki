@@ -86,9 +86,10 @@ jobs:
         with:
           repository: lexijamesesq/core-skills
           # Bumped for the estate lint-config rollout: this pin must carry the
-          # exclusion for every root config the suite adds (.yamllint.yaml,
-          # .markdownlint.yaml, and now ruff.toml), or release-check reads them
-          # as plugin content and fails — the same class of miss renovate.json hit.
+          # exclusion for every root config the suite adds
+          # (.pre-commit-config.yaml, .yamllint.yaml, .markdownlint.yaml,
+          # ruff.toml, biome.json, .prettierrc), or release-check reads them as
+          # plugin content and fails — the same class of miss renovate.json hit.
           ref: 6ad5db16f98fca23239c75616fdb44219f9bb8ce # core-skills#143 merge commit -- adds biome.json and .prettierrc to the plugin-version exclude list
           path: work-lifecycle
 
