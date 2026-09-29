@@ -89,7 +89,7 @@ jobs:
           # exclusion for every root config the suite adds (.yamllint.yaml,
           # .markdownlint.yaml, and now ruff.toml), or release-check reads them
           # as plugin content and fails — the same class of miss renovate.json hit.
-          ref: a5bc683d8bc5f963b02b6b0f4411682c4bade159 # core-skills#97 merge commit -- adds ruff.toml to the plugin-version exclude list
+          ref: 6ad5db16f98fca23239c75616fdb44219f9bb8ce # core-skills#143 merge commit -- adds biome.json and .prettierrc to the plugin-version exclude list
           path: work-lifecycle
 
       - name: Check plugin version discipline
