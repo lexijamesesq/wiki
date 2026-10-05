@@ -9,8 +9,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # release-tag now lives in this file (folded from release.yml). Keying
+  # push events on github.ref alone put every push to main in the same
+  # group — GitHub keeps only one pending run per group and replaces it,
+  # so a second quick push could silently drop the first push's run,
+  # release-tag included. Per-sha for push events gives every commit its
+  # own group; cancellation stays pull_request-only.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   floor:
@@ -60,7 +66,7 @@ jobs:
         run: python3 Wiki/.claude/skills/lint-knowledge/tests/run_tests.py
 
   release-check:
-    name: ci / release-check
+    name: ci
     # floor: always-run
     # release-check refuses a plugin change without a version bump;
     # a mechanical PR (a Renovate bump inside a plugin) can still need one.
@@ -69,30 +75,24 @@ jobs:
     # — a separate job. Deliberately no `paths:` filter on the workflow — a
     # path-skipped required check stays "Pending" forever and blocks
     # every PR (GitHub docs).
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          path: Wiki
-          fetch-depth: 0
-          fetch-tags: true
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    uses: lexijamesesq/dotty/.github/workflows/estate-plugin-release.yml@v1
+    with:
+      dotty_ref: v1
+      plugins: '[{"path":".","name":"wiki"}]'
 
-      # check-plugin-version.sh lives in core-skills (checked out under the
-      # legacy `work-lifecycle` local path name; see its own repo for the
-      # actual location).
-      - name: Checkout work-lifecycle (pinned, for the release scripts)
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: lexijamesesq/core-skills
-          # Bumped for the estate lint-config rollout: this pin must carry the
-          # exclusion for every root config the suite adds
-          # (.pre-commit-config.yaml, .yamllint.yaml, .markdownlint.yaml,
-          # ruff.toml, biome.json, .prettierrc), or release-check reads them as
-          # plugin content and fails — the same class of miss renovate.json hit.
-          ref: 6ad5db16f98fca23239c75616fdb44219f9bb8ce # core-skills#143 merge commit -- adds biome.json and .prettierrc to the plugin-version exclude list
-          path: work-lifecycle
-
-      - name: Check plugin version discipline
-        working-directory: Wiki
-        run: bash ../work-lifecycle/.github/scripts/check-plugin-version.sh . wiki
+  release-tag:
+    name: ci
+    # No `needs:` — preserves release.yml's unconditional-on-push behavior.
+    # node_version: '24' is wiki's deliberate divergence (every other
+    # migrated repo uses the reusable's default of 22).
+    if: github.event_name == 'push'
+    permissions:
+      contents: write
+    uses: lexijamesesq/dotty/.github/workflows/estate-plugin-release.yml@v1
+    with:
+      dotty_ref: v1
+      node_version: '24'
+      plugins: '[{"path":".","name":"wiki"}]'
