@@ -15,20 +15,19 @@ the trusted lane's `trusted-scan` (`gate.yml`), not a job here.
 
 **Release job — see core-skills' `CI.md` for the full design** (this
 repo publishes one plugin, `wiki`, from its own root; core-skills
-publishes two from its `plugins/` tree — the mechanism is identical). Two
-pieces, split across files on purpose:
+publishes two from its `plugins/` tree — the mechanism is identical).
+Both pieces are calling jobs in `ci.yml`, invoking dotty's shared
+`estate-plugin-release.yml@v1` — this repo carries neither script nor
+a pinned checkout of core-skills:
 
-- `release-check` joins `ci.yml` as a second job on the same
-  `pull_request` trigger `gate` already uses — required by this repo's
+- `release-check` (`pull_request`) — required by this repo's
   branch-protection ruleset (appended to its existing `gate` requirement,
   strict). Compares the plugin's tree against its highest existing tag;
   fails loud if content changed with no version bump.
-- `release.yml` is a **separate file**, `push`-triggered only, and
-  cuts the tag + GitHub Release once a version lands untagged.
-
-Both jobs invoke `core-skills`'s `check-plugin-version.sh` /
-`tag-plugin-release.sh` from a pinned checkout rather than duplicating
-the scripts here.
+- `release-tag` (`push` to `main`) cuts the tag + GitHub Release once a
+  version lands untagged. No longer a separate `release.yml` file — both
+  jobs now live in `ci.yml`, each gated on its own event (`gate`'s own
+  PR-only scoping is unaffected; it never reads from a push event).
 
 **First-release baseline:** `wiki--v0.1.0` — already reflects real,
 intentionally-set state; no bump needed to produce a clean first tag.
