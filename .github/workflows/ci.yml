@@ -7,13 +7,12 @@ on:
 permissions:
   contents: read
 
+# A PR's runs group on its ref (refs/pull/<N>/merge), so a new push cancels the
+# superseded run. A push to the default branch groups on its own sha and is
+# never cancelled: GitHub keeps only one pending run per group, so a shared
+# group would silently drop a pending push run -- and with it any job a repo
+# adds that must run on every merge, such as a release job.
 concurrency:
-  # release-tag now lives in this file (folded from release.yml). Keying
-  # push events on github.ref alone put every push to main in the same
-  # group — GitHub keeps only one pending run per group and replaces it,
-  # so a second quick push could silently drop the first push's run,
-  # release-tag included. Per-sha for push events gives every commit its
-  # own group; cancellation stays pull_request-only.
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
