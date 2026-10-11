@@ -21,47 +21,54 @@
 set -euo pipefail
 
 ALLOW=(
-  ".claude"
-  ".claude-plugin"
-  ".house-code.json"
-  "spec"
-  ".gitignore"
-  "README.md"
-  "LICENSE"
-  "CLAUDE.md"
-  ".pre-commit-config.yaml"
-  ".gitleaks.toml"
-  ".gitleaks.ci.toml"
-  ".track-list-guard.sh"
-  ".github"
+	".claude"
+	".claude-plugin"
+	".house-code.json"
+	"spec"
+	".gitignore"
+	"README.md"
+	"LICENSE"
+	"CLAUDE.md"
+	".shellcheckrc"
+	"ruff.toml"
+	".yamllint.yaml"
+	".markdownlint.yaml"
+	"biome.json"
+	".prettierrc"
+	"renovate.json"
+	".pre-commit-config.yaml"
+	".gitleaks.toml"
+	".gitleaks.ci.toml"
+	".track-list-guard.sh"
+	".github"
 )
 
 is_allowed() {
-  local top="$1"
-  for a in "${ALLOW[@]}"; do
-    [[ "$top" == "$a" ]] && return 0
-  done
-  return 1
+	local top="$1"
+	for a in "${ALLOW[@]}"; do
+		[[ "$top" == "$a" ]] && return 0
+	done
+	return 1
 }
 
 violations=()
 while IFS= read -r path; do
-  [[ -z "$path" ]] && continue
-  top="${path%%/*}"
-  if ! is_allowed "$top"; then
-    violations+=("$path")
-  fi
+	[[ -z "$path" ]] && continue
+	top="${path%%/*}"
+	if ! is_allowed "$top"; then
+		violations+=("$path")
+	fi
 done < <(git diff --cached --name-only --diff-filter=ACMR)
 
 if [[ ${#violations[@]} -gt 0 ]]; then
-  echo "Track-list guard: staged path(s) not on the allow-list:"
-  printf '  %s\n' "${violations[@]}"
-  echo ""
-  echo "Allow-list: ${ALLOW[*]}"
-  echo "If this path genuinely belongs in the public Wiki repo, add its top-level"
-  echo "name deliberately to .track-list-guard.sh. Otherwise it's operator content —"
-  echo "add it to .gitignore instead."
-  exit 1
+	echo "Track-list guard: staged path(s) not on the allow-list:"
+	printf '  %s\n' "${violations[@]}"
+	echo ""
+	echo "Allow-list: ${ALLOW[*]}"
+	echo "If this path genuinely belongs in the public Wiki repo, add its top-level"
+	echo "name deliberately to .track-list-guard.sh. Otherwise it's operator content —"
+	echo "add it to .gitignore instead."
+	exit 1
 fi
 
 exit 0

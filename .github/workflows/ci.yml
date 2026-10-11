@@ -1,91 +1,21 @@
 name: CI
 on:
-  pull_request:
-  push:
-    branches: [main]
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
 
 permissions:
   contents: read
+  pull-requests: read
+  checks: read
+  actions: read
 
-# A PR's runs group on its ref (refs/pull/<N>/merge), so a new push cancels the
-# superseded run. A push to the default branch groups on its own sha and is
-# never cancelled: GitHub keeps only one pending run per group, so a shared
-# group would silently drop a pending push run -- and with it any job a repo
-# adds that must run on every merge, such as a release job.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
+# The reusable uses one PR concurrency group and cancels superseded runs.
 jobs:
-  floor:
-    # The required check is `ci / checks`: this job's name, then the called
-    # job's (estate-ci.yml's check_name). Convention `<lane> / <what it checks>`.
-    name: ci
-    # Ceiling only: the reusable's own job declares the narrow scopes it
-    # actually needs (contents/pull-requests/checks: read, for Jev's triage
-    # answer on the head's check-runs) and a called workflow can never exceed
-    # what its caller grants. No write scope, no secret: this is the lane a
-    # PR controls.
-    permissions: read-all
-    uses: lexijamesesq/dotty/.github/workflows/estate-ci.yml@v1
-
-  gate:
-    name: ci / gate
-    needs: [floor]
-    if: ${{ needs.floor.outputs.mechanical != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout Wiki
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          path: Wiki
-          fetch-depth: 0
-
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: '24'
-      - name: Install Claude Code CLI 2.1.259
-        run: npm install -g @anthropic-ai/claude-code@2.1.259
-      - name: claude plugin validate --strict
-        working-directory: Wiki
-        run: claude plugin validate --strict .
-
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: '3.12'
-
-      - name: Run lint-knowledge tests
-        run: python3 Wiki/.claude/skills/lint-knowledge/tests/run_tests.py
-
-  release-check:
-    name: ci
-    # floor: always-run
-    # release-check refuses a plugin change without a version bump;
-    # a mechanical PR (a Renovate bump inside a plugin) can still need one.
-    # PR-time check, no writes. Required by this repo's branch-protection
-    # ruleset (appended alongside this job, strict). Independent of `gate`
-    # — a separate job. Deliberately no `paths:` filter on the workflow — a
-    # path-skipped required check stays "Pending" forever and blocks
-    # every PR (GitHub docs).
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: read
-    uses: lexijamesesq/dotty/.github/workflows/estate-plugin-release.yml@v1
-    with:
-      dotty_ref: v1
-      plugins: '[{"path":".","name":"wiki"}]'
-
-  release-tag:
-    name: ci
-    # No `needs:` — preserves release.yml's unconditional-on-push behavior.
-    # node_version: '24' is wiki's deliberate divergence (every other
-    # migrated repo uses the reusable's default of 22).
-    if: github.event_name == 'push'
-    permissions:
-      contents: write
-    uses: lexijamesesq/dotty/.github/workflows/estate-plugin-release.yml@v1
-    with:
-      dotty_ref: v1
-      node_version: '24'
-      plugins: '[{"path":".","name":"wiki"}]'
+  checks:
+    name: CI
+    uses: lexijamesesq/dotty/.github/workflows/estate-pr-ci.yml@v1
+    secrets:
+      OPERATOR_RULES: ${{ secrets.OPERATOR_RULES }}
+      MARGOT_APP_KEY: ${{ secrets.MARGOT_APP_KEY }}
+      MARGOT_JEV_KEY: ${{ secrets.MARGOT_JEV_KEY }}
+      MARGOT_ANTHROPIC_TOKEN: ${{ secrets.MARGOT_ANTHROPIC_TOKEN }}
