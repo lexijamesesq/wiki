@@ -14,7 +14,7 @@ The contract for knowledge files: four frontmatter fields, three update modes, f
 
 | In scope | Out of scope |
 | --- | --- |
-| Every `Knowledge/` folder: `{workspace_root}/Wiki/Knowledge`, `{workspace_root}/Projects/*/Knowledge`, `{workspace_root}/System/Knowledge`, `{workspace_root}/Agents/*/Knowledge` | `Wiki/Data` records (own schema; Obsidian Bases read their properties) |
+| Every `Knowledge/` folder: `{workspace_root}/Wiki/Knowledge`, `{workspace_root}/Projects/*/Knowledge`, `{workspace_root}/System/Knowledge`, `{workspace_root}/Projects/Agents/*/Knowledge` | `Wiki/Data` records (own schema; Obsidian Bases read their properties) |
 | `{workspace_root}/Wiki/Contexts` pages | `Personal/`, `Work/` |
 
 ## Frontmatter
