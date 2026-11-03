@@ -1,0 +1,17 @@
+Data/seed-order.md — updated unknown — Seed order
+Decisions/bin-material.md — Decisions · updated 2026-03-01 — Why the compost bins are built from cedar rather than pallets.
+    [[Methods/composting|the system the bins serve]]
+    [[Reference/soil-ph|pH context]]
+Methods/composting.md — Methods · updated 2026-03-14 — How to build and turn a three-bin compost system, including the ratio of browns to greens that keeps it from souring.
+    [[Reference/soil-ph|why compost acidity matters]]
+    [[Decisions/bin-material|why the bins are cedar]]
+Methods/nested/deep-watering.md — Methods · updated 2026-04-02 — Drip-line watering schedule for raised beds in dry summers.
+Notes/loose-thoughts.md — updated 2026-07-04 — Unsorted thoughts about next year's bed layout.
+Notes/no-date.md — updated unknown — A note whose author forgot the updated key.
+Records/2026-05-trial-log.md — Records · updated 2026-05-31 — Weekly bee counts per border from the May pollinator trial.
+Reference/no-description.md — Reference · updated 2026-01-20 — Frost dates
+Reference/soil-ph.md — Reference · updated 2026-02-01 — Target pH ranges for common vegetables and the cheapest reliable way to test a bed. Second paragraph on amendments.
+    [[Methods/composting|compost shifts pH slowly]]
+Research/pollinator-study.md — Research · updated 2026-06-30 — Notes on which flowering borders drew the most bees in a two-season trial: native mixes beat annuals.
+    [[Records/2026-05-trial-log|raw trial counts]]
+index.md — updated unknown — Index

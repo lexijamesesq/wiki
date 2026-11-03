@@ -1,0 +1,6 @@
+---
+description: Tip: this colon breaks plain YAML
+update: replace
+related: []
+updated: 2026-01-01
+---
