@@ -17,7 +17,12 @@
 | `related-entry` | an entry is not a string of the form `[[target\|reason]]`. An unquoted `[[a\|b]]` parses as a nested list and fails here; quote it |
 | `updated-missing` / `updated-invalid` | `updated` is absent or not a real `YYYY-MM-DD` date |
 
-The reason may be any text without `|` or `]]`; its length is not checked. Unknown keys are allowed.
+The reason may be any text without `|` or `]]`; a second `|` fails `related-entry`. Its length is not checked. Unknown keys are allowed.
+
+A nested mapping where the contract wants a string (`description: {…}` or an indented
+`key: value` block under it) fails `description-type`; a mapping as a `related` entry fails
+`related-entry`. The reader keeps those shapes as opaque markers rather than raising, so
+these two rules are what stop such a file from being reported clean.
 
 ## Retired keys
 

@@ -23,7 +23,8 @@ from knowledge_frontmatter import read_file  # noqa: E402
 
 UPDATE_VALUES = ("append", "replace", "never")
 RETIRED_KEYS = ("tags", "verified", "integration", "sources")
-RELATED_RE = re.compile(r"^\[\[([^\[\]|]+)\|((?:(?!\]\]).)+)\]\]$")
+# target: no brackets or pipes. reason: no pipe, and no "]]" before the closing one.
+RELATED_RE = re.compile(r"^\[\[([^\[\]|]+)\|((?:(?!\]\])[^|])+)\]\]$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 

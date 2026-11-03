@@ -208,7 +208,8 @@ class LintTests(unittest.TestCase):
             "description-type.md": ["description-type"],
             "update-invalid.md": ["update-invalid"],
             "related-type.md": ["related-type"],
-            "related-entries.md": ["related-entry"] * 4,
+            "related-entries.md": ["related-entry"] * 5,
+            "nested-mapping.md": ["description-type", "related-entry"],
             "updated-bad-date.md": ["updated-invalid"],
             "updated-bad-format.md": ["updated-invalid"],
         }

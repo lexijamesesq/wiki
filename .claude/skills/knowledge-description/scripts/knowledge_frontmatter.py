@@ -2,9 +2,17 @@
 
 Stdlib only (this repo ships no third-party dependencies). It reads the YAML
 subset knowledge files use: top-level `key: value` pairs whose values are
-plain/quoted scalars, flow lists, block lists, or block scalars. Anything it
-cannot read with confidence raises FrontmatterError, so "YAML must parse" is a
-real check rather than a best effort.
+plain/quoted scalars, flow lists, block lists, or block scalars. Malformed
+syntax in that subset (an unclosed block, a bare `key:value`, an unquoted
+`: ` inside a value, a duplicate key, a tab indent) raises FrontmatterError, so
+"YAML must parse" is a real check rather than a best effort.
+
+Two shapes are read but not interpreted, and come back as empty `Mapping`
+markers rather than errors: a nested mapping as a key's value, and a mapping as
+a list entry. The lint treats a `Mapping` where the contract wants a string or
+a list of strings as a violation (`description-type`, `related-entry`), so such
+a file is never reported clean. A second `---` block after the first is body
+text, as Obsidian reads it.
 """
 
 from __future__ import annotations
