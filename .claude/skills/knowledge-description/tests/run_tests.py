@@ -291,6 +291,14 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(fm["tags"], ["topic/a", "topic/b"])
         self.assertEqual(fm["updated"], "2026-01-01")
 
+    def test_flow_collection_opening_on_the_next_line(self):
+        fm = self.parse(
+            "tags:\n  [\n    topic/a,\n    topic/b\n  ]\nrelated:\n  []\nupdated: 2026-01-01"
+        )
+        self.assertEqual(fm["tags"], ["topic/a", "topic/b"])
+        self.assertEqual(fm["related"], [])
+        self.assertEqual(fm["updated"], "2026-01-01")
+
     def test_quoted_list_entry_wrapping_lines(self):
         fm = self.parse(
             'sources:\n  - "first line\n    second line"\n  - plain\nupdated: 2026-01-01'

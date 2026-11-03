@@ -111,6 +111,20 @@ def _read_value(lines, i, rest):
         ]
         if not block:
             return None, i
+        first = next(
+            k
+            for k in range(i, j)
+            if lines[k].strip() and not lines[k].lstrip().startswith("#")
+        )
+        if lines[first].strip()[0] in "[{":
+            # A flow collection that opens on the line after the key (valid YAML).
+            text, k = _gather_flow(lines, first, lines[first].strip())
+            value, pos = _parse_flow(text, 0, first + 1)
+            if text[pos:].strip() and not text[pos:].strip().startswith("#"):
+                raise FrontmatterError(
+                    f"line {first + 1}: unexpected text after flow value"
+                )
+            return (Mapping() if isinstance(value, Mapping) else value), k
         if block[0].lstrip().startswith("-"):
             return _read_block_list(lines[i:j], i), j
         if not KEY_RE.match(block[0].strip()):
