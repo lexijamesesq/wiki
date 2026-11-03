@@ -63,10 +63,15 @@ What reads the field today, and what does not:
   edit respected the mode. That is the writer's own discipline until the check below exists.
 - Unattended writers (eve agents): the vault tools will refuse a write that breaks the mode.
   That check is the eve vault-tool change and is not yet built.
-- The automated filer in this repo (`gatekeeper`, `automated-write-plan`) still decides by
-  `integration:` and the §2 class defaults; it does not read `update`. Until it is evolved to
-  read `update`, it must not run against files marked `replace` or `never`. Today it runs
-  against nothing: the capture and maintenance lanes that invoked it are retired.
+- The filer in this repo (`gatekeeper`) does not read `update`. Its integration-mode guard
+  (`assess-candidates`, which reads `integration:` and the §2 class defaults) runs only in
+  automated mode, and the automated path (`automated-write-plan`) runs against nothing today:
+  the capture and maintenance lanes that invoked it are retired. The interactive path is live:
+  `/capture` and `/wiki-intake` hand candidates to the gatekeeper in interactive mode, and an
+  interactive filing can append to an existing file without any mode check. Interim rule, until
+  the gatekeeper reads `update`: before accepting an interactive filing into an existing file,
+  the session reads that file's `update`; `append` files take the append, `replace` and `never`
+  files take a queue item instead, never an append.
 
 ## §4 Write shape × authority
 
