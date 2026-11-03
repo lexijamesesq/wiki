@@ -1,6 +1,6 @@
 # Playbook: classify
 
-Step 1 — read the capture and classify it into one of four intents. Reached only when Step 0 found no matching handler.
+Step 1 — read the capture and classify it into one of four intents.
 
 ## Input
 
@@ -13,7 +13,7 @@ content: <string>   # the raw capture
 1. Evaluate what the capture IS, not what it could become, against the taxonomy:
 
    | Intent | Signal | Example |
-   |---|---|---|
+   | --- | --- | --- |
    | **knowledge** | Substantive content about a topic, with enough detail to stand alone | "Dedicating a backhaul channel on the mesh Wi-Fi restored full throughput — sharing a channel between nodes halved it" |
    | **data-correction** | A fact change to existing data — not new knowledge, a mutation to current state | "Switched ISP to FiberCo", "Streaming plan downgraded to the ad-supported tier", "Gym membership cancelled" |
    | **explore** | A topic the user wants to research later — no real content yet | "Look into rsync alternatives for incremental backup" |
@@ -36,7 +36,7 @@ These demonstrate the reasoning pattern.
 **Knowledge:**
 > "The mesh Wi-Fi backhaul drops to half throughput when both nodes share a channel — moving the backhaul to a dedicated channel restored full speed. Confirmed across three evenings of testing."
 
-→ **knowledge.** Self-contained finding. Clear topic (e.g. `topic/networking`, home-infrastructure area). Specific enough to stand alone. Single question: why was the mesh backhaul slow, and what fixed it.
+→ **knowledge.** Self-contained finding. Clear subject (e.g. home networking, the home area). Specific enough to stand alone. Single question: why was the mesh backhaul slow, and what fixed it.
 
 **Data-correction:**
 > "Cancelled the streaming-service-X subscription as of today"
@@ -68,7 +68,7 @@ These demonstrate the reasoning pattern.
 When classification isn't obvious, evaluate along these axes:
 
 | Dimension | Knowledge signal | Not-knowledge signal |
-|---|---|---|
+| --- | --- | --- |
 | **Specificity** | Contains a concrete claim, finding, or fact | Vague interest, question, or direction |
 | **Completeness** | A reader can understand it standalone | Requires conversation context to parse |
 | **Actionability** | Changes understanding or behavior | Observation without conclusion |
