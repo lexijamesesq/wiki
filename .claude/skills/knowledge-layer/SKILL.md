@@ -10,7 +10,7 @@ description: >-
 
 # /knowledge-layer
 
-Domain expert for the Knowledge layer at session closeout — project-local `Knowledge/` folders, `{workspace_root}/System/Knowledge/`, and `{workspace_root}/Wiki/Knowledge/`. The file contract is `spec/knowledge-files.md` at this plugin's root (three levels above this file): four frontmatter fields (`description`, `update`, `related`, `updated`), three update modes, five type folders for project-scoped Knowledge.
+Domain expert for the Knowledge layer at session closeout — project-local `Knowledge/` folders, `{workspace_root}/System/Knowledge/`, and `{workspace_root}/Wiki/Knowledge/`. The file contract is `spec/knowledge-files.md` at this plugin's root (`../../../spec/` from this skill's folder): four frontmatter fields (`description`, `update`, `related`, `updated`), three update modes, five type folders for project-scoped Knowledge.
 
 ## Identity
 

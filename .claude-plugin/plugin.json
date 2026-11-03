@@ -1,7 +1,7 @@
 {
   "name": "wiki",
-  "version": "0.1.15",
-  "description": "Knowledge-layer skills for an Obsidian-vault wiki: capture routing, gatekeeping, lint, maintenance, queue, and project creation.",
+  "version": "0.2.0",
+  "description": "Knowledge-layer skills for an Obsidian-vault wiki: capture routing, gatekeeping, the knowledge-file contract and lint, per-session maintenance, and the judgment queue.",
   "author": {
     "name": "Lexi James",
     "url": "https://github.com/lexijamesesq"

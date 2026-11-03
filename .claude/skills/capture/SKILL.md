@@ -33,7 +33,7 @@ Discipline rules applied on every invocation:
 - **Trust follows the source, per candidate.** Operator-authored / operator-present session content → `trust: registered`. Third-party material pasted or forwarded into the conversation (a colleague's summary, quoted external text) → `trust: unregistered` — the operator forwarded it; they didn't author the claims (surface-defaults table, calibration surface §4). The gatekeeper surfaces unregistered content in-conversation rather than filing it; a pin still guarantees it is never silently dropped.
 - **Runs in the session context — never forked.** The live conversation is the extraction source; a forked context cannot see it.
 - **Explicit ask pins.** "Capture this/that/X" pins the pointed-at content into the candidate set (`pinned: true`) regardless of extraction judgment. Pinned + coherence-fail lands in the queue with a note — never silently discarded (the gatekeeper enforces the landing; this skill's job is to mark the pin).
-- **The calibration surface supplies the judgment** — kind definitions, dimensions, thresholds: `spec/calibration-surface.md` at this plugin's root (three levels above this file). Kind is a PROPOSAL — the gatekeeper may re-grade.
+- **The calibration surface supplies the judgment** — kind definitions, dimensions, thresholds: `spec/calibration-surface.md` at this plugin's root (`../../../spec/` from this skill's folder). Kind is a PROPOSAL — the gatekeeper may re-grade.
 - **This skill writes no vault file.** When it needs vault context (a project's name, an area's context page) it reads with Read and Grep under the session's own permissions; no file tool is pre-approved here.
 
 ## Intent
