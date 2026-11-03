@@ -6,7 +6,29 @@ tags:
 updated: 2026-07-26
 ---
 
-# Knowledge Contract
+# Knowledge Contract (superseded)
+
+**Superseded 2026-11-03 by `spec/knowledge-files.md`.** No skill reads this document any more: `lint.py` is retired, the gatekeeper and knowledge-layer read the four-field contract, and the vault's frontmatter cutover removed the keys this document governs (`tags`, `verified`, `sources`, `integration`). It stays as the record of the earlier rules. Where each part went:
+
+| Section | Fate |
+| --- | --- |
+| Part I, Tags (namespaces, growth thresholds, depth limits, depth escape hatch) | Retired: `tags` leave frontmatter; `related`, folder paths and `description` carry what tags did |
+| Part II, Invariant Core (`type/`, scope, `status/` tags; tag validity) | Replaced by the four fields; the single-H1 rule stands as house style |
+| Part II, Per-Type Additions and Destination Modifiers | Retired: no types, no per-destination tag rules; `index.md` participation replaced by `description` |
+| Part II, Provenance (`sources` frontmatter, `routine/<action> <run-id>`) | Replaced by a bottom `## Sources` section; automated attribution moves to the unattended write log |
+| Part II, Freshness (`verified`; `updated` semantics) | `verified` retired; `updated` is the date of the last content change |
+| Part II, Body and Content Architecture | Replaced by the per-file `update` modes |
+| Part II, Scope Boundaries (Location and Type gates) | Replaced by the folder scope list in `knowledge-files.md` |
+| Part II, Migration Legacy | Retired with the tags |
+| Part III, Filing Handoffs | Replaced by the gatekeeper's filing step against the four fields |
+| Part IV, Lint Surface | Replaced by `contract_lint.py` (the `knowledge-description` skill) |
+| Part V, Parsing Contract and Machine-Parse Invariants | Retired with `lint.py` |
+
+The original text follows, unchanged apart from one markdownlint marker comment and respaced table delimiter rows so the file passes the repo's lint.
+
+---
+
+## Original: Knowledge Contract
 
 The single source of truth for the vault's knowledge layer: **which tags are valid** (the tag dimension), **what envelope a file must have** (the structural dimension), **what each filing boundary adds** (the handoff dimension), and **what lint verifies** (the surface). Merges the former `tag-taxonomy.md`, `structural-contract.md`, `handoff-contracts.md`, and `lint-surface.md` into one contract; consumers reference this doc (and its parts) rather than duplicating its rules. The PII-bearing instance rosters stay split out of this contract entirely (real names/employers/top-level areas) — `tag-taxonomy-rosters.md`'s real content is declared in `dotty-private` and blueprint-applied to a machine-fixed path (resolved via `references.tag_taxonomy_rosters`), not a sibling file in this repo; this repo carries only a public-safe CI placeholder. Splitting the rosters out is what lets this contract publish without PII.
 
@@ -25,7 +47,7 @@ Each namespace is an **orthogonal question** Claude can ask about a page. Togeth
 Six namespaces. Each answers one question.
 
 | Namespace | Question | Vocabulary shape | Typical consumer |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `type/<x>` | What KIND of page is this? | Closed set | Router (format handling); lint (type-specific rules); search (filter by role) |
 | `project/<x>` | Which active Claude project OWNS this? | Closed set, matches `Projects/{Name}/` | Router delivery; cross-project queries; lint scope |
 | `area/<hierarchy>` | Which life/work area is this ABOUT? | Hierarchical, semi-closed | Summary construction; Personal/Work filter; domain search |
@@ -42,7 +64,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 **Vocabulary (closed set):**
 
 | Value | Meaning |
-|---|---|
+| --- | --- |
 | `type/knowledge` | Maintained narrative knowledge (`{workspace_root}/Wiki/Knowledge/` or project `Knowledge/`) |
 | `type/raw` | **Deprecated.** Retag to `type/knowledge`. Reserved for truly immutable external source snapshots if needed. |
 | `type/data` | Structured per-item record (Wiki/Data/, domain-scoped) — entity, event, or observation with typed frontmatter fields |
@@ -133,7 +155,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 **Vocabulary (closed set):**
 
 | Value | Meaning |
-|---|---|
+| --- | --- |
 | `status/stub` | Pending research, placeholder exists |
 | `status/active` | Current, maintained, load-bearing |
 | `status/current` | In-use / on the current list (domain-content lifecycle — e.g. a lens currently in the kit). Distinct from `status/active`, which marks a maintained knowledge-layer doc. |
@@ -148,7 +170,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 ## Growth Thresholds (Summary)
 
 | Namespace | Threshold | Enforcement |
-|---|---|---|
+| --- | --- | --- |
 | `type/` | HIGH | This contract; changes require spec + consumer updates |
 | `status/` | HIGH | This contract; changes require lifecycle consumer updates |
 | `project/` | HIGH (procedural) | `/new-project` enforces |
@@ -159,7 +181,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 ## Depth Limits (Summary)
 
 | Namespace | Typical | Max |
-|---|---|---|
+| --- | --- | --- |
 | `type/` | 2 | 2 |
 | `status/` | 2 | 2 |
 | `project/` | 2 | 3 (historical tags grandfathered deeper) |
@@ -172,7 +194,7 @@ Most pages carry tags from multiple namespaces. A typical Wiki page has 3+: `typ
 When tempted to go deeper than the max, reach for another namespace first:
 
 | Tempting deep path | Better: multiple tags |
-|---|---|
+| --- | --- |
 | `area/hobby/astronomy/telescopes` | `area/hobby/astronomy` + `topic/telescopes` |
 | `area/work/acorndyne/design/gms` | `area/work/acorndyne` + `project/cachetrack` |
 | `area/territory/riverbank/willow-bend` | `area/territory` + `topic/riverbank` + `topic/willow-bend` |
@@ -189,7 +211,7 @@ Governs the **envelope**: mechanically-verifiable static structure — required 
 Every knowledge-layer file MUST have:
 
 | Element | Requirement |
-|---|---|
+| --- | --- |
 | `type/` tag | Exactly one, from the closed `type/` vocabulary (Part I) |
 | Scope tag | At least one `project/<name>` OR `area/<hierarchy>` |
 | `status/` tag | Exactly one, from the closed `status/` vocabulary **[tightening — lint currently WARNING]** |
@@ -202,7 +224,7 @@ Type-agnostic and destination-agnostic. Everything below adds to it.
 ## Per-Type Additions
 
 | `type/` | Also requires | `sources` |
-|---|---|---|
+| --- | --- | --- |
 | `type/knowledge` | `topic/` — Wiki-hosted only (see Destination Modifiers) | Required |
 | `type/context` | — | Optional (Claude synthesis, not captured substance) |
 | `type/reference` | — | Optional |
@@ -220,7 +242,7 @@ Type-agnostic and destination-agnostic. Everything below adds to it.
 The same `type/` carries slightly different requirements by where it lives.
 
 | Aspect | Wiki-hosted (`{workspace_root}/Wiki/Knowledge`, `Data`, `Contexts`) | Project-hosted (`Projects/<name>/Knowledge`, `System/`) |
-|---|---|---|
+| --- | --- | --- |
 | Scope tag | `area/<hierarchy>`; exception: `type/project-pointer` carries `project/` (Per-Type row) | `project/<name>` |
 | `topic/` on `type/knowledge` | Required, ≥1 **[tightening]** | Optional |
 | Index participation | None — `area/` + `topic/` tags ARE the index | An `index.md` entry for the file exists |
@@ -240,7 +262,7 @@ Provenance is `sources` frontmatter — universal and mechanically checkable. A 
 Two date fields, distinct meanings:
 
 | Field | Meaning | Requirement |
-|---|---|---|
+| --- | --- | --- |
 | `updated` | File last touched — any edit, including mechanical ops (retag, migration, frontmatter fix) | Required |
 | `verified` | Content last reviewed for accuracy — a human or agent confirmed claims are current | Optional |
 
@@ -262,7 +284,7 @@ This contract governs **genuine knowledge-layer documents only** — maintained 
 A file is in a **governed location** only if its vault path matches one of:
 
 | Governed location | What lives there |
-|---|---|
+| --- | --- |
 | `{workspace_root}/System/*.md` and `{workspace_root}/System/Knowledge/**` | Vault knowledge-layer reference/spec/methodology docs |
 | `{workspace_root}/System/Context/**` | System-project Claude working-context docs |
 | `Projects/<name>/Knowledge/**` | Per-project knowledge-layer docs |
@@ -290,7 +312,7 @@ Within a governed location, the file's `type/` determines its tier. Two `type/` 
 **Exemption tiers** — a governed file's `type/` places it in exactly one tier. Lint derives the tier from this table:
 
 | Tier | Lint treatment | `type/` values |
-|---|---|---|
+| --- | --- | --- |
 | **Fully governed** | Invariant Core + the file's Per-Type Additions row | every `type/` in the Per-Type Additions table |
 | **Invariant-core-only** | Invariant Core enforced; Per-Type Additions skipped | `type/recipe`, `type/workout`, `type/dashboard`, `type/hub` — and, by default, any other closed-vocabulary `type/` value in neither the Per-Type Additions table nor the Structure-not-imposed tier |
 | **Structure-not-imposed** | No structural-contract check applies; only Part I tag validity | `type/claude-project`, `type/claude-hub`, `type/claude-wiki`, `type/claude-space`, `type/claude-system`, `type/summary`, `type/scratchpad`, `type/working-notes`, `type/working-doc`, `type/exploration`, `type/playbook` |
@@ -325,7 +347,7 @@ Authority: `/wiki-intake`, `Projects/Router/router-spec.md`, `/session-closeout`
 Eight handoff points; four produce a knowledge-layer file and therefore have a *structural* contract:
 
 | Handoff | Produces a file? | Covered |
-|---|---|---|
+| --- | --- | --- |
 | Wiki intake | Yes | §1 |
 | Project knowledge filing | Yes | §2 |
 | Session capture (`/capture` + closeout query-and-file) | Yes | §4 (absorbs former §3) |
@@ -343,7 +365,7 @@ Every filing-handoff contract has the same fields: **Base** (Part II envelope �
 **Every filing handoff produces the full envelope.** The per-§ *Field derivation* lists only fields whose *value* is handoff-specific — fields not listed still apply (a freshly-filed page takes `status/active`; `updated` = today). Pre-existing enforcer schemas predate this contract and are incomplete; reconciling an enforcer raises its schema to the full envelope:
 
 | Enforcer | Frontmatter fields it currently omits vs. the envelope |
-|---|---|
+| --- | --- |
 | `/wiki-intake` | none — already applies `type/` / `area/` / `topic/` / `status/` / `updated` / `sources` |
 | `router-spec.md` Knowledge Delivery | `status/`, `sources` |
 | `/knowledge-layer` query-and-file (closeout Step 9) | `status/`, `sources`; Wiki-hosted branch also `area/`, `topic/` |
@@ -431,7 +453,7 @@ Source: **SC** = envelope (Part II) · **TT** = tags (Part I) · **HC** = filing
 ### Envelope — Invariant Core (SC)
 
 | Check | Mode | Pass | Severity | Today |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Exactly one valid `type/` tag | Both | M | HIGH | ✓ |
 | ≥1 scope tag (`project/` or `area/`) | Both | M | HIGH | ✓ |
 | Scope tag matches destination | Both | M | HIGH | ✓ |
@@ -445,7 +467,7 @@ These apply only to files in **governed scope** — the Location Gate is the out
 ### Envelope — Per-Type (SC)
 
 | Check | Mode | Pass | Severity | Today |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `type/knowledge` carries `sources` | Both | M | HIGH | ✓ |
 | `type/knowledge` Wiki-hosted carries `topic/` ≥1 | Both | M | HIGH `[tightening]` | ✓ |
 | `type/project-pointer` carries `project/` + `topic/` | Periodic | M | HIGH | ✓ |
@@ -455,7 +477,7 @@ These apply only to files in **governed scope** — the Location Gate is the out
 ### Tag taxonomy (TT — all exist)
 
 | Check | Mode | Pass | Severity | Today |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Namespace membership; closed `type/`·`status/`·`project/` vocab | Both | M | HIGH | ✓ |
 | Depth limits | Both | M | HIGH | ✓ |
 | `area/` · `person/` recognition | Both | M | WARNING | ✓ |
@@ -467,7 +489,7 @@ These apply only to files in **governed scope** — the Location Gate is the out
 ### Structural integrity
 
 | Check | Source | Mode | Pass | Severity | Today |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Broken `[[wikilinks]]` | LINT | Periodic | M | MEDIUM | ✓ |
 | Cross-project references are wikilinks + resolve | LINT | Periodic | M | MEDIUM | ✗ |
 | Stub drift (`type/project-pointer` → missing project) | TT | Periodic | M | HIGH | ✓ |
@@ -482,7 +504,7 @@ The broken-wikilink check covers `[[wikilinks]]` only — `![[embeds]]` excluded
 ### Freshness (SC)
 
 | Check | Mode | Pass | Severity | Today |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Stale — `verified`/`updated` past the window | Periodic | M | WARNING | ✓ |
 | Unverified — `updated` present, `verified` absent | Periodic | M | INFO `[suppressed]` | ◐ |
 
@@ -491,7 +513,7 @@ The broken-wikilink check covers `[[wikilinks]]` only — `![[embeds]]` excluded
 ### Contradiction (LINT — the judgment pass)
 
 | Check | Mode | Pass | Severity | Today |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Claims contradicted by `CLAUDE.md` Current State / other pages | Periodic | J | INFO | ✓ |
 | Hub cross-reference (hub/subproject scopes only) | Periodic | J | INFO | ✓ |
 
@@ -500,7 +522,7 @@ The sole judgment-pass checks — best-effort, not contract-derived, delta-scope
 ### Filing-handoff (HC)
 
 | Check | Mode | Pass | Severity | Today |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Filed file satisfies the full envelope (per the handoff's §) | Filing | — | HIGH | ✓ (`lint.py --filing`, single-file) |
 
 Filing-time validation is `lint.py --filing` — single-file, not part of the periodic split; the same script as the periodic mechanical pass, filing mode.
@@ -518,7 +540,7 @@ A reference from one project's Knowledge into another's must be a `[[wikilink]]`
 ### Tag rules (Part I)
 
 | What to extract | Where | How to parse |
-|---|---|---|
+| --- | --- | --- |
 | Namespace prefixes | "The Namespaces" table, col 0 | Each entry `` `x/<…>` `` → prefix `x`; expect ≥6 |
 | Closed `type/` vocabulary | `type/` › "Vocabulary (closed set)" table, col 0 | Backticked `type/*` values; rows whose Meaning cell says "Deprecated" also feed the deprecated set |
 | Closed `status/` vocabulary | `status/` › first table, col 0 | Backticked `status/*` values |
@@ -529,7 +551,7 @@ A reference from one project's Knowledge into another's must be a `[[wikilink]]`
 ### Envelope rules (Part II)
 
 | What to extract | Where | How to parse |
-|---|---|---|
+| --- | --- | --- |
 | Invariant-core elements | "Invariant Core" table | Each row = one presence/cardinality check; col 0 = element, col 1 = rule; `[tightening]` in col 1 escalates severity |
 | Invariant-core tag validity | "Invariant Core" › "Tag validity" row | Delegates to Part I |
 | Invariant-core body element | "Invariant Core" › "Title" row | Body: exactly one level-1 (`#`) heading |
@@ -556,6 +578,7 @@ Primary consumers: `/lint-knowledge` + `lint.py` (Parts I–II Parsing Contract,
 
 `lint.py` parses this file for BOTH the tag rules (Part I) and the envelope rules (Part II); `main()` points its `taxonomy_path` and `sc_path` at this one file, `rosters_path` at the sibling `tag-taxonomy-rosters.md`. The following must survive any future edit verbatim (the merge may reorder around them, but not alter them):
 
+<!-- markdownlint-disable-next-line MD038 -->
 1. **Exact section headers**, byte-for-byte: `## The Namespaces`; `### \`type/\``; `### \`status/\``; `## Depth Limits (Summary)`; `### \`area/\``; `### \`person/\``; `### \`project/\``; `## Invariant Core`; `## Per-Type Additions`; `## Destination Modifiers`; `## Scope Boundaries` (containing a Location Gate table then an Exemption tiers table, in that order). Do not restate any of these as a line-start header anywhere else in the file — the parsers take the first match.
 2. **`## The Namespaces` must not appear inline** anywhere above its real section (its presence check is unanchored). All other header searches are line-anchored.
 3. **Table shapes:** column counts and backtick formatting per the Parsing Contract. The `type/` vocab table must retain the `**Vocabulary (closed set):**` marker before it and keep "Deprecated" in the `type/raw` Meaning cell. The Exemption tiers table must keep all four rows (Invariant-core-only, Structure-not-imposed, Out of scope non-empty — lint fails loud on any empty tier) with `type/` values in backticks in column 3. The Location Gate table must keep ≥1 backticked glob in column 1.
