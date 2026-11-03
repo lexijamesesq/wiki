@@ -6,6 +6,7 @@ After Knowledge pages have been created, renamed, or deleted, reconcile the corr
 
 - `knowledge_folder_path` — absolute path to the Knowledge folder (or project root for flat variants)
 - `changes` (optional) — list of recent mutations to drive incremental sync:
+
   ```yaml
   changes:
     - action: created | renamed | deleted
@@ -14,6 +15,7 @@ After Knowledge pages have been created, renamed, or deleted, reconcile the corr
       title: <string>          # from frontmatter or H1
       summary: <one-line>      # if known
   ```
+
   If `changes` not provided, full-reconcile mode (slower but exhaustive).
 
 ## Protocol

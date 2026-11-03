@@ -49,6 +49,7 @@ Discipline rules applied on every invocation:
 **Objective.** Noise has negative value — bad entries degrade search, dilute context windows, and make future answers less reliable; misrouted entries are buried where no future query finds them. Every ingress surface produces candidates; without one gatekeeper owning both routing and vault-fit, each surface re-invents partial judgment and the automated lanes accrete write authority nobody audited. This skill is the single point where candidates become vault state: file, queue, or discard — nothing else, no exceptions.
 
 **Desired outcomes** (observable):
+
 1. Every candidate gets exactly one terminal disposition — file / queue / discard — no silent drops, no unaccounted candidates.
 2. Filed content is discoverable via tag queries in its first session and satisfies the full knowledge-contract Part II envelope.
 3. The automated write surface stays deliberately narrow: Knowledge-layer appends/creates + meeting logs (registered playbook) + `Wiki/Queue/` items — nothing else, ever.
@@ -56,6 +57,7 @@ Discipline rules applied on every invocation:
 5. Every run emits the machine-readable extraction report — the audit artifact, the critic rubric's input, and the fixture-eval interface.
 
 **Health metrics — must NOT degrade:**
+
 - Zero automated-mode edits to existing substance (appends/creates only; edits are human-approved, ever — surfacing a conflict is not approval).
 - Zero filings from any trust value other than `registered` (missing or unknown trust ≠ registered).
 - Zero pinned candidates silently discarded.
@@ -66,6 +68,7 @@ Discipline rules applied on every invocation:
 **Strategic context.** The universal gatekeeper of the ingress design — router AND gatekeeper, one skill. Consumers: capture-meeting (pipeline dual-write Tier 1 + unregistered fallback), `/capture` (mid-session, plus `/capture batch` — the boundary entry `/knowledge-layer` query-and-file delegates to), `/wiki-intake` (knowledge-intent branch), the interactive Router (via `/wiki-intake`). Automated capture-lane filing authority is additionally subject to the Phase-3 enablement gate; the Pi lane config owns that gate — when the lane declares it uncleared, automated runs operate queue-only regardless of the matrix.
 
 **Constraints.**
+
 - **Hard:** No enum value other than `registered` grants autonomous filing — unbypassable by construction.
 - **Hard:** Undeclared mode → automated-strictness dispositions (queue-only; no filing, no mutation) + report flag. See Stop rules for the why.
 - **Hard:** Automated mode never mutates existing substance, never writes human surfaces (Personal/Work), never creates Linear issues, never runs the data-correction chain. The matrix's automated column IS the complete automated write authority; everything not listed as "file" queues or discards.
@@ -78,6 +81,7 @@ Discipline rules applied on every invocation:
 **Decision authority.** The disposition matrix (calibration surface §4) IS the authority model — mode × trust × kind, complete and closed. Within it, autonomous: re-grade, vault search, coherence assessment, destination resolution, batching, filing where the matrix says file, queue-item creation via `/queue create-item`, discard logging, report emission. Operator (interactive mode): ambiguity asks, destination overrides, mutation-intent confirmations, borderline-noise asks. The filing-time lint gate (`lint.py --filing`) holds PASS/FAIL authority on filed envelopes.
 
 **Stop rules.**
+
 - No candidates provided → halt. Do not invent candidates.
 - Vault search unavailable (MCP down) → halt; do not assess without vault context. Automated: report FAIL (the orchestrator suppresses the heartbeat).
 - **Undeclared mode → automated-strictness queue-only + `undeclared_mode` report flag.** This REWRITES the previous stop rule ("default to interactive (conservative)"): interactive is now the higher-authority column, so it can no longer be the fallback — a missing declaration must never grant MORE authority. Operator-safety fix.
@@ -88,7 +92,7 @@ Discipline rules applied on every invocation:
 
 The candidate schema, plus the `pinned` marker that carries the pinned rule:
 
-```
+```text
 {
   content:            string        # self-contained after context enrichment
   kind:               enum          # extractor's PROPOSAL; gatekeeper may re-grade
@@ -131,7 +135,7 @@ The candidate schema, plus the `pinned` marker that carries the pinned rule:
 
 Every run emits (both modes):
 
-```
+```text
 { run_id, source, candidates[],
   dispositions[],   # candidate → {file|queue|discard, reasons[], target}
   write_plan,       # automated mode; null in interactive
@@ -145,7 +149,7 @@ Interactive runs additionally present the human-readable summary: filed / queued
 ## Navigation
 
 | Invocation | Input | Output | Playbook |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `assess candidates` | candidate list (schema above) + declared trust/mode | dispositions + extraction report (+ write plan when automated) | `playbooks/assess-candidates.md` |
 | `assess single` | one candidate | same, single-candidate | `playbooks/assess-candidates.md` |
 

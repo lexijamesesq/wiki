@@ -62,7 +62,7 @@ Compose one ordered append per surviving target per run (source order, oldest at
 Every `queue` disposition → `/queue create-item`, one item per queued candidate (within-group conflicts: one item per conflict pair):
 
 | Dominant reason(s) | queue_kind |
-|---|---|
+| --- | --- |
 | `opt-in-gate-absent` (the declaration proposal only — the content itself files to the Wiki-hosted domain home separately and does not wait on the proposal) / proposing a new Data/ record / project-work deferred — INTERACTIVE promotions only; automated project-work discards (task-extraction-unbuilt) | `proposal` |
 | everything else — contradiction (vault or within-group), unregistered trust, unresolved or true-tie resolved-multiple meeting §0.3, `mutation-path-inactive` (current-truth override), `re-grade-forced`, pinned coherence-fail, undeclared mode, automated kind-authority deferral (data-mutation / context-shift) — queue ONLY when the calibration-surface §4 queue-entry gate holds (§0.3: critically important AND legitimately stuck); otherwise discard, logged — the source persists upstream | `disposition` |
 
@@ -77,7 +77,7 @@ An item-write FAIL fails the run loudly (stop rule) — never proceed as if queu
 Per `kind_final`; the matrix cells govern, the owners below execute:
 
 | kind_final | Execution |
-|---|---|
+| --- | --- |
 | durable-knowledge | **New file:** compose the full knowledge-contract Part II envelope (field derivation per knowledge-contract Part III §4; sources from the Provenance vocabulary), write via `write_note`, then run `python3 <skills-dir>/lint-knowledge/lint.py --filing --no-manifest --json --vault-root <vault-root> --contract-path <contract-path> --rosters-path <rosters-path> <target-path>` (sibling `lint-knowledge` skill — same skills directory as this skill; `<contract-path>`/`<rosters-path>` from the global CLAUDE.md's `references.tag_taxonomy`/`references.tag_taxonomy_rosters` keys — the contract and rosters no longer live under the vault). PASS = zero HIGH findings; a `missing-index-entry` MEDIUM on a project-hosted new file is expected (index sync is the post-file step) and does not affect PASS — ignore it. FAIL → fix each HIGH finding, re-run; cap 3; still failing → surface all findings, do not mark complete. **Append:** idempotency-checked, date-attributed suffix via `patch_note`; bump `updated`; verify suffix presence. **Project-hosted:** sync the `index.md` entry (§4 post-file) and report it done. |
 | meeting-log | Only the registered capture-meeting playbook writes these (dual-write branch). A meeting-log candidate arriving here without a registry match → re-grade or queue. |
 | data-mutation | Explicit operator mutation intent (the capture IS a correction statement) → delegate to `/wiki-intake` (data-correction intent — the existing chain owner: Data/ → Knowledge append → Context → Personal/Work). Extraction-inferred → ask/confirm first; confirm → delegate; decline → re-grade or discard per the operator. |

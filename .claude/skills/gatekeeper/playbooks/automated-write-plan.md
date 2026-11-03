@@ -25,7 +25,7 @@ Immediately before planning each append, recheck the target for a `content_hash`
 
 ## Downstream handoff (the contract this plan feeds — not executed here)
 
-```
+```text
 plan (model — this playbook)
   → validate (model — critic gate, capture-rubric v2, separate context)
       FAIL → nothing commits; run reports FAIL; heartbeat suppressed;

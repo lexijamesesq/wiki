@@ -23,6 +23,7 @@ Discipline rules applied on every invocation:
 **Objective.** Automated and semi-automated lanes produce judgment calls no automation may make (per-source trust boundaries, precision-over-recall). Without a queue with an owned signal + an owned verb, those judgments either interrupt the operator at generation time (defeating automation), pile up invisibly in a JSON backlog nobody reads, or get silently auto-resolved (violating decision authority). This skill makes deferred judgment cheap to park, ambiently visible (statusline), and cheap to pay down whenever — and only when — the operator chooses.
 
 **Desired outcomes** (observable):
+
 1. Every queue item is a self-contained adjudication package: kind, source, reasons, scope tags, payload + evidence — the operator decides at triage time without re-deriving context.
 2. Triage never fires on its own; sessions start and end with zero queue-related cost or output. The statusline line is absent at zero and shows (scoped) → All (total) otherwise.
 3. Every triaged item resolves to an explicit operator action (apply / skip / expire / discuss→decision); `status` reflects the outcome the moment it happens.
@@ -30,6 +31,7 @@ Discipline rules applied on every invocation:
 5. Items pending > 30 days surface as expire-candidates (prune-bias); expiry is an operator click, never silent garbage collection.
 
 **Health metrics — must NOT degrade.**
+
 - No auto-fire, anywhere: no orchestrator invokes triage; grep for `/queue triage` in orchestrators should return nothing.
 - Menu is scaffolding, not ceremony: a direct operator instruction bypasses it.
 - Distinct-file writes only; no shared-file mutation across writer classes.
@@ -39,14 +41,17 @@ Discipline rules applied on every invocation:
 **Strategic context.** Session-tier half of the unified ingress model: automated lanes write queue items (their only vault-write surface until the enablement gate clears); the operator triages them on demand. Composes with `/knowledge-layer scope-lint` (disposition-item producer) and the statusline Knowledge Triage Queue line (passive signal). Future: the Slack CHAT lane drains this same queue conversationally. Supersedes the Wiki backlog-JSON intents: explore/triage/promote live here as item kinds.
 
 **Constraints.**
+
 - **Hard:** `status` enum is `pending | resolved | expired` — nothing else. `queue-kind` enum is `disposition | proposal` (collapsed — until reality demands more). Item writes are distinct-file creates, never appends to a shared file. Triage never auto-fires — operator invocation only. Resolution actions execute within the EXISTING decision authority of the skill that executes them — triage grants no new write authority.
 - **Steering:** Slug from the payload topic, not the source lane. Scope tags (`project/*` or `area/*`) are load-bearing — the statusline scoped count and `triage`'s scope resolution read them; an unscoped item surfaces in Wiki scope and in `triage-all`.
 
 **Decision authority.**
+
 - **Autonomous:** item file creation (schema composition, filename, scope-tag derivation from payload); scope resolution + mechanical/judgment classification + item ordering within an invoked triage; marking `resolved`/`expired` AFTER operator adjudication; status reporting.
 - **Escalate to operator:** every triaged item's disposition — apply / skip / expire (and any judgment-class action) is always the operator's call; the skill never adjudicates. Item-write failure → report FAIL to caller (caller decides whether to halt).
 
 **Stop rules.**
+
 - Vault root unresolvable (no `workspace_root` config, no `VAULT_ROOT` env) → halt; report to caller. Do not guess a path.
 - `Wiki/Queue/` does not exist at the resolved root → create-item halts and surfaces (a missing queue dir means the substrate isn't deployed — creating it silently would hide a setup gap); triage and status report zero-state instead.
 - Item write fails or read-back verification fails → report FAIL; never proceed as if written.
@@ -57,7 +62,7 @@ Discipline rules applied on every invocation:
 Per invocation, identify the operation and load the matching playbook:
 
 | Operation | Input | Output | Playbook |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **create-item** | `queue_kind`, `source`, `reasons[]`, scope tags, payload + evidence | One new `Wiki/Queue/` item file (path returned), or FAIL | `playbooks/create-item.md` |
 | **triage** | none (scope from cwd) | menu-guided adjudication of current-project items | `playbooks/triage.md` |
 | **triage-all** | none | menu-guided adjudication of ALL pending items, grouped by scope | `playbooks/triage.md` |

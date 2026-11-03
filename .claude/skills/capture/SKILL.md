@@ -44,12 +44,14 @@ Discipline rules applied on every invocation:
 **Objective.** Sessions produce decisions, findings, corrections, and commitments that exist only in chat history unless captured. Without one operator verb, capture happens ad hoc — inconsistent envelopes, bypassed gatekeeping — or not at all. `/capture` makes mid-session capture one cheap utterance, and guarantees everything it captures crosses the same gatekeeper as every other ingress surface.
 
 **Desired outcomes** (observable):
+
 1. "Capture this" costs the operator one utterance; the skill locates the referent, enriches it to self-containment, and reports the terminal outcome with paths.
 2. Zero pinned candidates silently dropped — every explicit ask ends in a reported file or queue landing.
 3. Every candidate reaches gatekeeper — zero destination writes originate in this skill.
 4. Mid-session capture and closeout query-and-file produce identical envelopes and dispositions — same machinery, two entry points.
 
 **Health metrics — must NOT degrade:**
+
 - Zero direct destination writes from this skill (all vault writes happen inside the gatekeeper's machinery).
 - Every explicit ask yields ≥1 pinned candidate or an in-conversation clarification — never a shrug.
 - The report accounts for every candidate handed off: filed (paths) / queued (item paths + reasons) / discarded (reasons).
@@ -58,16 +60,19 @@ Discipline rules applied on every invocation:
 **Strategic context.** One of the two session-tier entry points into the unified ingress machinery: `/capture` mid-session; `/session-closeout` query-and-file at the boundary, which delegates here via **`/capture batch`** (invoked by `/knowledge-layer` query-and-file per knowledge-contract Part III §4). The closeout preflight capture scan (the self-aware bonus tier — ONE mechanism, attached to the existing boundary) also flows through `batch`.
 
 **Constraints.**
+
 - **Hard:** `mode: interactive` on every handoff, with trust per the source rule (Identity): `registered` for operator-authored session content, `unregistered` for third-party pasted/forwarded material — never `registered` for claims the operator didn't author. A subagent or background worker invoking this machinery has no human in its loop and MUST declare `mode: automated` instead — the gatekeeper then queues rather than files.
 - **Hard:** pinned semantics — an explicit ask pins inclusion; the pin travels on the candidate (`pinned: true`).
 - **Hard:** operator destination overrides — contract-legal wins silently; contract-violating gets the violated rule stated in one sentence + explicit confirmation (confirmed = user-initiated action; the constraint system binds autonomous action only). a filing-time lint gate FAIL on a user-chosen destination → fix the envelope, keep the destination — orthogonal concerns.
 - **Steering:** enrich to self-containment before handoff — resolve pronouns, name subjects and systems, date the claims; the candidate must survive with zero session context. Don't over-sweep: a pointed "capture this" takes the referent, not the whole conversation.
 
 **Decision authority.**
+
 - **Autonomous:** referent location; context enrichment; kind/scope/topic proposal (via the calibration surface); `content_hash` computation; handoff; report relay; reconciliation check.
 - **Operator:** what "this" means when ambiguous (ask, don't guess); destination overrides; mutation-intent confirmations and other asks relayed from the gatekeeper; whether a broad sweep's unpinned extras get handed off.
 
 **Stop rules.**
+
 - No discernible referent for a pointed ask → ask the operator; never guess, and never sweep the whole session as a fallback for a pointed ask.
 - Gatekeeper unavailable → halt and report; NEVER file directly as a fallback — the gatekeeper is the point.
 - `batch` invoked with zero items → report nothing-to-do to the caller; not an error.
@@ -78,7 +83,7 @@ Discipline rules applied on every invocation:
 Per invocation, identify the operation and load the matching playbook:
 
 | Operation | Input | Output | Playbook |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `capture` (default) | operator utterance + the live conversation | terminal report: filed / queued / discarded, with paths + reasons | `playbooks/extract.md` |
 | `batch` | pre-extracted items (boundary callers: `/knowledge-layer` query-and-file, closeout preflight scan) | same report, returned to the caller | `playbooks/batch.md` |
 

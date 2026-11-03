@@ -43,6 +43,7 @@ Surface it FIRST, in the same plain register as the opening frame — name the s
 > Six of these are stuck on the same thing — they can't tell where [domain] material belongs. That's usually a sign the page itself needs to say more about what lives there, not six separate calls. Want me to log that as a fix first, or just walk them?
 
 AskUserQuestion:
+
 - **Log the fix first** — files it via the same policy-landing pattern the per-item flow uses below, then continues to the items
 - **Just walk them** — skip straight to the menu
 - **Skip for now**

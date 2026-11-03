@@ -26,6 +26,7 @@ Discipline rules applied on every invocation:
 **Objective.** Captures accumulate in `Inbox/` mixing strategic seeds, operational notes, personal items, and meta observations. Without classification and routing, strategic seeds get buried and captures rot unprocessed. This skill materializes the Router as an operator-present operation: classify every capture, match it to a destination, deliver to that destination's intake entry point, and clear the Inbox — in a single session.
 
 **Desired outcomes** (observable):
+
 1. **Zero silent drops:** every capture produces exactly one of — a filed artifact, a queue item, or an explicit halt-and-ask. (The queue path counts only when the item's body carries the full verbatim capture.)
 2. Deliveries land at destination intake entry points per runtime-read contracts — never at destination internals, never from cached knowledge.
 3. Inbox files are deleted only after confirmed delivery with verified provenance, under operator confirmation.
@@ -33,6 +34,7 @@ Discipline rules applied on every invocation:
 5. Every run ends with a session summary auditable against the spec's output schema — including what remained in the Inbox and why.
 
 **Health metrics — must NOT degrade.**
+
 - Zero captures deleted without confirmed delivery + verified provenance + operator confirmation.
 - Zero mutations of capture bodies (additive frontmatter stamps only).
 - Zero Wiki-internal decisions made in Router context (per the classify-match-deliver boundary, above).
@@ -42,14 +44,17 @@ Discipline rules applied on every invocation:
 **Strategic context.** The first materialization of the Router spec as an invocable skill, and the first resident of the vault-root skills directory (visible to every vault session via ancestor-walking). Session-tier half of the two-lane ingress statement: until a scheduled Router lane is declared as a named amendment, Inbox processing is interactive-Router only. The spec's pre-architecture patterns (a strategy-seed creation route, a team-activity-log route, Slack signal extraction) remain documented spec behavior — this skill executes them by reference; their migration to destination intake skills is separate work.
 
 **Constraints.**
+
 - **Hard:** Never delete an undelivered capture. Never modify a capture's body. Never merge captures (consolidation is not the Router's job). Never deliver the Knowledge axis to a destination without `knowledge_intake: true` in its CLAUDE.md frontmatter — absence signals opt-out, not oversight. Wiki-axis → `/wiki-intake` only. Queue payloads carry the full verbatim capture. Contracts runtime-read. Interactive-only — no scheduled invocation path.
 - **Steering:** Low confidence → queue or ask rather than guess. Prefer surfacing borderline items over silent misfiling. Multi-category captures → present all plausible destinations. Taxonomy, detection criteria, and signal rules come from the spec — do not improvise variants.
 
 **Decision authority.**
+
 - **Autonomous:** classification + confidence assessment; two-axis (Task/Knowledge) evaluation; destination matching; delivery execution per runtime contracts; queue-item creation; sweep-plan and summary composition; additive `routed` frontmatter stamp on retained-but-delivered captures.
 - **Operator:** every Inbox deletion (per-file, or batch via approved sweep plan); every discard (superseded/noise — always explicit, always logged, never autonomous); ambiguous or multi-category routing; captures whose destination structure is missing; any capture referencing people, meetings, or decisions the Router lacks context on.
 
 **Stop rules.**
+
 - Vault root unresolvable (no `workspace_root` config, no `VAULT_ROOT`) → halt; do not guess a path.
 - A capture plausibly belongs to 2+ categories or destinations at similar confidence → stop routing it. If the operator can resolve it in a sentence, ask now (they are present); if it needs a design conversation or future judgment, queue it.
 - A capture references context the Router doesn't have → ask or queue; never guess.
@@ -62,7 +67,7 @@ Discipline rules applied on every invocation:
 Per invocation, identify the operation and load the matching playbook:
 
 | Operation | Input | Output | Playbook |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **process** | none (optional `today`) | Every Inbox capture dispositioned + session summary | `playbooks/process.md` |
 | **route-one** | Capture filename in `Inbox/` | One capture dispositioned + per-item report | `playbooks/route-one.md` |
 
