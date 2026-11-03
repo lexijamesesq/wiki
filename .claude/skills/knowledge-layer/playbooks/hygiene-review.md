@@ -3,9 +3,12 @@
 **LOAD BOUNDARY:** This file is loaded ONLY by a fresh subagent invocation given one doc + the anti-pattern definitions. The scan path (`hygiene.md`) NEVER loads this file. The load boundary IS the structural self-evaluation guard per `[[composable-skills-methodology]]`.
 
 The orchestrator (typically `/session-closeout`) spawns a critic subagent for each doc flagged as `for_review` by the scan path. The subagent reads:
+
 1. This file (the review rubric)
-2. The doc being reviewed
+2. The doc being reviewed, including its `update` frontmatter field
 3. Nothing else (no scan reasoning, no session context, no list of other docs)
+
+**Read the doc's `update` first.** In an `append` file, dated sections added over time are the declared shape: patterns 1 and 4 PASS by definition. In `append` and `never` files a suggested fix may not change existing body text; suggest a mode change or a successor file instead.
 
 The subagent returns a per-doc verdict; the orchestrator decides how to act. Iteration cap 3 per doc.
 
@@ -44,7 +47,7 @@ For each of the seven anti-patterns, evaluate the doc independently:
 - Look for: doc length >300 lines AND lack of clear top-level structure (e.g., no section headers to navigate by, or sections so long they need their own structure).
 - Note: long docs are not inherently bad; structure is what matters.
 - Verdict: HIT if both length + lack of structure; PASS otherwise.
-- **Suggested fix:** split into multiple docs OR add structural headers; if splitting, also update the Knowledge index.
+- **Suggested fix:** split into multiple docs OR add structural headers; a split-off doc gets its own description and a `related` link back.
 
 ### 6. Stale content
 

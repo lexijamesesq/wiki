@@ -1,42 +1,39 @@
 # Playbook: scope-lint
 
-Run the mechanical knowledge-integrity lint over the session's touched scope at closeout. Stateless, ~$0 (pure Python, no model in the lint pass). Envelope HIGHs on session-created files get fixed inline; everything else routes to the operator-judgment queue as disposition items.
+Run the contract lint over the knowledge files this session touched, at closeout. No model in the lint pass. Frontmatter findings on files the session created or edited get fixed inline; everything else is listed for the closeout summary.
 
 ## Input
 
-- `scope_paths` — the vault paths this session touched (files or directories; the orchestrator knows them from session-type detection)
-- `created_paths` — the subset of `scope_paths` this session CREATED (inline-fix authority applies only here)
-- `vault_root` — resolved via the `workspace_root` config key or `VAULT_ROOT` env
+- `scope_paths` — the vault paths this session touched (files or directories)
+- `created_paths` — the subset of `scope_paths` this session CREATED
+- `vault_root` — resolved via the `workspace_root` config key
 
 ## Protocol
 
-1. **Run the linter** — `lint.py` lives in the sibling `lint-knowledge` skill (same skills directory as this skill). Resolve `--contract-path` from the global CLAUDE.md's `references.tag_taxonomy` key and `--rosters-path` from its `references.tag_taxonomy_rosters` key, never omit either — neither `knowledge-contract.md` nor the real `tag-taxonomy-rosters.md` lives under `vault_root` any more (the contract ships in the wiki repo's `spec/`; the real rosters are declared in dotty-private, blueprint-applied to a machine-fixed path), so an unflagged call falls back to `lint.py`'s own pre-key default and fails loud:
+1. **Keep only knowledge files.** From `scope_paths`, keep paths under a `Knowledge/` folder or `{workspace_root}/Wiki/Contexts/`. Drop everything else (CLAUDE.md, `overview.md`, `Wiki/Data`, `Wiki/Queue`, Personal/Work). Nothing left → report `scope-lint: no knowledge files touched` and stop.
+
+2. **Run the lint** — `contract_lint.py` lives in the sibling `knowledge-description` skill (same skills directory as this skill):
 
    ```bash
-   python3 <skills-dir>/lint-knowledge/lint.py --no-manifest --json \
-       --vault-root <vault_root> --contract-path <resolved from references.tag_taxonomy> \
-       --rosters-path <resolved from references.tag_taxonomy_rosters> \
-       <scope_paths...>
+   python3 <skills-dir>/knowledge-description/scripts/contract_lint.py --cutover <created knowledge paths...>
+   python3 <skills-dir>/knowledge-description/scripts/contract_lint.py <other touched knowledge paths...>
    ```
 
-   `--no-manifest` is mandatory: a scope-lint is a stateless per-session pass and must not touch the periodic mode's manifest/delta state (non-overlap with `/lint-knowledge`).
+   New files must already be free of the retired keys (`tags`, `verified`, `integration`, frontmatter `sources`), so they get `--cutover`. Files that existed before the session may still carry those keys until the one-time cutover removes them; lint them without the flag. Exit `0` on both → report `scope-lint: clean, N files` and stop.
 
-2. **Parse findings** from the JSON output. If the scope contains no lintable files or zero findings, report one line (`scope-lint: clean, N files`) and stop.
+3. **Partition and act** on the `file: rule: message` lines:
+   - **Files this session created or edited** → fix the frontmatter now (`Edit`): a missing or stale `description` (write it per the `knowledge-description` skill), a missing or invalid `update`, a malformed `related` entry, a bad `updated` date. Frontmatter is editable under every update mode. Re-run step 2 on the fixed files to confirm.
+   - **Files the session only read** → do not modify. List them with their findings for the closeout summary.
 
-3. **Partition and act:**
-   - **Envelope HIGH findings on `created_paths`** → fix inline NOW. These are frontmatter-level structural-envelope repairs (missing `type/` or scope tag, missing `status/active`, missing/malformed `updated`, missing `sources`) on files this session made — autonomous, within this skill's existing decision authority. Fix via `mcp__obsidian__update_frontmatter`, then re-run step 1 on the fixed files to confirm the HIGHs cleared.
-   - **All other findings** — HIGHs on pre-existing files, MEDIUMs and WARNINGs anywhere — → queue items via `/queue create-item` with `queue_kind: disposition`, `source: scope-lint`, `reasons` from the finding text, scope tags from the affected file's own scope tag. **Batch all findings on the same file into ONE item** — the operator adjudicates files, not line numbers.
-
-4. **Report** to the orchestrator: files linted, findings by severity, inline fixes applied (with confirmation they cleared), queue items created (paths).
+4. **Report** to the orchestrator: files linted, fixes applied (confirmed clean on re-run), and the remaining findings by file.
 
 ## Discipline
 
-- **Inline-fix authority is scoped to session-created files and frontmatter-level repairs.** Findings on pre-existing files are out-of-session-scope docs — flag, don't modify (same escalation rule as the rest of this skill); the queue item is the flag. Body-content findings even on created files (e.g. contradiction candidates) go to the queue too — this playbook's autonomy ends at the envelope.
-- **No model in the lint pass.** Judgment enters only at the partition step and the fix composition. Keep it that way — the mechanical pass being free is what makes running it every closeout viable.
-- **Don't lint the queue.** `Wiki/Queue/` is outside the knowledge-contract Part II Location Gate; exclude it from `scope_paths` if the session touched it.
+- **Inline-fix authority is frontmatter on files this session created or edited.** Body changes are hygiene's, under the file's update mode.
+- **No model in the lint pass.** Judgment enters only at the partition step and the fix composition.
 
 ## What this playbook does NOT do
 
-- Does NOT run full-corpus scans or manage the manifest — that's `/lint-knowledge` (periodic mode).
-- Does NOT adjudicate queued findings — the queue drain surfaces them to the operator.
-- Does NOT gate filing — the filing-time lint gate in `query-and-file` already ran for new Knowledge pages; scope-lint is the closeout backstop across the whole touched scope.
+- Does NOT run whole-corpus scans — that's `/lint-knowledge`.
+- Does NOT create queue items; remaining findings go in the closeout summary for the operator.
+- Does NOT gate filing — the gatekeeper's lint already ran on files it filed; scope-lint is the closeout backstop across everything the session touched.
