@@ -8,9 +8,7 @@ description: >-
   item), or discard (logged) — under the two-axis trust/mode authority model.
   No candidate bypasses it; no extractor writes destinations. Triggers on
   "/gatekeeper assess candidates" or "/gatekeeper assess single".
-argument-hint:
-  - "assess candidates"
-  - "assess single"
+argument-hint: "assess candidates | assess single"
 context: fork
 allowed-tools:
   - Task

@@ -10,10 +10,7 @@ description: >-
   "/capture batch". Triggers on "/capture", "capture this", "capture that",
   "capture this decision ...", or a batch delegation from /knowledge-layer
   query-and-file.
-argument-hint:
-  - "(no argument — sweep the live conversation)"
-  - "<what to capture — e.g. 'this decision about X'>"
-  - "batch <items>"
+argument-hint: "(no argument — sweep the live conversation) | <what to capture — e.g. 'this decision about X'> | batch <items>"
 allowed-tools:
   - Skill
   - Task
