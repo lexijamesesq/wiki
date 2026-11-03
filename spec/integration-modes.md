@@ -55,10 +55,18 @@ that does not carry it. Files that still carry the older `integration:` field ar
 `current-truth` → `replace` and `evolution` → `append` until that field is removed at
 cutover.
 
-How the mode is held to: for interactive sessions the field is the instruction, and the
-contract lint (`knowledge-description` skill, run on demand) reports violations. For
-unattended writers (eve agents), the vault tools check the mode on every write; that
-check lands with the eve vault-tool change and is not yet in force.
+What reads the field today, and what does not:
+
+- Interactive sessions: the field is the instruction. The contract lint
+  (`contract_lint.py` in the `knowledge-description` skill, landing with the Studio kit)
+  checks that `update` is present and one of the three values; nothing today checks that an
+  edit respected the mode. That is the writer's own discipline until the check below exists.
+- Unattended writers (eve agents): the vault tools will refuse a write that breaks the mode.
+  That check is the eve vault-tool change and is not yet built.
+- The automated filer in this repo (`gatekeeper`, `automated-write-plan`) still decides by
+  `integration:` and the §2 class defaults; it does not read `update`. Until it is evolved to
+  read `update`, it must not run against files marked `replace` or `never`. Today it runs
+  against nothing: the capture and maintenance lanes that invoked it are retired.
 
 ## §4 Write shape × authority
 
