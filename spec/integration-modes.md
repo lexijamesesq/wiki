@@ -3,7 +3,7 @@ tags:
   - type/spec
   - project/system
   - status/active
-updated: '2026-07-10'
+updated: '2026-11-03'
 ---
 
 # Integration Modes — Destination Write Discipline
@@ -41,7 +41,6 @@ Derived from the architecture, not new policy:
 | Destination class | Serves | Encoded where |
 | --- | --- | --- |
 | {workspace_root}/Wiki/Knowledge + project Knowledge/ | evolution | append-bias mutation discipline; consolidation human-approved |
-| Registered meeting logs | evolution | rolling log by construction (`type/meeting-capture`) |
 | {workspace_root}/Wiki/Contexts | current-truth | update-on-shift; authority hierarchy (context page wins conflicts) |
 | Wiki/Data | current-truth | typed records of tracked state; correction chain |
 | Personal/Work pages | current-truth | stewardship patches facts in place; structure human-owned |
@@ -50,10 +49,11 @@ Derived from the architecture, not new policy:
 
 Every knowledge file declares its own mode in the `update` frontmatter field
 (`append` | `replace` | `never`, defined in `spec/knowledge-files.md`). That field is
-what a writer reads at write-plan time; the §2 class defaults are the fallback for a file
-that does not carry it. Files that still carry the older `integration:` field are read as
-`current-truth` → `replace` and `evolution` → `append` until that field is removed at
-cutover.
+what a writer reads at write-plan time. A knowledge file without it breaks the contract, and a
+writer treats it as not appendable. For knowledge files and context pages the field governs;
+the §2 class defaults still govern destinations that carry no `update` field (`Wiki/Data`,
+Personal/Work pages). The older `integration:` field is no
+longer read; the cutover removes it.
 
 What reads the field today, and what does not:
 
@@ -64,18 +64,17 @@ What reads the field today, and what does not:
 - Unattended writers (eve agents): the vault tools will refuse a write that breaks the mode.
   That check is the eve vault-tool change and is not yet built.
 - The filer in this repo (`gatekeeper`) reads `update` before any append to an existing file,
-  in both modes (`assess-candidates`, update-mode guard): `replace` and `never` targets take a
-  queue item, never an append. The check sits in the gatekeeper because the gatekeeper is what
-  writes; the session that invoked `/capture` or `/wiki-intake` never sees the destination. The
-  older integration-mode guard (`integration:` and the §2 class defaults) still runs after it in
-  automated mode, whose path (`automated-write-plan`) runs against nothing today: the capture
-  and maintenance lanes that invoked it are retired.
+  in both modes (`assess-candidates`, update-mode guard): `replace`, `never` and missing
+  `update` take a queue item, never an append. The check sits in the gatekeeper because the
+  gatekeeper is what writes; the session that invoked `/capture` or `/wiki-intake` never sees
+  the destination. Automated mode (`automated-write-plan`) plans writes and applies none: the
+  capture and maintenance lanes that applied its plans are retired.
 
 ## §4 Write shape × authority
 
 | Destination mode | Interactive | Automated |
 | --- | --- | --- |
-| evolution | append, per the calibration matrix | append, per the calibration matrix (Knowledge-layer write plan `{target, pre_state_hash, append_suffix}` — overwrite structurally impossible; registered meeting logs are playbook-owned) |
+| evolution | append, per the calibration matrix | append, per the calibration matrix (Knowledge-layer write plan `{target, pre_state_hash, append_suffix}` — overwrite structurally impossible) |
 | current-truth | the surface's own discipline (update-on-shift; correction chain on explicit intent; stewardship patch) | **validated-mutation path (§5)** once active; queue until then. Registered trust only — `automated + unregistered` queues always; the unregistered-trust line is untouched by activation |
 
 Personal/Work pages carry no automated write authority in either mode — human-owned

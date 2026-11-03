@@ -1,6 +1,6 @@
 # Playbook: assess-candidates
 
-Protocol for `assess candidates` and `assess single` (a single candidate is a batch of one). Load `Wiki/spec/calibration-surface.md` (vault spec layer, vault-root-relative) before the first candidate — every judgment below (kind definitions, dimensions, thresholds, the disposition matrix, resolution guidance, worked examples) lives there and is referenced, never restated.
+Protocol for `assess candidates` and `assess single` (a single candidate is a batch of one). Load `spec/calibration-surface.md` (this plugin's root) before the first candidate — every judgment below (kind definitions, dimensions, thresholds, the disposition matrix, resolution guidance, worked examples) lives there and is referenced, never restated.
 
 ## 0. Validate the invocation
 
@@ -14,7 +14,7 @@ Protocol for `assess candidates` and `assess single` (a single candidate is a ba
 
 Read `content` against the proposed `kind` (calibration surface §3). Wrong proposal → re-grade; full authority, any kind → any kind.
 
-**Lattice rule (automated mode):** any re-grade INTO {durable-knowledge, meeting-log} from any other kind → force disposition `queue` with reason `re-grade-forced`, regardless of the new kind's matrix cell. Re-grades among queue-bound kinds, or into `noise`, execute normally. Interactive mode: re-grade freely; the new kind's interactive column governs.
+**Lattice rule (automated mode):** any re-grade INTO durable-knowledge from any other kind → force disposition `queue` with reason `re-grade-forced`, regardless of the new kind's matrix cell. Re-grades among queue-bound kinds, or into `noise`, execute normally. Interactive mode: re-grade freely; the new kind's interactive column governs.
 
 Record `{kind_proposed, kind_final, regrade_forced: bool}` per candidate for the report.
 
@@ -22,8 +22,8 @@ Record `{kind_proposed, kind_final, regrade_forced: bool}` per candidate for the
 
 One search pass feeds BOTH routing and assessment:
 
-1. **Scope determination** — verify or derive `scope_hint`: project (`project/*`) or Wiki (`area/*`)? Tag search (`mcp__obsidian__search_notes` with `searchFrontmatter` on candidate area/topic/project tags) + content search on key terms.
-2. **Target search** — existing docs answering the candidate's question: tag matches, content matches, path check on the natural destination.
+1. **Scope determination** — verify or derive `scope_hint`: a project (a folder under `{projects_root}`, or `{workspace_root}/System`) or a Wiki area (a `{workspace_root}/Wiki/Contexts/<area>-context.md` page)? Read the candidate project's `description` in its CLAUDE.md frontmatter, or the area's context page. A project scope claim, when one exists, resolves scope (calibration surface §5).
+2. **Target search** — existing docs answering the candidate's question. Run the describe tool (`knowledge-description` skill) over the scoped Knowledge folder and read the descriptions; `Grep` that folder's file contents for the candidate's `search_terms`; follow `related` links from the closest hits; check the natural destination's path. Wiki-hosted files are named `<area>-<subject>.md`, so `Glob` `{workspace_root}/Wiki/Knowledge/<area>-*.md` lists an area's files.
 3. **Relationship** — per related doc: updates / extends / contradicts / none. Apply calibration surface §5's "dated accretion is not contradiction" distinction.
 
 Retain the evidence (paths, matched queries, quoted lines). It goes into the report and, verbatim, into any queue item.
@@ -40,9 +40,8 @@ Evaluate ALL applicable conditions and collect ALL reasons — never stop at the
 - coherence: clear fail (→ noise path) vs doubtful-at-the-bar (automated → **discard, logged with reason** per calibration surface §2 / §0.1 — NOT queue; queue only if §0.3's entry condition is met; interactive → ask)
 - contradiction with existing vault content — include BOTH versions in the payload
 - destination resolution (durable-knowledge only): resolved-unique / resolved-multiple / unresolved (judgment: calibration surface §5). Mechanical consequence (calibration surface §4 cell + §5): automated files on resolved-unique OR resolved-multiple's defensible best home (note the alternative home in the entry); unresolved → queue only if §0.3, else discard logged (`placement-unresolved`). Interactive: resolved-unique → file; resolved-multiple / unresolved → ask.
-- update-mode guard (both modes, before any append to an existing file): read the destination's `update:` frontmatter ([[integration-modes]] §3). `replace` or `never` → disposition `queue`, reason `update-mode-<value>`, never an append; `append` → continue to the next guard. `update` absent → derive it from the old marker, `integration:` if set, else the destination's §2 class default: `current-truth` → `queue`, reason `update-mode-unset-current-truth`; `evolution` → continue. No destination escapes the check for lacking the new field. The destination is read here, in this skill, before the write: the calling session never sees the target.
-- integration-mode guard (automated, before any append): read the destination's `integration:` frontmatter override ([[integration-modes]] §3; class default §2). `integration: current-truth` target → mutation surface → disposition `queue`, reason `mutation-path-inactive`, until the validated-mutation path is active ([[integration-modes]] §4–§5 own the activation state) — never an automated append to a current-truth surface. Evolution target → proceed to append.
-- project-hosted opt-in gate: read the destination project's CLAUDE.md frontmatter via `get_frontmatter`; is `knowledge_intake: true`? Absent or false → the destination re-resolves to the Wiki-hosted domain home (`area/*` + `topic/*`, no opt-in required) and the content files there — calibration surface §5: a missing declaration never black-holes content — AND the declaration proposal queues separately, reason `opt-in-gate-absent` (interactive: the operator may add `knowledge_intake: true` to the project's frontmatter now; re-check, then proceed project-hosted).
+- update-mode guard (both modes, before any append to an existing file): Read the destination's `update` frontmatter field (`spec/knowledge-files.md`; integration-modes §3). `append` → continue. `replace` or `never` → disposition `queue`, reason `update-mode-<value>`, never an append. `update` absent → the file breaks the contract; disposition `queue`, reason `update-mode-unset`, never an append. Interactive mode may resolve a `replace` target with the operator instead: they can direct an in-place rewrite, which is a user-initiated action (Interactive override); a `never` target takes a successor file, never a body change. The destination is read here, in this skill, before the write: the calling session never sees the target.
+- project-hosted opt-in gate: Read the destination project's CLAUDE.md frontmatter; is `knowledge_intake: true`? Absent or false → the destination re-resolves to the Wiki-hosted domain home (`{workspace_root}/Wiki/Knowledge/`, no opt-in required) and the content files there — calibration surface §5: a missing declaration never black-holes content — AND the declaration proposal queues separately, reason `opt-in-gate-absent` (interactive: the operator may add `knowledge_intake: true` to the project's frontmatter now; re-check, then proceed project-hosted).
 - re-grade forced (step 1)
 - idempotency (appends): target already contains an entry matching `content_hash` or attribution+date → disposition `discard`, reason `duplicate`
 - pinned + coherence-fail → disposition `queue` (queue-kind `disposition`) with a note naming the failed dimensions — never silent discard
@@ -65,36 +64,59 @@ Every `queue` disposition → `/queue create-item`, one item per queued candidat
 | Dominant reason(s) | queue_kind |
 | --- | --- |
 | `opt-in-gate-absent` (the declaration proposal only — the content itself files to the Wiki-hosted domain home separately and does not wait on the proposal) / proposing a new Data/ record / project-work deferred — INTERACTIVE promotions only; automated project-work discards (task-extraction-unbuilt) | `proposal` |
-| everything else — contradiction (vault or within-group), unregistered trust, unresolved or true-tie resolved-multiple meeting §0.3, `mutation-path-inactive` (current-truth override), `re-grade-forced`, pinned coherence-fail, undeclared mode, automated kind-authority deferral (data-mutation / context-shift) — queue ONLY when the calibration-surface §4 queue-entry gate holds (§0.3: critically important AND legitimately stuck); otherwise discard, logged — the source persists upstream | `disposition` |
+| everything else — contradiction (vault or within-group), unregistered trust, unresolved or true-tie resolved-multiple meeting §0.3, `update-mode-<value>` / `update-mode-unset`, `re-grade-forced`, pinned coherence-fail, undeclared mode, automated kind-authority deferral (data-mutation / context-shift) — queue ONLY when the calibration-surface §4 queue-entry gate holds (§0.3: critically important AND legitimately stuck); otherwise discard, logged — the source persists upstream | `disposition` |
 
-Pass to create-item: `queue_kind`; `source` = this run's source; `reasons[]` = ALL collected reasons; scope tags from the resolved or hinted scope; evidence = the step-2 search evidence plus attribution + provenance (+ both gradings when re-graded, both versions when conflicting) — all of which lands in the item's `## Mechanics` section, not the ask.
+Pass to create-item: `queue_kind`; `source` = this run's source; `reasons[]` = ALL collected reasons; `scope` from the resolved or hinted scope; evidence = the step-2 search evidence plus attribution + provenance (+ both gradings when re-graded, both versions when conflicting) — all of which lands in the item's `## Mechanics` section, not the ask.
 
 **The payload is a human ask, not a data dump.** This playbook is the only party holding both the candidate and the reasons, so it composes the three parts create-item requires (create-item.md § The human-question test): *what this is* — the candidate's content in plain terms; *why I'm stuck* — the collected reasons translated into the specific fork only the operator can close (e.g. `resolved-multiple` becomes "this could live with your X notes or your Y notes and I can't tell which"; `unregistered trust` becomes "this came from pasted third-party material, so I won't file it as your knowledge without your say-so"); *what your answer changes* — each plausible answer mapped to the disposition it triggers, consequences first. Reason codes, kind names, trust levels, and check ids never appear in the ask. The title handed over is the plain question itself.
 
 An item-write FAIL fails the run loudly (stop rule) — never proceed as if queued.
 
-## 7. Execute — interactive mode (knowledge-contract Part III §4)
+## 7. Execute — interactive mode
 
 Per `kind_final`; the matrix cells govern, the owners below execute:
 
 | kind_final | Execution |
 | --- | --- |
-| durable-knowledge | **New file:** compose the full knowledge-contract Part II envelope (field derivation per knowledge-contract Part III §4; sources from the Provenance vocabulary), write via `write_note`, then run `python3 <skills-dir>/lint-knowledge/lint.py --filing --no-manifest --json --vault-root <vault-root> --contract-path <contract-path> --rosters-path <rosters-path> <target-path>` (sibling `lint-knowledge` skill — same skills directory as this skill; `<contract-path>`/`<rosters-path>` from the global CLAUDE.md's `references.tag_taxonomy`/`references.tag_taxonomy_rosters` keys — the contract and rosters no longer live under the vault). PASS = zero HIGH findings; a `missing-index-entry` MEDIUM on a project-hosted new file is expected (index sync is the post-file step) and does not affect PASS — ignore it. FAIL → fix each HIGH finding, re-run; cap 3; still failing → surface all findings, do not mark complete. **Append:** idempotency-checked, date-attributed suffix via `patch_note`; bump `updated`; verify suffix presence. **Project-hosted:** sync the `index.md` entry (§4 post-file) and report it done. |
-| meeting-log | Only the registered capture-meeting playbook writes these (dual-write branch). A meeting-log candidate arriving here without a registry match → re-grade or queue. |
+| durable-knowledge | **New file** or **append**: see Filing below. |
 | data-mutation | Explicit operator mutation intent (the capture IS a correction statement) → delegate to `/wiki-intake` (data-correction intent — the existing chain owner: Data/ → Knowledge append → Context → Personal/Work). Extraction-inferred → ask/confirm first; confirm → delegate; decline → re-grade or discard per the operator. |
-| context-shift | Update the `{workspace_root}/Wiki/Contexts/` domain context page per the update-on-shift discipline (autonomous). Never a project CLAUDE.md. |
+| context-shift | Update the `{workspace_root}/Wiki/Contexts/` domain context page through the `context-page` skill (autonomous; the page is `update: replace`). Never a project CLAUDE.md. |
 | personal-action | Append to the existing Personal/Work task section per router-spec's personal-action append format (the format owner). Section absent → queue (`disposition`) — never create the section. |
 | project-work | Create the Linear issue per `linear-discipline`'s Integrity on Creation: duplicate check, falsifiable acceptance criteria, relations as Linear relations, project + priority matching the work. |
 | noise | Discard, logged in the report. Borderline → ask. |
 
-## 8. Execute — automated mode (knowledge-contract Part III §5)
+### Filing (durable-knowledge)
 
-Load `automated-write-plan.md`. Summary of the contract: this skill emits the write plan + queue items + report; the orchestration tier validates (critic gate, capture-rubric v2), applies (deterministic script), and verifies (the filing-time lint gate / suffix checks). No destination write happens in this context — the skill's only direct vault writes in automated mode are `/queue create-item` files.
+`<lint>` below is `python3 <skills-dir>/knowledge-description/scripts/contract_lint.py`, where `<skills-dir>` is the directory holding this skill's folder.
+
+**New file.**
+
+1. Place it. Project-hosted: `<project>/Knowledge/<Folder>/`, where `<Folder>` is the type folder that fits (`spec/knowledge-files.md` › Structure: `Methods/` how we do things, `Reference/` how a system is built and what is true now, `Research/` findings about the outside world, `Decisions/` choices and their reasoning, `Records/` dated frozen material) or a folder the project added. Wiki-hosted: `{workspace_root}/Wiki/Knowledge/<area>-<subject>.md`, flat, no type folders; `<area>` matches the area's context page name. Kebab-case file names.
+2. Compose it: frontmatter with exactly the four fields, then the body.
+   - `description` — written per the `knowledge-description` skill: true of this file, specific to it, in the words someone would search with.
+   - `update` — `append` for a file that will accrete dated entries, `replace` for one that states what is true now and is rewritten to stay current, `never` for a dated record that must not change.
+   - `related` — `[]`, or aliased links `"[[target|short reason]]"` to files the step-2 search found this one directly extends or depends on.
+   - `updated` — today, `YYYY-MM-DD`.
+   - Body: one `# Title`, the content, and a bottom `## Sources` section (Sources, SKILL.md).
+   - No `tags`, `verified`, `integration`, or frontmatter `sources`: those keys are retired.
+3. Write it with `Write`, then run `<lint> --cutover <path>`. PASS = exit 0. FAIL → fix each finding, re-run; cap 3; still failing → surface all findings, do not mark complete.
+
+**Append** (only to an `update: append` target; the guard in step 4 has already held):
+
+1. Re-run the idempotency check against a fresh `Read` of the target.
+2. With `Edit`, add the entry under its parent heading, or as a new dated section at the end of the body above `## Sources`: date attribution plus `source_attribution`. Existing text stays unchanged.
+3. Add the entry's Sources bullets under the existing `## Sources` heading (create the heading at the bottom if absent).
+4. Set `updated` to today. Refresh `description` if the entry changes what the file is about (knowledge-description skill).
+5. Read the file back to confirm the entry is present, then run `<lint> <path>` (no `--cutover`: a file written before the cutover still carries the retired keys, which only the cutover removes). PASS = exit 0.
+
+## 8. Execute — automated mode
+
+Load `automated-write-plan.md`. Summary of the contract: this skill emits the write plan + queue items + report. No destination write happens in this context — the skill's only direct vault writes in automated mode are `/queue create-item` files.
 
 ## 9. Report
 
 Emit the extraction report (schema: SKILL.md › Extraction report). Reconcile before returning:
 
-- every candidate has exactly one terminal disposition (rubric R1);
-- `queue_items[]` matches the step-6 writes (rubric R7);
+- every candidate has exactly one terminal disposition;
+- `queue_items[]` matches the step-6 writes;
 - interactive: also present the human-readable summary — filed (paths + validator verdicts), queued (item paths + reasons), discarded (reasons) — and any `flags[]`.

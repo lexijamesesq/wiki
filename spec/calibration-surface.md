@@ -3,11 +3,11 @@ tags:
   - type/spec
   - project/system
   - status/active
-updated: '2026-07-14'
+updated: '2026-11-03'
 ---
 # Calibration Surface — Knowledge-Ingress Judgment
 
-The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): the governing disposition philosophy, kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), capture-meeting (extraction guidance), `/wiki-intake` (knowledge branch), knowledge-contract Part III §§4–5 — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
+The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): the governing disposition philosophy, kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), `/wiki-intake` (knowledge branch) — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
 
 ## §0 Disposition philosophy (governing)
 
@@ -40,8 +40,8 @@ superlinearly; this is why append-bias exists and why clean-replace authority is
 earned last, via the validated-mutation path ([[integration-modes]] §5), not assumed.
 Wrong *placement* is individually tolerable and aggregate-bounded by the repair loop.
 Filed-but-imperfectly-placed beats unfiled: a mis-placed note is still reachable by
-content search and area tag; an unfiled one is gone. Over-filing's residual risk is
-carried by mandatory attribution + detection (knowledge-contract Part III §5), per
+content search and its description; an unfiled one is gone. Over-filing's residual risk is
+carried by mandatory attribution + detection, per
 the safety methodology's recover-don't-prevent doctrine for reversible writes.
 Aggregate placement quality still matters — the corpus is training signal for future
 judgment — so the repair loop is load-bearing, not optional; placement-repair findings
@@ -69,7 +69,7 @@ Evaluate every candidate against these as reasoning context, not a mechanical ch
 ## §2 Thresholds
 
 | Context | Bar |
-|---|---|
+| --- | --- |
 | Standard | clearly strong on ≥2 of 4 dimensions |
 | Elevated (1:1 meetings — the Tier-2 calibration, cited not reinvented) | ≥3 of 4, with stricter queryability: "would a future session search for this in a *professional* context?" |
 
@@ -89,9 +89,8 @@ Evaluate every candidate against these as reasoning context, not a mechanical ch
 Each kind maps to exactly one destination class (spec §1, verbatim):
 
 | Kind | Destination class |
-|---|---|
+| --- | --- |
 | durable-knowledge | Knowledge layer (project Knowledge/ or `{workspace_root}/Wiki/Knowledge/` by scope) |
-| meeting-log | registered meeting's per-area rolling log (`type/meeting-capture`) — Tier-1 dual-write branch only |
 | data-mutation | Wiki/Data/ correction chain (mode per [[integration-modes]] §4) |
 | context-shift | `{workspace_root}/Wiki/Contexts/` domain context page (mode per [[integration-modes]] §4) |
 | personal-action | Personal/Work domain-page task section (interactive-only append; automated → queue) |
@@ -99,15 +98,15 @@ Each kind maps to exactly one destination class (spec §1, verbatim):
 | noise | discard, logged |
 
 Each destination class also carries an **integration mode** — evolution or
-current-truth — governed by [[integration-modes]]; the §4 matrix's mutation-kind rows
-are its authority consequence.
+current-truth — governed by [[integration-modes]]; a knowledge file declares its own in
+its `update` field (`append` | `replace` | `never`, `spec/knowledge-files.md`). The §4
+matrix's mutation-kind rows are its authority consequence.
 
 1:1 kind→class holds: context-shift targets `{workspace_root}/Wiki/Contexts` ONLY — project working-understanding is `/project-state`'s surface; pipeline candidates never target CLAUDE.md. One source item may yield multiple candidates of different kinds — **duplication happens at EXTRACTION only** (extractor emits both, shared provenance); the gatekeeper never splits a candidate.
 
 **Kind signals:**
 
 - **durable-knowledge** — a substantive finding, decision, synthesis, or dated fact that stands alone and answers a future question. New understanding, not a change to tracked state.
-- **meeting-log** — a dated entry in a registered meeting's per-area rolling log. Only the registered capture-meeting playbook produces these (dual-write); exempt from the no-rollup rule by construction (the log derives from the external meeting source).
 - **data-mutation** — a fact change to existing tracked state: "X is now Y", "stopped X", "switched to Y", "cancelled X". The signal is a state transition on data the vault already tracks, not new understanding.
 - **context-shift** — a shift in working understanding of a Wiki domain (what's currently true/active in a domain), belonging on that domain's `{workspace_root}/Wiki/Contexts/` page rather than in a Knowledge file.
 - **personal-action** — an action item owned by the operator personally ("Lexi to escalate…", "need to renew…"). Personal tasks are NOT Linear tickets — they append to the Personal/Work domain-page task section (format owned by router-spec).
@@ -122,15 +121,13 @@ are its authority consequence.
 
 Two orthogonal axes:
 
-- **trust** = source property. `registered`: the operator configured or authored the source (registry-matched meeting; operator-authored Inbox capture; operator-present session content). `unregistered`: external/unconfigured (unregistered meeting, forwarded/third-party content). Hard line, unbypassable by construction: **no enum value other than `registered` grants autonomous filing.**
-- **mode** = invocation property, **declared by the caller, always**. Staging-file presence implies automated (Pi convention). All scheduler-invoked runs are Pi-lane runs and declare automated. Subagents/background workers invoking capture machinery MUST declare automated — no human in their loop. Undeclared mode → the gatekeeper's stop rule applies (automated-strictness, queue-only).
+- **trust** = source property. `registered`: the operator configured or authored the source (operator-authored Inbox capture; operator-present session content). `unregistered`: external/unconfigured (forwarded/third-party content). Hard line, unbypassable by construction: **no enum value other than `registered` grants autonomous filing.**
+- **mode** = invocation property, **declared by the caller, always**. Subagents/background workers invoking capture machinery MUST declare automated — no human in their loop. Undeclared mode → the gatekeeper's stop rule applies (automated-strictness, queue-only).
 
 **Surface defaults:**
 
 | Surface | trust default | mode |
-|---|---|---|
-| Pipeline, registry-matched meeting | registered | automated |
-| Pipeline, unregistered meeting | unregistered | automated |
+| --- | --- | --- |
 | Inbox capture via interactive Router session | registered | interactive |
 | Live session, operator present (/capture, closeout) | registered | interactive |
 | Subagent-produced candidates | per source | automated |
@@ -141,9 +138,8 @@ Two orthogonal axes:
 **Disposition matrix (mode × trust × kind).** The automated column IS the complete automated write authority; everything not listed as "file" queues or discards:
 
 | Kind | automated + registered | automated + unregistered | interactive + registered | interactive + unregistered |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | durable-knowledge | file (resolved-unique or defensible best home per §5) / queue (§0.3 only) / discard (logged) | queue | file / ask (ambiguous) | surface in-conversation |
-| meeting-log | file (registered playbook only) | n/a (no registry) | file | n/a |
 | data-mutation | queue | queue | execute chain ONLY on explicit operator mutation intent (the capture IS a correction statement — wiki-intake's existing pattern); extraction-*inferred* mutations → ask/confirm | surface |
 | context-shift | queue | queue | autonomous per update-on-shift discipline | surface |
 | personal-action | queue | queue | append to existing task section; queue if section absent | surface |
@@ -158,29 +154,29 @@ acceptance. Bar-passing durable-knowledge that resolves *unresolved* (no defensi
 home even after probing): queue if §0.3 is met; else discard, logged with reason
 `placement-unresolved` (source persists upstream).
 
-**Queue-entry gate (universal, automated mode — amended 2026-07-14, operator-directed):** every 'queue' in the automated columns names where a candidate MAY land, never a guarantee — §0.3's entry condition governs entry: *critically important AND legitimately stuck*. An automated candidate whose cell reads queue but which does not clear §0.3 **discards, logged with all reasons** — recoverable by design: the source persists upstream (§0). Trust is unchanged by this gate: unregistered content still never files; the gate only decides queue-vs-discard. Exceptions that ALWAYS queue regardless of §0.3: pinned candidates (coherence-fail), quarantine items (validator/apply FAIL — a failed plan always surfaces), and within-group contradictions — these are the queue's escape-hatch purpose itself. While task extraction remains unbuilt (operator ruling 2026-07-10), automated `personal-action` and `project-work` candidates **discard, logged** — their cells flip by amendment when the substrate program's task-extraction rung activates. (Provenance of this amendment: first production flood, 52 queued/day vs the §7 fill-rate expectation of 0–5/day; `{workspace_root}/System/Context/` carries the incident analysis.)
+**Queue-entry gate (universal, automated mode — amended 2026-07-14, operator-directed):** every 'queue' in the automated columns names where a candidate MAY land, never a guarantee — §0.3's entry condition governs entry: *critically important AND legitimately stuck*. An automated candidate whose cell reads queue but which does not clear §0.3 **discards, logged with all reasons** — recoverable by design: the source persists upstream (§0). Trust is unchanged by this gate: unregistered content still never files; the gate only decides queue-vs-discard. Exceptions that ALWAYS queue regardless of §0.3: pinned candidates (coherence-fail), quarantine items (validator/apply FAIL — a failed plan always surfaces), and within-group contradictions — these are the queue's escape-hatch purpose itself. While task extraction remains unbuilt (operator ruling 2026-07-10), automated `personal-action` and `project-work` candidates **discard, logged** — their cells flip by amendment when the substrate program's task-extraction rung activates. (Provenance of this amendment: first production flood, 52 queued/day against an expected 0–5/day.)
 
 ## §5 Destination resolution (durable-knowledge)
 
 A named judgment with a mechanical consequence (the consequence rule lives with the gatekeeper; the judgment is calibrated here):
 
-- **resolved-unique** — exactly one existing doc answers *the same question* as the candidate (one-question-per-file rule), OR no existing doc does and scope + topic yield an unambiguous new-file placement.
-- **resolved-multiple** — two or more plausible homes at similar confidence — including a NEW-file placement where scope/topic plausibly span two established areas or projects at similar confidence (no existing doc required on either side). A candidate spanning two valid domains (e.g., a technology setup undertaken for a personal-care or health outcome) is resolved-multiple, not a silent pick of the more obvious-sounding tag. **Scope-first exclusion:** an explicit `project/*` scope claim RESOLVES scope — a co-occurring `area/*` tag on project-scoped content is descriptive metadata, never a competing home. Dual-domain applies only when no single scope claim wins: two projects, or two areas with no project claim.
-- **unresolved** — no confident scope or topic; no natural placement.
+- **resolved-unique** — exactly one existing doc answers *the same question* as the candidate (one-question-per-file rule), OR no existing doc does and scope + subject yield an unambiguous new-file placement.
+- **resolved-multiple** — two or more plausible homes at similar confidence — including a NEW-file placement where scope/subject plausibly span two established areas or projects at similar confidence (no existing doc required on either side). A candidate spanning two valid domains (e.g., a technology setup undertaken for a personal-care or health outcome) is resolved-multiple, not a silent pick of the more obvious-sounding area. **Scope-first exclusion:** an explicit project scope claim (the candidate names a project, or it came from that project's session) RESOLVES scope — a Wiki area the content also touches is descriptive, never a competing home. Dual-domain applies only when no single scope claim wins: two projects, or two areas with no project claim.
+- **unresolved** — no confident scope or subject; no natural placement.
 
 Judgment guidance:
 
 - **Match questions, not keywords.** A decoy doc sharing vocabulary with the candidate is not a home unless it answers the same question. Ask: "if a future session searched for the candidate's question, is THIS the doc it should land on?" Discrimination, not echo.
-- **Scope first.** Who consumes this — sessions of one project (→ project-hosted, subject to the `### Knowledge` opt-in gate) or any session touching a life/work domain (→ Wiki-hosted, `area/*` + `topic/*`)?
+- **Scope first.** Who consumes this — sessions of one project (→ project-hosted, in a type folder under the project's `Knowledge/`, subject to the `knowledge_intake: true` opt-in gate) or any session touching a life/work domain (→ Wiki-hosted, `{workspace_root}/Wiki/Knowledge/<area>-<subject>.md`)?
   The opt-in gate constrains the project-hosted *path*, not filing itself: when the
-  right home is project-hosted but the project hasn't declared `### Knowledge`, file
+  right home is project-hosted but the project hasn't declared `knowledge_intake: true`, file
   to the Wiki-hosted domain home (no opt-in required) and queue the declaration
   proposal separately — a missing declaration never black-holes content.
-- **Append-bias.** When a resolved-unique home exists, append to it; a near-duplicate new file is worse than a longer existing one.
-- **Collapse-bias on topics.** Prefer an existing `topic/*` over a near-synonym when placing a new file.
-- **Dated accretion is not contradiction.** A newer dated entry superseding an older dated entry in an accreting file (meeting logs, dated Knowledge sections) is the normal append pattern. A **contradiction** is an incompatible claim about the same fact with no supersession structure — that surfaces/queues as conflict.
+- **Append-bias.** When a resolved-unique home exists and its `update` is `append`, append to it; a near-duplicate new file is worse than a longer existing one. A `replace` home is rewritten in place only by the operator's direction; a `never` home takes a successor file.
+- **Collapse-bias on homes.** Prefer an existing file that answers the same question, and the area's existing file-name prefix, over a near-synonym new name.
+- **Dated accretion is not contradiction.** A newer dated entry superseding an older dated entry in an accreting file (dated Knowledge sections in an `append` file) is the normal append pattern. A **contradiction** is an incompatible claim about the same fact with no supersession structure — that surfaces/queues as conflict.
 - **Probe the destination before resolving.** Before placing, read the candidate
-  domain's context page and scan its existing Knowledge topics — "what does this
+  domain's context page and the descriptions of its existing Knowledge files (the describe tool) — "what does this
   location already treat as durable?" An unread destination is a guess; most
   resolved-multiple forks collapse once the destination's self-description is loaded.
 - **Defensible best home (resolved-multiple, automated consequence — interactive asks
@@ -190,152 +186,151 @@ Judgment guidance:
   home over a narrower project-hosted one. Queue only the rare true tie where
   mis-placement would genuinely bury the content and §0.3 is met; otherwise file on
   best judgment.
-- **Integration mode.** Load the destination's mode ([[integration-modes]] class
-  defaults + `integration:` frontmatter override) before composing the write:
-  evolution → dated, attributed append; current-truth → the mutation path (interactive
-  per the surface's own discipline; automated per the validated-mutation lane's
-  activation state).
+- **Update mode.** Read the destination's `update` field before composing the write
+  ([[integration-modes]] §3): `append` → dated, attributed addition; `replace` → the
+  mutation path (interactive per the surface's own discipline; automated queues);
+  `never` → no body change, a successor is a new file; missing → queue.
 
 ## §6 Worked examples
 
-Worked examples use Acorndyne — the vault's canonical fictional-company universe (`plugins/work-lifecycle/skills/sample-universe/universe.md` in the work-lifecycle plugin repo (https://github.com/lexijamesesq/work-lifecycle)) — for narrative consistency across the knowledge-ingress skill family. The `<thinking>` traces demonstrate the reasoning style. Interactive first, then automated.
+Worked examples use Acorndyne — the vault's canonical fictional-company universe (`plugins/work-lifecycle/skills/sample-universe/universe.md` in the work-lifecycle plugin repo (<https://github.com/lexijamesesq/work-lifecycle>)) — for narrative consistency across the knowledge-ingress skill family. The fenced traces show the reasoning style. Interactive first, then automated.
 
 ### Interactive
 
-**I1 — file (resolved-unique append)**
+#### I1 — file (resolved-unique append)
 
 Candidate (durable-knowledge, registered, interactive): `The Cache-to-Ledger data migration is a fundamental prerequisite to the GMS; earliest CacheTrack-into-GMS integration is now likely 2028 — a timeline the Drey Council had previously found unacceptable.`
 
-<thinking>
+```text
 Re-grade: durable-knowledge is right — a dated strategic fact, not a mutation to tracked data.
-Search: topic/cachetrack surfaces two hits — `meeting-canopy-triad-sync-cachetrack.md` (same topic, but destination class meeting-log — §3's kind→class mapping is 1:1, and this skill does NOT write meeting logs, so a same-topic meeting log is never a candidate destination regardless of topic overlap) and `cachetrack-gms-integration.md` (destination class Knowledge layer), which answers "what's happening with the CacheTrack-to-GMS timeline?" — same question, matching class. Relationship: extends (new dated entry).
+Search: the describe tool over the work area's Knowledge files, plus a content search for "CacheTrack" and "GMS", surfaces `cachetrack-gms-integration.md`, whose description answers "what's happening with the CacheTrack-to-GMS timeline?" — same question. Its `update` is `append`. Relationship: extends (new dated entry).
 Coherence: strong on all four dimensions.
-Resolution: resolved-unique — on the Knowledge-layer doc. (Had no Knowledge-layer doc existed, scope + topic would still route to a NEW `{workspace_root}/Wiki/Knowledge/` file, never to the meeting log.)
-Disposition: file — append to `cachetrack-gms-integration.md` with date attribution; bump updated; verify suffix.
-</thinking>
+Resolution: resolved-unique — on the Knowledge-layer doc. (Had no such doc existed, scope + subject would route to a NEW `{workspace_root}/Wiki/Knowledge/` file.)
+Disposition: file — append to `cachetrack-gms-integration.md` with date attribution and a Sources bullet; bump updated; verify the entry.
+```
 
-**I2 — discard (noise)**
+#### I2 — discard (noise)
 
 Candidate: `Onboarding one additional engineer (3rd in total) to GMS Delivery Settings. Overall progress is steady.`
 
-<thinking>
+```text
 Queryability low (no one searches historical team size), durability low (stale within a sprint), specificity moderate but routine, independence fine.
 Clearly fails the bar; not borderline, not pinned. Disposition: discard, logged (reason: transient status).
-</thinking>
+```
 
-**I3 — data-mutation, explicit intent → execute chain**
+#### I3 — data-mutation, explicit intent → execute chain
 
 Operator: `Capture this: I switched the house ISP to FiberCo yesterday — old service cancels on the 15th.`
 
-<thinking>
+```text
 Kind: data-mutation — "switched to Y" is a state transition on tracked home-services data, not new understanding.
 Mode interactive, trust registered. Matrix cell: execute chain ONLY on explicit operator mutation intent. The capture IS the correction statement — the operator dictated it as a fact change. Intent is explicit.
 Disposition: file (mutation) — delegate to /wiki-intake's data-correction chain (Data/ → Knowledge append → Context → Personal/Work as affected). Report every layer touched.
-</thinking>
+```
 
-**I4 — data-mutation, extraction-inferred → ask**
+#### I4 — data-mutation, extraction-inferred → ask
 
 During a broad "capture this session", the sweep finds an aside: `…oh, and the gym membership lapsed last month, which is why…`
 
-<thinking>
+```text
 Kind: data-mutation (active → lapsed on tracked data). But the operator never asked to record it — the mutation was *inferred by extraction* from a passing remark.
 Matrix cell condition: extraction-inferred mutations → ask/confirm. Asking costs one sentence; a wrong mutation corrupts tracked state.
 Disposition: ask — "Also record the gym membership as lapsed in the tracking chain?" On confirm → execute chain; on decline → discard or re-grade per the operator.
-</thinking>
+```
 
-**I5 — pinned + coherence-fail → queue with note**
+#### I5 — pinned + coherence-fail → queue with note
 
 Operator: `capture that` → referent: `Something about how the Zigbee mesh handles… maybe coordinator placement, or the channel? Probably the microwave interference thing too.`
 
-<thinking>
+```text
 Pinned: explicit ask — inclusion is pinned regardless of my judgment.
 Coherence: fails — no single question (mesh routing? placement? channel? interference?), not self-contained, no concrete claim. Unpinned this would be discard/ask.
-Pinned + coherence-fail → queue, never silent discard. Disposition: queue — /queue create-item, queue-kind disposition, note naming the failed dimensions (single-question, specificity), payload carrying the verbatim content + candidate topics.
-</thinking>
+Pinned + coherence-fail → queue, never silent discard. Disposition: queue — /queue create-item, queue-kind disposition, note naming the failed dimensions (single-question, specificity), payload carrying the verbatim content + candidate subjects.
+```
 
-**I6 — ambiguous destination → ask**
+#### I6 — ambiguous destination → ask
 
 Candidate (durable-knowledge, registered, interactive): a validated finding about home-automation testing practices produced during a personal-infrastructure project session.
 
-<thinking>
-Search: two plausible homes at similar confidence — `{workspace_root}/Projects/Home Automation/Knowledge/` (project-hosted; the home-automation project owns testing practice) and `{workspace_root}/Wiki/Knowledge/` under area/home (domain knowledge any session could need).
+```text
+Search: two plausible homes at similar confidence — `{workspace_root}/Projects/Home Automation/Knowledge/` (project-hosted; the home-automation project owns testing practice) and `{workspace_root}/Wiki/Knowledge/` as a `home-` file (domain knowledge any session could need).
 Resolution: resolved-multiple. Matrix: interactive + registered durable-knowledge, ambiguous → ask.
 Disposition: ask — present both homes with the evidence; the operator's contract-legal choice wins silently.
-</thinking>
+```
 
-**I7 — unregistered trust → surface in-conversation**
+#### I7 — unregistered trust → surface in-conversation
 
 Operator pastes a colleague's Slack summary of a platform decision: `From #eng-announce: the platform team decided…`
 
-<thinking>
+```text
 Trust: unregistered — third-party content, not operator-authored (the operator forwarded it; they didn't author the claims).
 Coherence passes; that changes nothing about trust. Matrix: interactive + unregistered durable-knowledge → surface in-conversation.
 Disposition: surface — present the candidate + proposed destination + evidence; the operator's "file it" is a user-initiated action and proceeds; silence or "no" → discard or queue per their call.
-</thinking>
+```
 
 ### Automated
 
-**A1 — clean resolved-unique append → file**
+#### A1 — clean resolved-unique append → file
 
 Candidate (durable-knowledge, registered, automated; source "Hollow Migration Sync 2026-07-02"): `Hollow EOL moved from FY27-Q2 to FY27-Q4; migration tooling scope now includes district-level exports. Decided at the migration sync; supersedes the Q2 assumption.`
 
-<thinking>
+```text
 Re-grade: durable-knowledge correct — dated decision + timeline, no tracked Data/ record involved.
-Search: topic tags → fy26-hollow-migration.md answers "what is the Hollow migration plan?" — same question. Two keyword decoys (acorndyne-org-strategy, gms-timeline docs) answer different questions — discrimination, not echo.
+Search: descriptions + content search → fy26-hollow-migration.md (`update: append`) answers "what is the Hollow migration plan?" — same question. Two keyword decoys (acorndyne-org-strategy, gms-timeline docs) answer different questions — discrimination, not echo.
 Relationship: extends — dated accretion with explicit supersession, not a contradiction (§5: dated accretion is not contradiction).
 Coherence: clear pass. Resolution: resolved-unique. Idempotency: no hash/attribution match in target.
 Matrix: automated + registered, resolved-unique → file. Disposition: file — write-plan append entry {target, pre_state_hash, append_suffix}; NO new file.
-</thinking>
+```
 
-**A2 — resolved-multiple → file to the defensible best home, alternative noted**
+#### A2 — resolved-multiple → file to the defensible best home, alternative noted
 
 Candidate (durable-knowledge, registered, automated): a "GMS Priorities Tracker"
 summary mixing org-initiative status, the operator's own professional-development
 notes, and team-process observations.
 
-<thinking>
+```text
 Coherence: passes (specific, durable, queryable) — the fork is placement, not quality.
 Search + probe: three plausible homes — a Team project Knowledge/ doc,
-`{workspace_root}/Wiki/Knowledge/` under area/work, and an initiatives context page.
+a `work-` file in `{workspace_root}/Wiki/Knowledge/`, and an initiatives context page.
 Probing them: the context page serves current working understanding, not dated
 synthesis; the Team project Knowledge/ serves that project's sessions only. The
-Wiki-hosted area/work home is any-session-reachable and answers the candidate's
+Wiki-hosted `work-` home is any-session-reachable and answers the candidate's
 question.
 Resolution: resolved-multiple with a defensible best home (§5) — the Wiki-hosted home
 wins the tiebreak.
-Disposition: file — append to the area/work Knowledge doc with attribution, noting the
+Disposition: file — append to the `work-` Knowledge doc with attribution, noting the
 alternative home considered (Team project Knowledge/) in the entry. §0.2: good content
 is never queue-parked on a placement fork; a mis-placed note is reachable and
 repairable, a queued one waits on triage that may never come.
-</thinking>
+```
 
-**A3 — re-grade INTO durable-knowledge → forced queue**
+#### A3 — re-grade INTO durable-knowledge → forced queue
 
 Candidate (proposed kind context-shift, registered, automated): `CacheTrack-to-GMS integration timeline is now 2028 (was 2027), per the Ledger migration dependency.`
 
-<thinking>
+```text
 Re-grade check: the extractor graded this context-shift, but it is a dated durable fact with a named dependency — durable-knowledge by the §3 definitions. Re-grade context-shift → durable-knowledge.
 Lattice rule: this re-grade moves INTO durable-knowledge in automated mode — the new kind's automated disposition (file) is more permissive than the old kind's (queue). A re-grade must never gain filing authority: forced queue, even though the new kind's matrix cell would allow filing on resolved-unique.
 Disposition: queue — disposition item, reasons [re-grade-forced], payload carrying both gradings (proposed context-shift, re-graded durable-knowledge) + evidence. The operator confirms the re-grade at triage; the next interactive pass may file it.
-</thinking>
+```
 
-**A4 — duplicate → discard**
+#### A4 — duplicate → discard
 
-Candidate (durable-knowledge, registered, automated; source "Canopy Triad Sync 2026-06-25"): a re-delivered payload after a pipeline retry; target log already carries the 2026-06-25 dated section.
+Candidate (durable-knowledge, registered, automated; source "Canopy Triad Sync 2026-06-25"): a re-delivered payload after a retry; the target file already carries the 2026-06-25 dated section.
 
-<thinking>
-Re-grade: fine. Search: resolved-unique to the existing per-area file.
+```text
+Re-grade: fine. Search: resolved-unique to the existing `append` file.
 Idempotency: target contains an entry matching this candidate's attribution+date, and the content_hash matches the prior append.
-Disposition: discard, reason duplicate — logged in the report, never a second append. Pipeline idempotency is n8n's job; this is the candidate-level backstop that keeps a double-delivery from becoming a double-append silently.
-</thinking>
+Disposition: discard, reason duplicate — logged in the report, never a second append. This is the candidate-level backstop that keeps a double-delivery from becoming a double-append silently.
+```
 
-**A5 — doubtful at the bar → discard, logged**
+#### A5 — doubtful at the bar → discard, logged
 
 Candidate (durable-knowledge, registered, automated; source "GMS Delivery weekly sync
 2026-07-01"): `Team feels the GMS Delivery Settings rollout is ahead of schedule; no
 dates revised yet.`
 
-<thinking>
+```text
 Dimensions: specificity weak (no dates, numbers, or named decision), durability
 doubtful (pace sentiment, superseded the moment dates move), queryability doubtful —
 what question does "feels ahead" answer? Not a clear fail; a maybe.
@@ -345,44 +340,44 @@ apply. The source transcript persists; if dates actually move, THAT captures as 
 clear keeper.
 Disposition: discard, logged (reason: doubtful durability/queryability — pace
 sentiment without concrete claims).
-</thinking>
+```
 
-**A6 — unregistered + critically important → queue**
+#### A6 — unregistered + critically important → queue
 
 Candidate (durable-knowledge, unregistered, automated; source "unregistered strategy offsite 2026-07-13"): `Drey Council has reversed the standing decision to build GMS atop the Cache-to-Ledger migration; GMS will be rebuilt from scratch on a new platform, and the recorded CacheTrack-to-GMS integration target of 2028 is abandoned. Decided at the offsite; supersedes the recorded direction.`
 
-<thinking>
+```text
 Re-grade: durable-knowledge correct — a dated strategic decision reversing recorded direction, not a mutation to tracked Data/.
-Search: topic/gms + topic/ledger surface `cachetrack-gms-integration.md`, which records the standing 2028 direction — same question, and this candidate reverses it.
+Search: a content search for "GMS" and "Ledger" surfaces `cachetrack-gms-integration.md`, which records the standing 2028 direction — same question, and this candidate reverses it.
 Coherence: clear pass on all four — specific (named body, named reversal), durable (direction-setting), queryable, independent.
 Trust: unregistered — an unconfigured offsite, not operator-authored. The automated + unregistered durable-knowledge cell forbids filing outright; trust is a hard line and coherence does not lift it.
 §0.3 gate: the cell reads queue, but does it clear the entry condition? Critically important — YES: it reverses standing recorded direction, and a future session reading `cachetrack-gms-integration.md` would act on stale truth. Legitimately stuck — YES: filing is forbidden by trust, and a discard would lose a direction-reversal the operator must see; no autonomous path records it correctly.
 Disposition: queue — /queue create-item, disposition, reasons [unregistered-trust, direction-reversal], payload carrying the verbatim candidate + the superseded doc + search evidence.
-</thinking>
+```
 
-**A7 — unregistered + specific-but-ordinary → discard, logged**
+#### A7 — unregistered + specific-but-ordinary → discard, logged
 
 Candidate (durable-knowledge, unregistered, automated; source "unregistered product-marketing sync 2026-07-13"): `The team settled on positioning CacheTrack's multi-signal (soil/competitor/yield) optimization as the wedge against single-signal competitors (AcornTracker, NutCache Pro, SquirrelSense) — "multi-signal, not location-only" as the one-line frame.`
 
-<thinking>
+```text
 Re-grade: durable-knowledge — a settled positioning finding that stands alone.
-Search: topic/cachetrack homes exist; this would append cleanly. This is NOT a noise case — it is specific (named frame, named competitors), independent, and plausibly queryable. Coherence: honest pass. The fork is trust + importance, not quality.
+Search: a CacheTrack `append` home exists; this would append cleanly. This is NOT a noise case — it is specific (named frame, named competitors), independent, and plausibly queryable. Coherence: honest pass. The fork is trust + importance, not quality.
 Trust: unregistered — automated + unregistered durable-knowledge forbids filing.
 §0.3 gate: critically important? NO — a useful-but-ordinary positioning frame; nothing in the recorded corpus breaks or goes stale if it is not captured, and the source persists upstream for a later registered pass. Not critically-important-AND-stuck → the queue's entry condition is not met.
 Disposition: discard, logged — reasons [unregistered-trust, below-queue-entry-bar]. A discard is recoverable and the source persists upstream; the queue is not a value-uncertainty parking lot (§0.3, §2 automated bias).
-</thinking>
+```
 
-**A8 — unregistered 1:1 + action item → discard (task extraction unbuilt)**
+#### A8 — unregistered 1:1 + action item → discard (task extraction unbuilt)
 
 Candidate (personal-action, unregistered, automated; source "Hazel ↔ Chip 1:1 2026-07-13"): `Hazel to escalate the Hollow EOL slip (FY27-Q2 → FY27-Q4) to the Drey Council before the next Canopy Triad Sync.`
 
-<thinking>
+```text
 Tier: a two-person 1:1 — the elevated bar applies (§2: ≥3 of 4 dimensions, stricter professional-context queryability).
 Re-grade: an owned action item — kind personal-action, not durable-knowledge.
 Mode automated, trust unregistered. The automated personal-action cell reads queue — but the §4 queue-entry gate routes automated personal-action to discard while task extraction is unbuilt: the operator ruled 2026-07-10 that task extraction is deliberately not built, so such items are DISCARDED, not queued, until it activates. (Trust is unregistered too — no filing regardless.)
 Disposition: discard, logged — reasons [task-extraction-unbuilt]. The cell flips to queue by amendment when the substrate program's task-extraction rung activates; until then the source persists upstream.
-</thinking>
+```
 
 ## Amendment discipline
 
-This file changes only by operator-approved edit. Consumers reference sections by number (§0–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, capture-meeting, /wiki-intake, knowledge-contract Part III §§4–5).
+This file changes only by operator-approved edit. Consumers reference sections by number (§0–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, /wiki-intake).
