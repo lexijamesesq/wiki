@@ -48,11 +48,17 @@ Derived from the architecture, not new policy:
 
 ## §3 Frontmatter override
 
-A specific file may override its class default: `integration: evolution` or
-`integration: current-truth` — e.g., a Knowledge/ file that is a maintained
-current-state reference rather than an accretion record. Writers read the override at
-write-plan time. Enforced by tooling for unattended writers; for interactive sessions the
-`update` field (`spec/knowledge-files.md`) is the instruction and lint runs on demand.
+Every knowledge file declares its own mode in the `update` frontmatter field
+(`append` | `replace` | `never`, defined in `spec/knowledge-files.md`). That field is
+what a writer reads at write-plan time; the §2 class defaults are the fallback for a file
+that does not carry it. Files that still carry the older `integration:` field are read as
+`current-truth` → `replace` and `evolution` → `append` until that field is removed at
+cutover.
+
+How the mode is held to: for interactive sessions the field is the instruction, and the
+contract lint (`knowledge-description` skill, run on demand) reports violations. For
+unattended writers (eve agents), the vault tools check the mode on every write; that
+check lands with the eve vault-tool change and is not yet in force.
 
 ## §4 Write shape × authority
 
