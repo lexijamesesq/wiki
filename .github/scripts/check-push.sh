@@ -2,8 +2,8 @@
 # Select native outgoing paths, including deletions and both rename sides.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
-component=${1:?usage: check-push.sh plugin | lint-knowledge}
-case "$component" in plugin | lint-knowledge) ;; *)
+component=${1:?usage: check-push.sh plugin | knowledge-kit}
+case "$component" in plugin | knowledge-kit) ;; *)
 	echo "Unknown component: $component" >&2
 	exit 2
 	;;
@@ -27,7 +27,7 @@ while IFS= read -r -d '' path; do
 	case "$path" in .pre-commit-config.yaml | .github/scripts/check-push.sh) relevant=true ;; esac
 	case "$component:$path" in
 	plugin:.claude-plugin/* | plugin:.claude/skills/* | plugin:agents/* | plugin:commands/* | plugin:hooks/* | plugin:.mcp.json | plugin:.lsp.json | plugin:settings.json | plugin:package.json | plugin:package-lock.json) relevant=true ;;
-	lint-knowledge:.claude/skills/lint-knowledge/* | lint-knowledge:spec/* | lint-knowledge:.claude/instance.sample.md | lint-knowledge:pyproject.toml | lint-knowledge:requirements*.txt | lint-knowledge:uv.lock) relevant=true ;;
+	knowledge-kit:.claude/skills/knowledge-description/* | knowledge-kit:spec/* | knowledge-kit:pyproject.toml | knowledge-kit:requirements*.txt | knowledge-kit:uv.lock) relevant=true ;;
 	esac
 done <"$paths"
 [[ "$relevant" == true ]] || {
@@ -52,5 +52,5 @@ plugin)
 	}
 	exec npx --yes --package @anthropic-ai/claude-code@2.1.259 claude plugin validate --strict .
 	;;
-lint-knowledge) PYTHONDONTWRITEBYTECODE=1 python3 -B .claude/skills/lint-knowledge/tests/run_tests.py ;;
+knowledge-kit) PYTHONDONTWRITEBYTECODE=1 python3 -B .claude/skills/knowledge-description/tests/run_tests.py ;;
 esac

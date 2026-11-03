@@ -8,7 +8,7 @@ what's specific to it.
 ## Decisions specific to this repo
 
 **`gate` (`ci.yml`) is the pre-existing conformance check**
-— `claude plugin validate --strict` and the lint-knowledge tests —
+— `claude plugin validate --strict` —
 alongside `floor` (this repo's caller into the estate's shared
 `estate-ci.yml`, the standard pre-commit chain). It runs on both
 `pull_request` and `push` to `main`, gated on `floor`'s mechanical
