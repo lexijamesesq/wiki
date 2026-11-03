@@ -71,7 +71,7 @@ Per invocation, identify the operation and load the matching playbook:
 
 ## What this skill does NOT do
 
-- Does NOT execute resolution payloads itself — a consequence that files knowledge routes through the filing path (`/capture`, which hands to the gatekeeper); one that creates a work item routes through `/linear`; each with its own gates intact.
+- Does NOT execute resolution payloads itself — a consequence that files knowledge routes through the gatekeeper (`/gatekeeper assess single`); one that creates a work item routes through `/linear`; each with its own gates intact.
 - Does NOT apply the knowledge-file contract or its lint to queue items — `Wiki/Queue/` is outside the contract by design.
 - Does NOT emit any ambient signal — that's the statusline (pure file counting in `statusline.sh`, no skill invocation). `statusline.sh` alone defines the count semantics.
 - Does NOT manage the external backpressure monitor (e.g., an uptime monitor flipping to warn) — that belongs to the automation tier.

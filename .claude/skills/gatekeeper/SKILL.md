@@ -2,8 +2,9 @@
 name: gatekeeper
 description: >-
   Universal router + gatekeeper for everything entering the vault's knowledge
-  layer. Receives typed candidates from any ingress surface (Inbox routing,
-  live sessions via /capture and closeout, /wiki-intake), resolves each to a
+  layer. Receives typed candidates from any ingress surface (Inbox routing via
+  /router, closeout query-and-file, /wiki-intake, or a session invoking it
+  directly), resolves each to a
   terminal disposition — file (through a write contract), queue (Wiki/Queue/
   item), or discard (logged) — under the two-axis trust/mode authority model.
   No candidate bypasses it; no extractor writes destinations. Triggers on
@@ -19,7 +20,7 @@ allowed-tools:
 
 # gatekeeper — Router + Gatekeeper
 
-One judgment pass per candidate: routing and vault-fit are two halves of one judgment — "does this help me help Lexi?" includes "where would it help?". Extractors (`/capture`, `/wiki-intake`'s knowledge branch, the Router) produce typed candidates; this skill disposes of them. Files it writes follow `spec/knowledge-files.md`. Where this skill is silent, the ingress design (`references.intake_defaults` config key) governs.
+One judgment pass per candidate: routing and vault-fit are two halves of one judgment — "does this help me help Lexi?" includes "where would it help?". Callers (`/router`, `/knowledge-layer` query-and-file, `/wiki-intake`'s knowledge branch, or a session invoking `/gatekeeper assess single` directly) hand it candidates; this skill disposes of them. Files it writes follow `spec/knowledge-files.md`. Where this skill is silent, the ingress design (`references.intake_defaults` config key) governs.
 
 ## Identity
 
@@ -55,7 +56,7 @@ Discipline rules applied on every invocation:
 - Zero files created without the four contract fields and a `## Sources` section.
 - Report reconciliation: `dispositions[]` covers every candidate; `queue_items[]` count matches actual queue writes.
 
-**Strategic context.** The universal gatekeeper of the ingress design — router AND gatekeeper, one skill. Consumers: `/capture` (mid-session, plus `/capture batch` — the boundary entry `/knowledge-layer` query-and-file delegates to), `/wiki-intake` (knowledge-intent branch), the interactive Router. Every live caller runs in interactive mode today. Automated mode is kept for a subagent or background worker that invokes capture machinery: it plans writes and never applies them (see `playbooks/automated-write-plan.md`). The unattended lanes that used to apply those plans are retired; unattended writes now belong to eve agents and their own vault tools.
+**Strategic context.** The universal gatekeeper of the ingress design — router AND gatekeeper, one skill. Consumers: `/knowledge-layer` query-and-file (closeout synthesis), the interactive `/router` (Inbox captures), `/wiki-intake` (knowledge-intent branch), and a session that invokes `/gatekeeper assess single` directly to file something mid-session — there is no separate capture verb. Every live caller runs in interactive mode today. Automated mode is kept for a subagent or background worker that invokes this skill: it plans writes and never applies them (see `playbooks/automated-write-plan.md`). The unattended lanes that used to apply those plans are retired; unattended writes now belong to eve agents and their own vault tools.
 
 **Constraints.**
 

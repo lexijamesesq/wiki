@@ -36,13 +36,13 @@ State the proposed route (classification, confidence, axes, destination, deliver
 Same routing order and rules as `process.md` § 5:
 
 - **Specialized (spec-owned):** strategy → a strategy seed per spec § Seed Creation + the destination project's contract; weekly team update → activity logs per spec § Team Activity Log Creation + the destination project's contract; ad-hoc Slack → spec § Slack Signal Extraction, then the default path.
-- **Project-owned:** Task axis → Linear per `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §14` + `linear-discipline` (context doc for 3+ sentence captures). Knowledge axis → only if the destination's CLAUDE.md frontmatter includes `knowledge_intake: true` (absent/false = opt-out): the full verbatim capture to `/capture batch` with the project as `scope_hint` (process.md § 5b).
-- **Domain-owned:** Knowledge axis → full verbatim capture to `/capture batch` with the Wiki area as `scope_hint` (`mode: interactive`, `trust: registered`) — full stop. Task axis → domain-page task-section append per spec § Domain Destinations; page/section absent → ask.
+- **Project-owned:** Task axis → Linear per `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §14` + `linear-discipline` (context doc for 3+ sentence captures). Knowledge axis → only if the destination's CLAUDE.md frontmatter includes `knowledge_intake: true` (absent/false = opt-out): the full verbatim capture to the gatekeeper as one candidate with the project as `scope_hint` (process.md § 5b).
+- **Domain-owned:** Knowledge axis → full verbatim capture to the gatekeeper as one candidate with the Wiki area as `scope_hint` (process.md § 5c) — full stop. Task axis → domain-page task-section append per spec § Domain Destinations; page/section absent → ask.
 - **No home / ambiguous** → ask; unsettled, the capture stays in the Inbox.
 
 ### 5. Verify provenance, confirm, delete
 
-Apply the route-specific provenance check from `process.md` § 6 (seed `## Original Capture`; Linear description-or-context-doc; `/capture batch` disposition, with a `## Sources` entry and lint PASS on a filed file; domain-page item present). Then ask the operator to confirm deletion of the Inbox file and delete it with Bash `rm` on its absolute path.
+Apply the route-specific provenance check from `process.md` § 6 (seed `## Original Capture`; Linear description-or-context-doc; gatekeeper disposition, with a `## Sources` entry and lint PASS on a filed file; domain-page item present). Then ask the operator to confirm deletion of the Inbox file and delete it with Bash `rm` on its absolute path.
 
 Declined or verification failed → the file stays; stamp additive `routed: <destination> (<date>)` frontmatter with `Edit` (body untouched) and say so in the report.
 

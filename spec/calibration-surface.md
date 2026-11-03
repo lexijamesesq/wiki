@@ -7,7 +7,7 @@ updated: '2026-11-03'
 ---
 # Calibration Surface — Knowledge-Ingress Judgment
 
-The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): the governing disposition philosophy, kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/capture` (kind proposals), `/wiki-intake` (knowledge branch) — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
+The **canonical home** of the ingress judgment tables (per the ingress design's canonical-home table): the governing disposition philosophy, kind definitions + destination classes, the four dimensions + thresholds, the mode × trust × kind disposition matrix, destination-resolution judgment guidance, and worked examples — interactive AND automated. Consumers — gatekeeper, `/wiki-intake` (knowledge branch) — REFERENCE this file. Nothing here is restated elsewhere; amend here, nowhere else.
 
 ## §0 Disposition philosophy (governing)
 
@@ -129,7 +129,7 @@ Two orthogonal axes:
 | Surface | trust default | mode |
 | --- | --- | --- |
 | Inbox capture via interactive Router session | registered | interactive |
-| Live session, operator present (/capture, closeout) | registered | interactive |
+| Live session, operator present (closeout, direct gatekeeper invocation) | registered | interactive |
 | Subagent-produced candidates | per source | automated |
 | Third-party content pasted/forwarded | unregistered | per invoker |
 
@@ -380,4 +380,4 @@ Disposition: discard, logged — reasons [task-extraction-unbuilt]. The cell fli
 
 ## Amendment discipline
 
-This file changes only by operator-approved edit. Consumers reference sections by number (§0–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /capture, /wiki-intake).
+This file changes only by operator-approved edit. Consumers reference sections by number (§0–§6); renumbering requires sweeping consumer references (gatekeeper SKILL.md + playbooks, /wiki-intake).

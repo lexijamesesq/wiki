@@ -22,7 +22,7 @@ Resolve the vault root from the `workspace_root` config key (global CLAUDE.md > 
 | --- | --- |
 | `/lint-knowledge` from inside a project folder | that project's `Knowledge/` |
 | `/lint-knowledge --scope wiki` | `{workspace_root}/Wiki/Knowledge/` and `{workspace_root}/Wiki/Contexts/` |
-| `/lint-knowledge --scope vault` | the wiki scope, plus `{workspace_root}/System/Knowledge/`, every `{projects_root}/*/Knowledge/`, and every `{workspace_root}/Agents/*/Knowledge/` |
+| `/lint-knowledge --scope vault` | the wiki scope, plus `{workspace_root}/System/Knowledge/`, every `{projects_root}/*/Knowledge/`, and every `{projects_root}/Agents/*/Knowledge/` |
 | `/lint-knowledge --scope <path>` | that vault-relative file or folder |
 
 With no flag and no project folder in the working directory, ask which scope; do not guess.

@@ -66,7 +66,7 @@ What reads the field today, and what does not:
 - The filer in this repo (`gatekeeper`) reads `update` before any append to an existing file,
   in both modes (`assess-candidates`, update-mode guard): `replace`, `never` and missing
   `update` take a queue item, never an append. The check sits in the gatekeeper because the
-  gatekeeper is what writes; the session that invoked `/capture` or `/wiki-intake` never sees
+  gatekeeper is what writes; the session that handed it the candidate never sees
   the destination. Automated mode (`automated-write-plan`) plans writes and applies none: the
   capture and maintenance lanes that applied its plans are retired.
 

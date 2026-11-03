@@ -1,6 +1,6 @@
 ---
 name: router
-description: Interactive Inbox Router — classify Inbox/ captures, match them to destinations, and deliver to intake entry points (Linear, the knowledge filing path via /capture batch, Personal/Work domain pages). Executes a vault-resident routing spec under a documented classify-match-deliver accountability boundary. Triggers on "/router process", "/router route-one <capture>", "process the inbox", or "route this capture".
+description: Interactive Inbox Router — classify Inbox/ captures, match them to destinations, and deliver to intake entry points (Linear, the gatekeeper for knowledge, Personal/Work domain pages). Executes a vault-resident routing spec under a documented classify-match-deliver accountability boundary. Triggers on "/router process", "/router route-one <capture>", "process the inbox", or "route this capture".
 ---
 
 # /router
@@ -15,7 +15,7 @@ Interactive executor for the vault's Inbox Router. The Router classifies capture
 
 Discipline rules applied on every invocation:
 
-- **Classify-match-deliver boundary.** The Router classifies + matches + delivers to intake entry points. It does NOT process content for destinations beyond the spec's documented routes, does NOT know Wiki internals (no area-classification authority, no intent decisions, no handler awareness), does NOT call specialized handlers. Knowledge-axis content → deliver to `/capture batch`, full stop; the gatekeeper behind it owns placement, filing, and any data-correction hand-off.
+- **Classify-match-deliver boundary.** The Router classifies + matches + delivers to intake entry points. It does NOT process content for destinations beyond the spec's documented routes, does NOT know Wiki internals (no area-classification authority, no intent decisions, no handler awareness), does NOT call specialized handlers. Knowledge-axis content → deliver to `/gatekeeper assess candidates`, full stop; the gatekeeper behind it owns placement, filing, and any data-correction hand-off.
 - **Contracts are read at runtime, never cached.** Destination discovery (project CLAUDE.md files found by path, and their `description`, `linear_project_id`, `knowledge_intake` frontmatter) is re-read every run; a previous run's destination map is never reused.
 - **Vault files are read and edited with the native tools** (Read, Glob, Grep, Edit) under the session's own permissions; this skill pre-approves none of them. Deleting an Inbox file is a Bash `rm` on its absolute path, run only after the operator confirms that deletion (Deletion rule).
 - **Every delivery declares its lane:** `mode: interactive`, `trust: registered` to downstream skills (per the ingress surface matrix).
@@ -45,7 +45,7 @@ Discipline rules applied on every invocation:
 
 **Constraints.**
 
-- **Hard:** Never delete an undelivered capture. Never modify a capture's body. Never merge captures (consolidation is not the Router's job). Never deliver the Knowledge axis to a destination without `knowledge_intake: true` in its CLAUDE.md frontmatter — absence signals opt-out, not oversight. Knowledge axis → `/capture batch` only, with the full verbatim capture. Contracts runtime-read. Interactive-only — no scheduled invocation path.
+- **Hard:** Never delete an undelivered capture. Never modify a capture's body. Never merge captures (consolidation is not the Router's job). Never deliver the Knowledge axis to a destination without `knowledge_intake: true` in its CLAUDE.md frontmatter — absence signals opt-out, not oversight. Knowledge axis → the gatekeeper only, with the full verbatim capture. Contracts runtime-read. Interactive-only — no scheduled invocation path.
 - **Steering:** Low confidence → ask rather than guess; a capture the operator can't settle now stays in the Inbox. Prefer surfacing borderline items over silent misfiling. Multi-category captures → present all plausible destinations. Taxonomy, detection criteria, and signal rules come from the spec — do not improvise variants.
 
 **Decision authority.**
@@ -73,9 +73,9 @@ Per invocation, identify the operation and load the matching playbook:
 
 ## Destination resolution (runtime, never cached)
 
-1. **Discover routable projects by path:** a project is a folder holding a `CLAUDE.md` at `{projects_root}/<Name>/CLAUDE.md`, `{workspace_root}/System/CLAUDE.md`, or `{workspace_root}/Agents/<Name>/CLAUDE.md` (`Glob` those three patterns). `{projects_root}/CLAUDE.md` and the vault-root `CLAUDE.md` are not projects. Read each project CLAUDE.md's frontmatter `description`, `linear_project_id`, and `knowledge_intake`. A project with `linear_project_id` is routable for tasks; one with `knowledge_intake: true` is routable for knowledge. A project missing both is flagged, not delivered.
+1. **Discover routable projects by path:** a project is a folder holding a `CLAUDE.md` at `{projects_root}/<Name>/CLAUDE.md`, `{workspace_root}/System/CLAUDE.md`, or `{projects_root}/Agents/<Name>/CLAUDE.md` (`Glob` those three patterns). `{projects_root}/CLAUDE.md` and the vault-root `CLAUDE.md` are not projects. Read each project CLAUDE.md's frontmatter `description`, `linear_project_id`, and `knowledge_intake`. A project with `linear_project_id` is routable for tasks; one with `knowledge_intake: true` is routable for knowledge. A project missing both is flagged, not delivered.
 2. **Match:** capture content against project `description` fields, plus any project the capture names. A confident single match → project-owned.
-3. **No project match:** lightweight area identification only — explicit content signals and surface-level matching against the Wiki context pages (`{workspace_root}/Wiki/Contexts/<area>-context.md`). Enough to route, never enough to file (authoritative placement belongs downstream). Knowledge-shaped → `/capture batch`. Task-shaped → Personal/Work domain page per spec § Domain Destinations (Task axis).
+3. **No project match:** lightweight area identification only — explicit content signals and surface-level matching against the Wiki context pages (`{workspace_root}/Wiki/Contexts/<area>-context.md`). Enough to route, never enough to file (authoritative placement belongs downstream). Knowledge-shaped → the gatekeeper. Task-shaped → Personal/Work domain page per spec § Domain Destinations (Task axis).
 4. **No project, no identifiable home, or ambiguous** → ask the operator; if it can't be settled now, the capture stays in the Inbox and the summary says why.
 
 Delivery rules resolve per `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §14` § Resolution Order: spec'd specialized routes first → destination `### Notes` → declared `### Tasks` / `### Knowledge` values → universal defaults → Origin Handoff Contract (always applies, never overridden).
@@ -87,7 +87,7 @@ An Inbox file is deleted only after (a) delivery is confirmed and (b) provenance
 ## What this skill does NOT do
 
 - Does NOT run on a schedule or unattended — the scheduled Router is a future lane requiring a named surface-matrix amendment before any authority attaches.
-- Does NOT make knowledge-placement decisions or dispatch to specialized handlers — `/capture batch` is the single knowledge entry point and the gatekeeper behind it owns everything downstream.
+- Does NOT make knowledge-placement decisions or dispatch to specialized handlers — the gatekeeper is the single knowledge entry point and owns everything downstream.
 - Does NOT restate destination contracts (a strategy-seed schema, a team-activity-log schema, project Knowledge schemas) — it reads them at runtime per spec § Contract Resolution.
 - Does NOT develop, enrich, assess, or consolidate captures — routing only.
 - Does NOT create missing destination structure (folders, pages, sections, indexes).
@@ -98,4 +98,4 @@ An Inbox file is deleted only after (a) delivery is confirmed and (b) provenance
 - `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §§13–15` — accountability boundaries, destination contract pattern, anti-patterns. Vault-resident; does not ship in this repo.
 - `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §14` — universal delivery defaults + resolution order. Vault-resident; does not ship in this repo.
 - `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md` §2 (surface matrix; interactive lane). Vault-resident; does not ship in this repo.
-- `/capture batch` — knowledge entry point (the gatekeeper behind it). `/linear` + `linear-discipline` rule — Task-axis Linear deliveries.
+- `/gatekeeper` — knowledge entry point (`assess candidates`). `/linear` + `linear-discipline` rule — Task-axis Linear deliveries.

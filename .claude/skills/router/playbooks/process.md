@@ -50,11 +50,11 @@ Route in this order. Task-side: first match wins. Knowledge axis: evaluated unde
 **b. Project-owned (confident project match):**
 
 - **Task axis** → Linear issue per `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §14` § Default Delivery: Linear Issue (teamId + Project ID from the destination's `### Tasks`), satisfying `linear-discipline` integrity-on-creation. Captures of 3+ sentences or with structure get a `Context/` doc with `## Original Capture` per the Origin Handoff Contract; a ≤2-sentence capture's description must reproduce it completely.
-- **Knowledge axis** → ONLY if the destination's CLAUDE.md frontmatter includes `knowledge_intake: true` (Read the frontmatter; absent or false = opt-out, not oversight; the Task axis still fires independently). Hand the FULL VERBATIM capture to `/capture batch` as one item: `scope_hint` = the project name, `provenance` = `inbox-capture <date>` and the source filename, `trust: registered`, `mode: interactive`. The gatekeeper places it in the project's type folder, writes `## Sources`, and runs the contract lint. Note the dual-axis cross-reference when both axes fired.
+- **Knowledge axis** → ONLY if the destination's CLAUDE.md frontmatter includes `knowledge_intake: true` (Read the frontmatter; absent or false = opt-out, not oversight; the Task axis still fires independently). Hand it to `/gatekeeper assess candidates` as one candidate: `content` = the full verbatim capture, `kind` = the router's knowledge proposal (default `durable-knowledge`), `scope_hint` = the project name, `provenance` = `inbox-capture <date>` and the source filename, `source_attribution` = `Inbox capture <date> (<filename>)`, `trust: registered`, `mode: interactive`. The gatekeeper places it in the project's type folder, writes `## Sources`, and runs the contract lint. Note the dual-axis cross-reference when both axes fired.
 
 **c. Domain-owned (no project match, identifiable domain via lightweight area identification):**
 
-- **Knowledge axis** → hand the FULL VERBATIM capture to `/capture batch` as one item: `scope_hint` = the identified Wiki area, `provenance` = `inbox-capture <date>` and the source filename, `trust: registered`, `mode: interactive`. Full stop — the gatekeeper owns everything downstream, including a hand-off to `/wiki-intake`'s data-correction chain when the capture is a fact change. Record the batch report's outcome for the summary; a reported disposition is the delivery confirmation for this axis.
+- **Knowledge axis** → hand it to `/gatekeeper assess candidates` as one candidate: `content` = the full verbatim capture, `kind` = the router's knowledge proposal (default `durable-knowledge`), `scope_hint` = the identified Wiki area, `provenance` = `inbox-capture <date>` and the source filename, `source_attribution` = `Inbox capture <date> (<filename>)`, `trust: registered`, `mode: interactive`. Full stop — the gatekeeper owns everything downstream, including a hand-off to `/wiki-intake`'s data-correction chain when the capture is a fact change. Record the gatekeeper report's outcome for the summary; a reported disposition is the delivery confirmation for this axis.
 - **Task axis** → append to the domain page's existing task section (`Personal/{Domain Title Case}.md` or `Work/{Domain Title Case}.md`) per spec § Domain Destinations (Task axis): auto-id checklist item via `Edit`, verbatim-overflow rules per the Origin Handoff Contract. Page or task section absent → ask the operator; never create pages or sections.
 
 **d. No home / ambiguous / needs deferred judgment** → ask at the checkpoint. If the operator can't settle it now, the capture stays in the Inbox, unstamped, and the summary lists it with the candidate destinations considered and what was missing. The Inbox is its holding place; nothing is copied elsewhere.
@@ -69,7 +69,7 @@ Per delivered capture, verify per route before deletion:
 | --- | --- |
 | Incubator seed / signal seed | `## Original Capture` section present, verbatim |
 | Linear issue | Description reproduces a ≤2-sentence capture, OR context doc with `## Original Capture` exists |
-| `/capture batch` delivery | the batch report gives the capture a disposition; a filed file has a `## Sources` entry naming the capture and a lint PASS |
+| Gatekeeper delivery | the gatekeeper report gives the capture a disposition; a filed file has a `## Sources` entry naming the capture and a lint PASS |
 | Domain-page task append | Checklist item present; verbatim overflow handled per contract |
 | Team activity logs | Per-designer entries created; W: content verbatim |
 
@@ -89,6 +89,6 @@ Emit per spec § Output Schema: per-item YAML records plus the session summary (
 
 ## What this playbook does NOT do
 
-- Does NOT decide knowledge placement, intent, or handler questions — delivery to `/capture batch` ends the Router's knowledge-axis responsibility.
+- Does NOT decide knowledge placement, intent, or handler questions — delivery to the gatekeeper ends the Router's knowledge-axis responsibility.
 - Does NOT process the `Unprocessed Captures` dashboard or any other generated view.
 - Does NOT create destination structure, develop content, or consolidate related captures.

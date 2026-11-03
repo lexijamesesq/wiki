@@ -5,6 +5,7 @@ Protocol for `assess candidates` and `assess single` (a single candidate is a ba
 ## 0. Validate the invocation
 
 - Candidates present? None → halt (stop rule). Do not invent candidates.
+- **Normalize** each candidate to the schema (SKILL.md › Candidate schema). Callers hand over content they have already chosen to file; this skill does not extract. Fill what a caller may leave out: `content_hash` = SHA-256 of `content` (`shasum -a 256` on stdin); `source_attribution` default `CC session YYYY-MM-DD (<project>)` (date via `date`); `kind` default `durable-knowledge` (a proposal, re-graded in step 1). `provenance` must be present — a candidate without any is returned to the caller, never filed unattributed. Enrich `content` to stand alone only where the caller left a dangling reference; never add claims.
 - Read `trust` and `mode` per candidate.
   - `mode` missing/undeclared → process that candidate at **automated strictness, queue-only** (no filing, no mutation) and set `undeclared_mode` in report `flags[]` (SKILL.md stop rule; the why lives there).
   - `trust` missing/unknown → treat as `unregistered` — only the literal `registered` grants autonomous filing (hard constraint).

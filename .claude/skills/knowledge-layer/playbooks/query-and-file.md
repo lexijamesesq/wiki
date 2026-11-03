@@ -1,6 +1,6 @@
 # Playbook: query-and-file
 
-Hand durable session synthesis to the filing path. The gatekeeper composes the file (four frontmatter fields, `## Sources`, type folder), decides append versus new file, and runs the contract lint; this playbook validates the caller's input, maps it to `/capture batch` items, and returns the report.
+Hand durable session synthesis to the gatekeeper. The gatekeeper composes the file (four frontmatter fields, `## Sources`, type folder), decides append versus new file, and runs the contract lint; this playbook validates the caller's input, maps it to gatekeeper candidates, and returns the report.
 
 ## Input
 
@@ -23,13 +23,26 @@ suggested_filename: <slug>          # optional
    - If `project-hosted`: `host_project_root` exists and has a `Knowledge/` folder.
    - `draft_content` presents current understanding in one coherent pass, with no "this session" framing (hygiene anti-pattern 4).
 
-2. **Hand off:** `/capture batch` with one item per synthesis, `entry: closeout`, `pinned: true` (the operator approved filing at closeout), and the field mapping in `capture/playbooks/batch.md` › Caller mapping.
+2. **Hand off:** `/gatekeeper assess candidates`, one candidate per synthesis (gatekeeper SKILL.md › Candidate schema), mapped as:
 
-3. **Relay** any gatekeeper ask to the operator (closeout is operator-present), then **return** the batch report unchanged.
+   | Candidate field | From |
+   | --- | --- |
+   | `content` | `draft_content`, with `title` as its first line |
+   | `kind` | `durable-knowledge` |
+   | `scope_hint` | `scope` (the project name for project-hosted, the Wiki area name for Wiki-hosted) |
+   | `search_terms` | `search_terms` |
+   | `provenance` | `sources` |
+   | `source_attribution` | `CC session YYYY-MM-DD (<project>)` |
+   | `trust` / `mode` | `registered` / `interactive` (closeout synthesis is operator-authored and the operator is present) |
+   | `pinned` | `true` (the operator approved filing at closeout) |
+
+   The gatekeeper computes `content_hash` and resolves final placement, including the type folder.
+
+3. **Relay** any gatekeeper ask to the operator, then **return** its report.
 
 ## Output
 
-The `/capture batch` report:
+The gatekeeper's report, reduced to:
 
 ```yaml
 filed:     [{path, destination_class, validator_verdict}]

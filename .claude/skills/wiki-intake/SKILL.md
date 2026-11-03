@@ -40,7 +40,7 @@ Entry point for Wiki-axis content the operator hands over directly: classifies i
 - Data-correction chain touches all affected layers — no partial propagation.
 - Queue items are actionable without the original conversation.
 
-**Strategic context.** A Wiki-axis entry point of the ingress design, alongside `/capture` (mid-session) and `/router` (Inbox). All of them hand typed candidates to the same gatekeeper; the router and `/capture` now deliver there directly, so this skill's own entry is an operator invoking `/wiki-intake`. Its lasting duty is the data-correction chain.
+**Strategic context.** A Wiki-axis entry point of the ingress design, alongside `/router` (Inbox) and closeout's query-and-file. All of them hand typed candidates to the same gatekeeper; the router and query-and-file deliver there directly, so this skill's own entry is an operator invoking `/wiki-intake`. Its lasting duty is the data-correction chain.
 
 **Constraints.**
 

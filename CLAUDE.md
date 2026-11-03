@@ -7,7 +7,7 @@ docs_home: "{workspace_root}/Wiki"
 
 # wiki
 
-The machinery half of a personal knowledge-base system: capture routing (`/wiki-intake`, `/capture`, `/router`), gatekeeping (`/gatekeeper`), the knowledge-file kit (`/knowledge-description`, `/context-page`), maintenance (`/knowledge-layer`, `/lint-knowledge`), and an operator-judgment queue (`/queue`). The notes half — `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, `Queue/` — lives in the operator's vault, addressed via `{workspace_root}`; this repo never tracks it. Public repo: also the source `wiki` plugin published for other Claude Code sessions to consume.
+The machinery half of a personal knowledge-base system: capture routing (`/wiki-intake`, `/router`), gatekeeping (`/gatekeeper`), the knowledge-file kit (`/knowledge-description`, `/context-page`), maintenance (`/knowledge-layer`, `/lint-knowledge`), and an operator-judgment queue (`/queue`). The notes half — `Knowledge/`, `Data/`, `Contexts/`, `Attachments/`, `Queue/` — lives in the operator's vault, addressed via `{workspace_root}`; this repo never tracks it. Public repo: also the source `wiki` plugin published for other Claude Code sessions to consume.
 
 ## Setup
 
@@ -47,7 +47,7 @@ pre-commit run --all-files                                         # gitleaks-st
 | File | Purpose |
 | ---- | ------- |
 | `.claude/instance.sample.md` | Configuration contract template — copy to `.claude/instance.md` and fill in your instance's values |
-| `.claude/skills/` | The ingress (`wiki-intake`, `capture`, `router`, `queue`), gatekeeping (`gatekeeper`), knowledge-file kit (`knowledge-description`, `context-page`), and maintenance (`knowledge-layer`, `lint-knowledge`) skills |
+| `.claude/skills/` | The ingress (`wiki-intake`, `router`, `queue`), gatekeeping (`gatekeeper`), knowledge-file kit (`knowledge-description`, `context-page`), and maintenance (`knowledge-layer`, `lint-knowledge`) skills |
 | `.claude-plugin/` | The `wiki` marketplace and plugin manifests — this repo root is the plugin; `plugin.json`'s `skills` field points at `.claude/skills/` |
 | `spec/knowledge-files.md` | The knowledge-file contract — four frontmatter fields, three update modes, type folders |
 | `spec/knowledge-contract.md` | The superseded tag-based rulebook, kept until it is retired; no skill reads it |

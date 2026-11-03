@@ -62,9 +62,8 @@ How content gets in. Every capture passes through the gatekeeper before anything
 | Artifact | Type | What it does |
 | ---------- | ------ | -------------- |
 | `/wiki-intake` | Skill | Takes Wiki-axis content handed over directly — classifies intent and routes to the gatekeeper, the queue, or the data-correction chain, which it owns. At `.claude/skills/wiki-intake/` |
-| `/gatekeeper` | Skill | Resolves every candidate to file, queue, or discard through the mode × trust × kind matrix — the only skill that writes into the knowledge layer. At `.claude/skills/gatekeeper/` |
-| `/capture` | Skill | The mid-session capture verb — extracts knowledge candidates from the live conversation and hands every one to the gatekeeper. At `.claude/skills/capture/` |
-| `/router` | Skill | Sorts Inbox captures and delivers each to its destination's intake; knowledge goes to the gatekeeper through `/capture batch`. At `.claude/skills/router/` |
+| `/gatekeeper` | Skill | Resolves every candidate to file, queue, or discard through the mode × trust × kind matrix — the only skill that writes into the knowledge layer. A session files something mid-session with `/gatekeeper assess single`. At `.claude/skills/gatekeeper/` |
+| `/router` | Skill | Sorts Inbox captures and delivers each to its destination's intake; knowledge goes to the gatekeeper. At `.claude/skills/router/` |
 | `/queue` | Skill | Creates operator-judgment queue items and runs the menu-guided triage. At `.claude/skills/queue/` |
 
 ### Maintenance
@@ -113,13 +112,13 @@ See `.claude/instance.sample.md` for the full configuration contract with placeh
 
 Classifies intent and routes: knowledge candidates go to the gatekeeper, explore captures become queue items, and data corrections propagate through the affected layers.
 
-### Capturing from a session
+### Filing from a session
 
 ```text
-/capture this decision about X
+/gatekeeper assess single
 ```
 
-Extracts the referent, enriches it to stand alone, and hands it to the gatekeeper.
+The session hands one self-contained candidate (content, kind, provenance, trust, mode) to the gatekeeper, which places, files and lints it. At closeout, `/knowledge-layer` query-and-file does the same for the session's synthesis.
 
 ### Operator-judgment queue
 
@@ -134,8 +133,8 @@ Menu-guided triage of pending items, scoped or all.
 Content enters through one path and narrows. An intake skill classifies a capture's intent; the gatekeeper resolves it against a disposition matrix indexed by mode (interactive or automated), trust (registered or unregistered source), and kind; only then does a write happen. No extractor chooses its own destination, so a new capture surface never adds a new way to write to the vault.
 
 ```text
-  session captures          Inbox              everything else
-     /capture              /router              /wiki-intake
+  session / closeout        Inbox              everything else
+  query-and-file           /router              /wiki-intake
          └──────────────────────┼─────────────────────────┘
                                 ▼
                           /gatekeeper

@@ -39,7 +39,7 @@ Keep Wiki maintained, fresh, queryable, and trustworthy so every Claude session 
 - Captures graduate through a deliberate intake pipeline: TODO: name your router/intake skill
 - Knowledge/ files stay single-question scoped (one question per file) with source attribution
 - Context files carry Claude's durable working understanding — updated when understanding shifts, not on every session
-- Stale content is flagged, not silently drifted
+- Stale content is flagged, not silently drifted (hygiene at closeout; the librarian agent once live)
 - Human-facing pages stay accurate via periodic stewardship
 
 ---
@@ -139,7 +139,7 @@ Item kinds — TODO: define your own taxonomy. This repo's convention (kept mini
 | Contract lint (`/lint-knowledge`) | TODO: your trigger | Automatic |
 | Context update | TODO: your trigger | Automatic |
 | Human-facing page stewardship | TODO: your trigger | Automatic |
-| Knowledge/ mutation review | Lint flags a file over threshold | Flagged for user review |
+| Knowledge/ mutation review | Closeout hygiene flags a file over threshold | Flagged for user review |
 | Queue triage | Operator-invoked only | User decides when |
 | Structured-data expansion | Session-initiated | User decides when a domain fits |
 
