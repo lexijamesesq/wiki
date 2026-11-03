@@ -51,7 +51,7 @@ feed calibration.
 important / where does it go) are system-context gaps — missing or thin "what lives
 here" surfaces — fixed by enriching context, never by adding mechanics. Queue rate and
 queue-reason patterns are read as context-gap symptoms. (Verification gates — critic,
-the filing-time lint gate, authenticity validator — are not "mechanics" in this sense: they
+the contract lint, authenticity validator — are not "mechanics" in this sense: they
 bound judgment, they never substitute for it.)
 
 ## §1 The four dimensions

@@ -32,7 +32,7 @@ When the operator names a destination (before or after handoff):
 
 - **Contract-legal** → it wins, silently. Pass it to the gatekeeper as the resolved destination.
 - **Contract-violating** (e.g., a personal-action into Linear; a rollup file; project Knowledge/ in a project without `knowledge_intake: true`) → state the violated rule in one sentence + ask for explicit confirmation. Confirmed → proceed as a user-initiated action. Declined → fall back to the gatekeeper's own resolution.
-- A filing-time lint gate FAIL on an operator-chosen destination → the envelope gets fixed; the destination stays.
+- A contract-lint FAIL on an operator-chosen destination → the frontmatter gets fixed; the destination stays.
 
 ## 6. Relay the report
 

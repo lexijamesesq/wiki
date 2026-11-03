@@ -45,7 +45,7 @@ Discipline rules applied on every invocation:
 1. "Capture this" costs the operator one utterance; the skill locates the referent, enriches it to self-containment, and reports the terminal outcome with paths.
 2. Zero pinned candidates silently dropped — every explicit ask ends in a reported file or queue landing.
 3. Every candidate reaches gatekeeper — zero destination writes originate in this skill.
-4. Mid-session capture and closeout query-and-file produce identical envelopes and dispositions — same machinery, two entry points.
+4. Mid-session capture and closeout query-and-file produce identical files and dispositions — same machinery, two entry points.
 
 **Health metrics — must NOT degrade:**
 
@@ -60,7 +60,7 @@ Discipline rules applied on every invocation:
 
 - **Hard:** `mode: interactive` on every handoff, with trust per the source rule (Identity): `registered` for operator-authored session content, `unregistered` for third-party pasted/forwarded material — never `registered` for claims the operator didn't author. A subagent or background worker invoking this machinery has no human in its loop and MUST declare `mode: automated` instead — the gatekeeper then queues rather than files.
 - **Hard:** pinned semantics — an explicit ask pins inclusion; the pin travels on the candidate (`pinned: true`).
-- **Hard:** operator destination overrides — contract-legal wins silently; contract-violating gets the violated rule stated in one sentence + explicit confirmation (confirmed = user-initiated action; the constraint system binds autonomous action only). a filing-time lint gate FAIL on a user-chosen destination → fix the envelope, keep the destination — orthogonal concerns.
+- **Hard:** operator destination overrides — contract-legal wins silently; contract-violating gets the violated rule stated in one sentence + explicit confirmation (confirmed = user-initiated action; the constraint system binds autonomous action only). a contract-lint FAIL on a user-chosen destination → fix the frontmatter, keep the destination — orthogonal concerns.
 - **Steering:** enrich to self-containment before handoff — resolve pronouns, name subjects and systems, date the claims; the candidate must survive with zero session context. Don't over-sweep: a pointed "capture this" takes the referent, not the whole conversation.
 
 **Decision authority.**
@@ -88,7 +88,7 @@ Per invocation, identify the operation and load the matching playbook:
 
 ## What this skill does NOT do
 
-- Does NOT write destinations, run the filing-time lint gate, create queue items, or execute correction chains — all gatekeeper machinery.
+- Does NOT write destinations, run the contract lint, create queue items, or execute correction chains — all gatekeeper machinery.
 - Does NOT re-implement judgment tables — kind and dimension judgments come from the calibration surface, by reference.
 - Does NOT do document intake — standalone document deliveries and Inbox routing are `/wiki-intake`'s and `/router`'s entries. Third-party text pasted INTO the live conversation is in scope when the operator asks to capture it — but it hands off as `trust: unregistered`, never as operator-authored content.
 - Does NOT run at session boundaries on its own — closeout invokes `batch`; nothing here auto-fires.
