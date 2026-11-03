@@ -15,8 +15,8 @@ content: <string>   # the raw capture, before any classification
 
 **Current handlers:**
 
-| Handler | Detection signals | Delegation |
-|---|---|---|
+| Handler            | Detection signals                                                                                                                                                                                                                                                                                                                                                     | Delegation                                                                                                                           |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | `/capture-meeting` | **Explicit:** content includes a meeting name matching a key in `Wiki/Data/meeting-registry.json`. **Structural:** document contains `## Agenda for {date}` or `## **Agenda for {date}**` headings AND entries prefixed with Moved/Learned/Need. **Heuristic:** multiple dated sections with team/product area subsections — flag for confirmation before delegating. | Invoke `/capture-meeting` with the matched meeting name and full content. The handler owns parsing, coherence filtering, and filing. |
 
 ## Output
@@ -28,7 +28,7 @@ handler: <name | null>
 
 ## Discipline
 
-**Self-sourcing handlers.** Some handlers can fetch their own content from external sources (e.g., `/capture-meeting` auto-fetches from Drive when the registry entry includes `drive_file_id`). When this is the case, users may invoke the handler directly without going through wiki-intake — the handler handles transport itself. wiki-intake remains the entry point for pasted, router-delivered, or unrecognized content; self-sourced invocation is a parallel path, not a replacement. Delivered content always wins over self-sourcing when both are available. See `{workspace_root}/System/Knowledge/unified-ingress-design.md §§13–15` for the invocation paths.
+**Self-sourcing handlers.** Some handlers can fetch their own content from external sources (e.g., `/capture-meeting` auto-fetches from Drive when the registry entry includes `drive_file_id`). When this is the case, users may invoke the handler directly without going through wiki-intake — the handler handles transport itself. wiki-intake remains the entry point for pasted, router-delivered, or unrecognized content; self-sourced invocation is a parallel path, not a replacement. Delivered content always wins over self-sourcing when both are available. See `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §§13–15` for the invocation paths.
 
 ## What this playbook does NOT do
 
