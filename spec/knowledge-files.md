@@ -8,7 +8,7 @@ updated: 2026-11-02
 
 # Knowledge Files
 
-The contract for knowledge files: four frontmatter fields, three update modes, five base folders. It defines the target state. `spec/knowledge-contract.md` stays in force and `lint.py` keeps reading it until the cutover (see the pull request that introduced this file for what the cutover supersedes).
+The contract for knowledge files: four frontmatter fields, three update modes, five base folders. It is the contract in force: the vault's frontmatter cutover landed on 2026-11-03, `lint.py` is retired, and `spec/knowledge-contract.md` is superseded (its header maps each of its parts to this document). The lint is `contract_lint.py` in the `knowledge-description` skill.
 
 ## Scope
 

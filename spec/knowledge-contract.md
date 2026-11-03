@@ -24,7 +24,7 @@ updated: 2026-07-26
 | Part IV, Lint Surface | Replaced by `contract_lint.py` (the `knowledge-description` skill) |
 | Part V, Parsing Contract and Machine-Parse Invariants | Retired with `lint.py` |
 
-The original text follows, unchanged apart from one markdownlint marker comment and respaced table delimiter rows so the file passes the repo's lint.
+The original text follows. Three edits for the repo's lint and this header: its title is demoted to `## Original: Knowledge Contract`, one markdownlint marker comment is added, and table delimiter rows are respaced. Nothing else changed.
 
 ---
 
