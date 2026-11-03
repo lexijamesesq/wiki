@@ -19,9 +19,8 @@ allowed-tools:
   - Task
   - 'Bash(date:*)'
   - 'Bash(shasum:*)'
-  - mcp__obsidian__read_note
-  - mcp__obsidian__search_notes
-  - mcp__obsidian__get_frontmatter
+  - Read
+  - Grep
 ---
 
 # /capture — Session Capture
@@ -37,7 +36,7 @@ Discipline rules applied on every invocation:
 - **Runs in the session context — never forked.** The live conversation is the extraction source; a forked context cannot see it.
 - **Explicit ask pins.** "Capture this/that/X" pins the pointed-at content into the candidate set (`pinned: true`) regardless of extraction judgment. Pinned + coherence-fail lands in the queue with a note — never silently discarded (the gatekeeper enforces the landing; this skill's job is to mark the pin).
 - **The calibration surface supplies the judgment** — kind definitions, dimensions, thresholds: `Wiki/spec/calibration-surface.md` (vault spec layer, vault-root-relative). Kind is a PROPOSAL — the gatekeeper may re-grade.
-- **Vault `.md` operations go through Obsidian MCP tools** — never generic Read/Write/Edit.
+- **Vault `.md` operations use the native tools** (`Read`, `Write`, `Edit`, `Grep`, `Glob`).
 
 ## Intent
 

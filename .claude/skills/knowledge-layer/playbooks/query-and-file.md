@@ -50,7 +50,7 @@ suggested_filename: <slug>          # optional; derive from title if not provide
 
    **Provenance vocabulary** for `sources` — the full shape vocabulary lives in knowledge-contract Part II (Provenance). Session-derived filing typically uses `AI research YYYY-MM-DD` (synthesis) or `user-stated` (user-provided facts); cite an external reference as its URL directly — not a bespoke `external:` prefix, which is not a valid shape and will fail the filing-time lint gate's `invalid-sources-value` check.
 
-4. **Write the file** via Obsidian MCP `write_note`.
+4. **Write the file** via `Write`.
 
 5. **Run the filing-time lint gate.** Per `[[knowledge-contract]] Part III` §4 session-closeout query-and-file:
    - Run `python3 <skills-dir>/lint-knowledge/lint.py --filing --no-manifest --json --vault-root <vault-root> --contract-path <contract-path> --rosters-path <rosters-path> <target-path>` (sibling `lint-knowledge` skill — same skills directory as this skill; `<contract-path>`/`<rosters-path>` from the global CLAUDE.md's `references.tag_taxonomy`/`references.tag_taxonomy_rosters` keys — the contract and rosters no longer live under the vault).

@@ -18,15 +18,11 @@ allowed-tools:
   - Skill
   - 'Bash(date:*)'
   - 'Bash(shasum:*)'
-  - mcp__obsidian__read_note
-  - mcp__obsidian__read_multiple_notes
-  - mcp__obsidian__search_notes
-  - mcp__obsidian__write_note
-  - mcp__obsidian__patch_note
-  - mcp__obsidian__get_frontmatter
-  - mcp__obsidian__update_frontmatter
-  - mcp__obsidian__list_directory
-  - mcp__obsidian__get_notes_info
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
 ---
 
 # gatekeeper — Router + Gatekeeper
@@ -38,7 +34,7 @@ One judgment pass per candidate: routing and vault-fit are two halves of one jud
 Discipline rules applied on every invocation:
 
 - **Resolve the vault root via the `workspace_root` config key** (global CLAUDE.md > Configuration). Never hardcode a vault path.
-- **Vault `.md` operations go through Obsidian MCP tools** — never generic Read/Write/Edit.
+- **Vault `.md` operations use the native tools** (`Read`, `Write`, `Edit`, `Grep`, `Glob`).
 - **The caller declares `trust` and `mode`, always.** Trust is a source property; mode is an invocation property. This skill never decides its own mode.
 - **The calibration surface is the canonical judgment home.** `Wiki/spec/calibration-surface.md` (vault spec layer, vault-root-relative) holds the kind definitions, the four dimensions + thresholds, the full disposition matrix, destination-resolution guidance, and worked examples (interactive AND automated). Load it on every invocation; reference its tables, never restate them.
 - **One vault search feeds routing AND assessment** — never two passes.
@@ -116,7 +112,7 @@ The candidate schema, plus the `pinned` marker that carries the pinned rule:
 3. **Coherence assessment** — four dimensions at the mode's threshold (calibration surface §§1–2).
 4. **Disposition** — evaluate ALL applicable conditions, collect ALL reasons; look up the matrix (calibration surface §4). Apply the §4 queue-entry gate to any automated 'queue' cell: §0.3 must hold (critically important AND legitimately stuck) or the disposition is discard, logged — pinned, quarantine, and contradiction items always queue. A queued candidate produces ONE queue item carrying `reasons[]` — conflict payload included even when unregistered also applies; no evidence loss to branch ordering.
 
-**Destination resolution** (within step 4, durable-knowledge only) is a named judgment with a mechanical consequence. Outcome ∈ {resolved-unique, resolved-multiple, unresolved} — judgment guidance + worked examples in calibration surface §5. Mechanical consequence (calibration surface §4 cell + §5 defensible best home): automated mode files on resolved-unique OR resolved-multiple's defensible best home (alternative home noted in the entry); unresolved → queue only if §0.3 (critically important AND stuck), else discard logged (`placement-unresolved`). Interactive: resolved-unique → file; resolved-multiple / unresolved → ask (operator present). **Project-hosted opt-in gate (mechanical):** the destination project's CLAUDE.md frontmatter must include `knowledge_intake: true` (read via `get_frontmatter`). Absent or false → the content files to the Wiki-hosted domain home instead (`area/*` + `topic/*`, no opt-in required — calibration surface §5: a missing declaration never black-holes content), AND the declaration proposal queues separately (reason `opt-in-gate-absent`). In interactive mode the operator may add `knowledge_intake: true` to the frontmatter on the spot — re-check, then proceed project-hosted. **Integration-mode guard (mechanical, automated):** before planning an automated append, read the destination's `integration:` frontmatter override ([[integration-modes]] §3; class default §2). An `integration: current-truth` target is a mutation surface — an automated write there queues (reason `mutation-path-inactive`) until the validated-mutation path is active ([[integration-modes]] §4–§5 own the activation state), never appends; evolution targets proceed.
+**Destination resolution** (within step 4, durable-knowledge only) is a named judgment with a mechanical consequence. Outcome ∈ {resolved-unique, resolved-multiple, unresolved} — judgment guidance + worked examples in calibration surface §5. Mechanical consequence (calibration surface §4 cell + §5 defensible best home): automated mode files on resolved-unique OR resolved-multiple's defensible best home (alternative home noted in the entry); unresolved → queue only if §0.3 (critically important AND stuck), else discard logged (`placement-unresolved`). Interactive: resolved-unique → file; resolved-multiple / unresolved → ask (operator present). **Project-hosted opt-in gate (mechanical):** the destination project's CLAUDE.md frontmatter must include `knowledge_intake: true` (read via `Read`). Absent or false → the content files to the Wiki-hosted domain home instead (`area/*` + `topic/*`, no opt-in required — calibration surface §5: a missing declaration never black-holes content), AND the declaration proposal queues separately (reason `opt-in-gate-absent`). In interactive mode the operator may add `knowledge_intake: true` to the frontmatter on the spot — re-check, then proceed project-hosted. **Integration-mode guard (mechanical, automated):** before planning an automated append, read the destination's `integration:` frontmatter override ([[integration-modes]] §3; class default §2). An `integration: current-truth` target is a mutation surface — an automated write there queues (reason `mutation-path-inactive`) until the validated-mutation path is active ([[integration-modes]] §4–§5 own the activation state), never appends; evolution targets proceed.
 
 **Batching:** after per-candidate routing, group file-disposition candidates by target file; check each group pairwise for internal contradictions; one ordered append per target per run. A within-group contradiction → neither candidate files as fact: interactive → surface both versions to the operator; automated → one `disposition` queue item carrying both + evidence.
 

@@ -22,7 +22,7 @@ Per SKILL.md § Destination resolution. Fresh discovery even for a single captur
 
 ### 3. Classify
 
-Read the full content + frontmatter (`mcp__obsidian__read_note`), then:
+Read the full content + frontmatter (`Read`), then:
 
 1. Classify per spec § Classification Taxonomy (`professional-strategy | professional-operational | personal | meta`) + confidence.
 2. Two-axis evaluation per spec § Knowledge Axis Classification (Task / Knowledge fire independently).
@@ -36,15 +36,15 @@ State the proposed route (classification, confidence, axes, destination, deliver
 Same routing order and rules as `process.md` § 5:
 
 - **Specialized (spec-owned):** strategy → a strategy seed per spec § Seed Creation + the destination project's contract; weekly team update → activity logs per spec § Team Activity Log Creation + the destination project's contract; ad-hoc Slack → spec § Slack Signal Extraction, then the default path.
-- **Project-owned:** Task axis → Linear per `{workspace_root}/System/Knowledge/unified-ingress-design.md §14` + `linear-discipline` (context doc for 3+ sentence captures). Knowledge axis → only if the destination's CLAUDE.md frontmatter includes `knowledge_intake: true` (read via `get_frontmatter`; absent/false = opt-out). `Knowledge/` is the standardized location. Per spec § Knowledge Delivery Rules (envelope, `sources` provenance, index update, the filing-time lint gate; `Knowledge/` dir absent → queue, never create).
+- **Project-owned:** Task axis → Linear per `{workspace_root}/System/Knowledge/unified-ingress-design.md §14` + `linear-discipline` (context doc for 3+ sentence captures). Knowledge axis → only if the destination's CLAUDE.md frontmatter includes `knowledge_intake: true` (read via `Read`; absent/false = opt-out). `Knowledge/` is the standardized location. Per spec § Knowledge Delivery Rules (envelope, `sources` provenance, index update, the filing-time lint gate; `Knowledge/` dir absent → queue, never create).
 - **Domain-owned:** Knowledge axis → full verbatim capture + lightweight area identification to `/wiki-intake` (`mode: interactive`, `trust: registered`) — full stop. Task axis → domain-page task-section append per spec § Domain Destinations; page/section absent → queue-triage.
 - **No home / ambiguous** → `/queue create-item`: `queue_kind: disposition`, `source: router`, reasons, scope tags when identifiable, payload = full verbatim capture + evidence.
 
 ### 5. Verify provenance, confirm, delete
 
-Apply the route-specific provenance check from `process.md` § 6 (seed `## Original Capture`; Linear description-or-context-doc; Knowledge `sources` + validator PASS; wiki-intake reported disposition; domain-page item present; queue item created with verbatim payload). Then ask the operator to confirm deletion of the Inbox file and delete via `mcp__obsidian__delete_note`.
+Apply the route-specific provenance check from `process.md` § 6 (seed `## Original Capture`; Linear description-or-context-doc; Knowledge `sources` + validator PASS; wiki-intake reported disposition; domain-page item present; queue item created with verbatim payload). Then ask the operator to confirm deletion of the Inbox file and delete via Bash `rm` (not pre-approved, so the harness also prompts).
 
-Declined or verification failed → the file stays; stamp additive `routed: <destination> (<date>)` frontmatter via `mcp__obsidian__update_frontmatter` (body untouched) and say so in the report.
+Declined or verification failed → the file stays; stamp additive `routed: <destination> (<date>)` frontmatter via `Edit` (body untouched) and say so in the report.
 
 ### 6. Report
 

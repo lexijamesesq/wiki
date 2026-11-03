@@ -14,7 +14,7 @@ The queue is where automated lanes and session-tier skills park candidates that 
 Discipline rules applied on every invocation:
 
 - **Resolve the vault root via the `workspace_root` config key** (global CLAUDE.md > Configuration). Never hardcode a vault path. Queue dir = `{workspace_root}/Wiki/Queue/`; Inbox dir = `{workspace_root}/Inbox/`.
-- **Vault `.md` writes go through the Obsidian MCP tools** (`mcp__obsidian__write_note`, `mcp__obsidian__update_frontmatter`) — never generic Write/Edit.
+- **Vault `.md` writes use `Write` (create) and `Edit` (frontmatter)**.
 - **No silent drops.** A failed item write is reported FAIL to the caller loudly; a queue item is never resolved or expired without the operator adjudicating it.
 - **Pull, never push.** Triage runs only on explicit operator invocation. Session boundaries are never task surfaces. The statusline count is the only ambient signal.
 

@@ -71,9 +71,9 @@ Write one operator-judgment item into `Wiki/Queue/` as a distinct file.
 
 5. **The human-question test (hard rule)** — see the section below. An item body that fails it does not get written; recompose first.
 
-6. **Write via `mcp__obsidian__write_note`** (create mode). Vault `.md` files are MCP-only — never generic Write.
+6. **Write via `Write`** (create mode).
 
-7. **Verify:** read back the frontmatter (`mcp__obsidian__get_frontmatter`) and confirm `status: pending` and `queue-kind` are present. On write or verification failure, report **FAIL** to the caller with the attempted path and error — never silently drop (a dropped judgment is invisible forever; the design treats queue-write failure as a loud, run-failing event).
+7. **Verify:** read back the frontmatter (`Read`) and confirm `status: pending` and `queue-kind` are present. On write or verification failure, report **FAIL** to the caller with the attempted path and error — never silently drop (a dropped judgment is invisible forever; the design treats queue-write failure as a loud, run-failing event).
 
 ## The human-question test (hard rule)
 

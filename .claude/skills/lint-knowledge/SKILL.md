@@ -114,7 +114,7 @@ Determine the **judgment scope**:
 - **CLAUDE.md widening:** if the scope's `CLAUDE.md` is in the delta set, widen the judgment scope to all knowledge files in that scope — a Current State edit can retroactively contradict unchanged pages.
 - If the judgment scope is **empty** (nothing changed, and not `--full`) → skip this step. Report that the judgment pass was skipped (no changes since last run).
 
-For each file in the judgment scope, read its body (Obsidian MCP, read-only) and run the **contradiction scan** — best-effort, INFO severity:
+For each file in the judgment scope, read its body (read-only) and run the **contradiction scan** — best-effort, INFO severity:
 
 - Claims contradicted by the scope's `CLAUDE.md` Current State
 - References to entities, paths, or configs that no longer exist

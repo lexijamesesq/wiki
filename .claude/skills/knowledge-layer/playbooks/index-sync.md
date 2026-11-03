@@ -58,7 +58,7 @@ warnings:
 
 - **Section grouping matters.** If the index has explicit sections (e.g., "## Knowledge/" and "## Reference/"), add new entries to the correct section based on the file's `type/*` tag and location. Don't dump everything in one list.
 - **Summary discipline.** One-line summaries; concrete (what this doc holds, not "describes X"). Pull from the file's first paragraph if the frontmatter doesn't have a `description`.
-- **Preserve existing entries.** When adding new entries, do NOT rewrite the entire index — patch in place. Use Obsidian MCP `patch_note` for surgical updates.
+- **Preserve existing entries.** When adding new entries, do NOT rewrite the entire index — patch in place. Use `Edit` for surgical updates.
 - **Wikilink integrity.** Deleted pages may leave dangling `[[old-name]]` references elsewhere. This playbook surfaces the warning; resolving the dangling reference is the orchestrator's call (typically: update the citing doc or file as a follow-up Linear issue).
 
 ## Hub-shared index considerations

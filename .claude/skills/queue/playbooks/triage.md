@@ -24,7 +24,7 @@ Triage is a conversation with a person, not a report to a session. Hard presenta
 
 ### 1. Opening frame (one short block, plain terms)
 
-Mechanics first, silently: queue dir = `{workspace_root}/Wiki/Queue/` (vault root via the `workspace_root` config key; fallback `VAULT_ROOT` env — same resolution as create-item). List it with `mcp__obsidian__list_directory` on `Wiki/Queue`, read items via `read_multiple_notes` (batch ≤10). No narration between tool calls — the first thing the operator reads is the frame below, never path discovery or self-correction.
+Mechanics first, silently: queue dir = `{workspace_root}/Wiki/Queue/` (vault root via the `workspace_root` config key; fallback `VAULT_ROOT` env — same resolution as create-item). List it with `Glob` on `Wiki/Queue`, read items with parallel `Read` calls. No narration between tool calls — the first thing the operator reads is the frame below, never path discovery or self-correction.
 
 Read all pending items in scope (frontmatter + body). Summarize in words a person plans around — how many, how heavy, what domains:
 
@@ -77,7 +77,7 @@ Any freeform reply is a conversation — discuss, then land on one of the above.
 
 Internal mapping (bookkeeping — never shown):
 
-- Natural answer chosen → execute its consequence within existing decision authority (mechanical edits autonomous; substance edits still require the item to carry explicit approval semantics — when in doubt, confirm what was decided). **A consequence premised on something being missing or broken verifies the premise first** — check for renames, basename matches, and non-markdown attachments before editing anything; act-then-verify is how false positives become real damage. Mark item `status: resolved` via `update_frontmatter`, and record a one-line `resolution:` frontmatter key (same `update_frontmatter` call — never a body edit).
+- Natural answer chosen → execute its consequence within existing decision authority (mechanical edits autonomous; substance edits still require the item to carry explicit approval semantics — when in doubt, confirm what was decided). **A consequence premised on something being missing or broken verifies the premise first** — check for renames, basename matches, and non-markdown attachments before editing anything; act-then-verify is how false positives become real damage. Mark item `status: resolved` via `Edit`, and record a one-line `resolution:` frontmatter key (same `Edit` call — never a body edit).
 - **Skip for now** → stays `pending`, untouched. No aging escalation exists; skipped means skipped.
 - **Drop it** → `status: expired`.
 

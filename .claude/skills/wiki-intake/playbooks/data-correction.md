@@ -25,10 +25,10 @@ Not every correction touches every layer. Scope it before acting:
 2. **Load the domain's context page** — understand current state.
 3. **Identify affected files** (check all layers): Data/ records (if structured data exists), Knowledge/ files (if the correction affects narrative knowledge), Context page (if working understanding needs updating), Personal/Work pages (downstream, stewarded last).
 4. **Apply the correction** through the chain:
-   - Data/ → update frontmatter fields via `update_frontmatter`
+   - Data/ → update frontmatter fields via `Edit`
    - Knowledge/ → append new information (append-bias; don't edit existing substance without approval)
    - Context page → update if working understanding shifted
-   - Personal/Work → `patch_note` only (autonomous stewardship rules apply)
+   - Personal/Work → `Edit` only (autonomous stewardship rules apply)
 5. **Report what was updated** across all layers.
 
 ## Output

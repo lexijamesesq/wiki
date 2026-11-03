@@ -24,7 +24,7 @@ Run the mechanical knowledge-integrity lint over the session's touched scope at 
 2. **Parse findings** from the JSON output. If the scope contains no lintable files or zero findings, report one line (`scope-lint: clean, N files`) and stop.
 
 3. **Partition and act:**
-   - **Envelope HIGH findings on `created_paths`** → fix inline NOW. These are frontmatter-level structural-envelope repairs (missing `type/` or scope tag, missing `status/active`, missing/malformed `updated`, missing `sources`) on files this session made — autonomous, within this skill's existing decision authority. Fix via `mcp__obsidian__update_frontmatter`, then re-run step 1 on the fixed files to confirm the HIGHs cleared.
+   - **Envelope HIGH findings on `created_paths`** → fix inline NOW. These are frontmatter-level structural-envelope repairs (missing `type/` or scope tag, missing `status/active`, missing/malformed `updated`, missing `sources`) on files this session made — autonomous, within this skill's existing decision authority. Fix via `Edit`, then re-run step 1 on the fixed files to confirm the HIGHs cleared.
    - **All other findings** — HIGHs on pre-existing files, MEDIUMs and WARNINGs anywhere — → queue items via `/queue create-item` with `queue_kind: disposition`, `source: scope-lint`, `reasons` from the finding text, scope tags from the affected file's own scope tag. **Batch all findings on the same file into ONE item** — the operator adjudicates files, not line numbers.
 
 4. **Report** to the orchestrator: files linted, findings by severity, inline fixes applied (with confirmation they cleared), queue items created (paths).
