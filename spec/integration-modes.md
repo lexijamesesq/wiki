@@ -12,7 +12,7 @@ The canonical home of the **integration-mode property**: whether a write destina
 serves *evolution* or *current truth*, the write shape and authority that follow, and
 the validated-mutation path that earns automated writes on current-truth surfaces.
 Owns the mutation-discipline layer the knowledge contract deliberately leaves outside
-its envelope (knowledge-contract Part II › Body & Content Architecture). Consumers —
+its envelope (now the per-file `update` mode in `spec/knowledge-files.md`; the earlier rule was knowledge-contract Part II › Body & Content Architecture, superseded). Consumers —
 calibration-surface §§3–5, the gatekeeper (write plans), `/wiki-intake`
 (data-correction chain), stewardship and closeout surfaces — reference this file.
 Nothing here is restated elsewhere; amend here, nowhere else.
@@ -58,7 +58,7 @@ longer read; the cutover removes it.
 What reads the field today, and what does not:
 
 - Interactive sessions: the field is the instruction. The contract lint
-  (`contract_lint.py` in the `knowledge-description` skill, landing with the Studio kit)
+  (`contract_lint.py` in the `knowledge-description` skill, shipped with the Studio kit in wiki#206)
   checks that `update` is present and one of the three values; nothing today checks that an
   edit respected the mode. That is the writer's own discipline until the check below exists.
 - Unattended writers (eve agents): the vault tools will refuse a write that breaks the mode.
