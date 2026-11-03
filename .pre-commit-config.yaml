@@ -106,9 +106,9 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
-      - id: lint-knowledge-tests
-        name: knowledge lint behavior
-        entry: bash .github/scripts/check-push.sh lint-knowledge
+      - id: knowledge-kit-tests
+        name: knowledge kit behavior
+        entry: bash .github/scripts/check-push.sh knowledge-kit
         language: system
         pass_filenames: false
         always_run: true

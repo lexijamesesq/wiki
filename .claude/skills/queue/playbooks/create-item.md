@@ -13,7 +13,7 @@ Write one operator-judgment item into `Wiki/Queue/` as a distinct file.
 - `queue_kind` — one of `disposition | proposal` (collapsed — until reality demands more)
 - `source` — what produced the item (a skill name, lane name, or session descriptor; e.g. `scope-lint`, `capture-lane`, `session-closeout`)
 - `reasons` — array of short strings: why this needs operator judgment rather than autonomous handling. Machine-honest; they go in frontmatter and get TRANSLATED into the "why I'm stuck" sentence — never pasted into the ask.
-- `scope_tags` — one or more `project/<name>` or `area/<hierarchy>` tags locating the item's domain (load-bearing: the statusline scoped count and triage's scope resolution read these)
+- `scope` — one or more entries locating the item's domain: `project/<kebab-project-name>` for a project (the project's folder name, lowercased, spaces as hyphens; `project/system` for System), `wiki/<area>` for a Wiki area (the area's context page name). Load-bearing: the statusline scoped count and triage's scope resolution read these lines. They are queue routing values, not knowledge-file tags.
 - `payload` — the candidate/question the operator will adjudicate
 - `evidence` — supporting material (file paths, quotes, search results) sufficient for the executing session to act without re-derivation — lands in `## Mechanics`
 - `today` — ISO date (caller passes for testability)
@@ -42,8 +42,8 @@ Write one operator-judgment item into `Wiki/Queue/` as a distinct file.
    subject: <vault path(s) the item is about — optional>
    checks:
      - <machine check id(s), when a lint/scan produced the item — optional>
-   tags:
-     - <project/* or area/* scope tag(s)>
+   scope:
+     - <project/<kebab-project-name> or wiki/<area>>
    ---
    ```
 
@@ -71,9 +71,9 @@ Write one operator-judgment item into `Wiki/Queue/` as a distinct file.
 
 5. **The human-question test (hard rule)** — see the section below. An item body that fails it does not get written; recompose first.
 
-6. **Write via `mcp__obsidian__write_note`** (create mode). Vault `.md` files are MCP-only — never generic Write.
+6. **Write the file with `Write`**, after a `Glob` of the target name confirms it does not exist (never overwrite an existing item).
 
-7. **Verify:** read back the frontmatter (`mcp__obsidian__get_frontmatter`) and confirm `status: pending` and `queue-kind` are present. On write or verification failure, report **FAIL** to the caller with the attempted path and error — never silently drop (a dropped judgment is invisible forever; the design treats queue-write failure as a loud, run-failing event).
+7. **Verify:** `Read` the file back and confirm `status: pending` and `queue-kind` are present. On write or verification failure, report **FAIL** to the caller with the attempted path and error — never silently drop (a dropped judgment is invisible forever; the design treats queue-write failure as a loud, run-failing event).
 
 ## The human-question test (hard rule)
 
@@ -103,8 +103,8 @@ AFTER — passes:
 
 - **One item per file, one judgment per item.** Two unrelated findings are two files. Related findings on the same subject (e.g. several lint findings on one page) batch into ONE item — the operator adjudicates subjects, not line numbers. A batched item still asks ONE question; secondary findings ride along as consequences ("…and I'll also list it where its siblings appear").
 - **Derivable fixes still get the best human ask.** If the resolution is mechanically derivable without operator knowledge (the item exists only because the producing lane lacked write authority), say so honestly in the ask ("there's nothing here only you would know") and mark it `auto-fix candidate` in `## Mechanics` — an automated resolution lane may pay it down, but until then the operator can still answer it in a word.
-- **No knowledge-contract Part II envelope, no filing-time lint gate.** Queue items are transient judgment artifacts outside the Location Gate. Do not add `type/knowledge`, `status/active`, `updated`, or `sources` — the schema above is complete.
-- **Scope tags are the routing signal.** Derive them from the payload's domain. An item with no plausible scope tag still gets filed (it surfaces in Wiki scope and triage-all) — note the absence in `reasons`.
+- **Not a knowledge file, no contract lint.** Queue items are transient judgment artifacts outside the knowledge-file contract. Do not add `description`, `update`, `related`, `updated`, or `tags` — the schema above is complete.
+- **`scope` is the routing signal.** Derive it from the payload's domain. An item with no plausible scope still gets filed (it surfaces in Wiki scope and triage-all) — note the absence in `reasons`.
 
 ## What this playbook does NOT do
 

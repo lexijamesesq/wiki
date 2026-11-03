@@ -4,7 +4,7 @@ Playbook for `triage` (current-project scope) and `triage-all` (everything). **P
 
 ## Scope resolution
 
-- `triage` → items whose scope tags match the current context: cwd under `Projects/<Name>` → `project/<kebab-name>`; `System/` → `project/system`. **Wiki-rooted → the WHOLE queue**, grouped by scope (Wiki is the queue's home, not a project silo). No matches → say so in one line and offer `triage-all`.
+- `triage` → items whose `scope` list matches the current context: cwd under `{projects_root}/<Name>` → `project/<kebab-name>`; `{workspace_root}/System/` → `project/system`. **Wiki-rooted → the WHOLE queue**, grouped by scope (Wiki is the queue's home, not a project silo). No matches → say so in one line and offer `triage-all`.
 - `triage-all` → every pending item, grouped by scope.
 
 ## Voice — how items reach the operator
@@ -24,7 +24,7 @@ Triage is a conversation with a person, not a report to a session. Hard presenta
 
 ### 1. Opening frame (one short block, plain terms)
 
-Mechanics first, silently: queue dir = `{workspace_root}/Wiki/Queue/` (vault root via the `workspace_root` config key; fallback `VAULT_ROOT` env — same resolution as create-item). List it with `mcp__obsidian__list_directory` on `Wiki/Queue`, read items via `read_multiple_notes` (batch ≤10). No narration between tool calls — the first thing the operator reads is the frame below, never path discovery or self-correction.
+Mechanics first, silently: queue dir = `{workspace_root}/Wiki/Queue/` (vault root via the `workspace_root` config key; fallback `VAULT_ROOT` env — same resolution as create-item). List it with `Glob` on `Wiki/Queue/*.md` (skip `Queue Dashboard.md`), read items with `Read`. No narration between tool calls — the first thing the operator reads is the frame below, never path discovery or self-correction.
 
 Read all pending items in scope (frontmatter + body). Summarize in words a person plans around — how many, how heavy, what domains:
 
@@ -43,6 +43,7 @@ Surface it FIRST, in the same plain register as the opening frame — name the s
 > Six of these are stuck on the same thing — they can't tell where [domain] material belongs. That's usually a sign the page itself needs to say more about what lives there, not six separate calls. Want me to log that as a fix first, or just walk them?
 
 AskUserQuestion:
+
 - **Log the fix first** — files it via the same policy-landing pattern the per-item flow uses below, then continues to the items
 - **Just walk them** — skip straight to the menu
 - **Skip for now**
@@ -76,7 +77,7 @@ Any freeform reply is a conversation — discuss, then land on one of the above.
 
 Internal mapping (bookkeeping — never shown):
 
-- Natural answer chosen → execute its consequence within existing decision authority (mechanical edits autonomous; substance edits still require the item to carry explicit approval semantics — when in doubt, confirm what was decided). **A consequence premised on something being missing or broken verifies the premise first** — check for renames, basename matches, and non-markdown attachments before editing anything; act-then-verify is how false positives become real damage. Mark item `status: resolved` via `update_frontmatter`, and record a one-line `resolution:` frontmatter key (same `update_frontmatter` call — never a body edit).
+- Natural answer chosen → execute its consequence within existing decision authority (mechanical edits autonomous; substance edits still require the item to carry explicit approval semantics — when in doubt, confirm what was decided). **A consequence premised on something being missing or broken verifies the premise first** — check for renames, basename matches, and non-markdown attachments before editing anything; act-then-verify is how false positives become real damage. Mark item `status: resolved` with `Edit` on its frontmatter, and record a one-line `resolution:` frontmatter key in the same edit — never a body edit.
 - **Skip for now** → stays `pending`, untouched. No aging escalation exists; skipped means skipped.
 - **Drop it** → `status: expired`.
 

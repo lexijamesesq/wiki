@@ -12,7 +12,7 @@ Scan a list of touched knowledge/reference docs for the seven anti-patterns. App
 ## The seven anti-patterns
 
 | # | Pattern | Detection signal |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Appendix syndrome** | Dated section headers appended ("Extended Research: 2026-05-23", "Update: 2026-04-12") instead of integration into existing structure |
 | 2 | **Duplicate structures** | Tables, lists, or sections that repeat earlier content with additions rather than updating the original |
 | 3 | **Historical framing** | Language about how/when research was conducted ("Last session I found...", "This session's investigation revealed..."). Exception: methodology/provenance markers ("Analysis used X framework") are fine |
@@ -21,16 +21,29 @@ Scan a list of touched knowledge/reference docs for the seven anti-patterns. App
 | 6 | **Stale content** | Findings contradicted or superseded by recent work that weren't updated in place (best-effort detection — what's obviously stale) |
 | 7 | **Orphaned sections** | Content no longer connected to active project concerns — not wrong, just dead weight |
 
+## Update modes decide what a fix may touch
+
+Read the doc's `update` field first (`spec/knowledge-files.md`):
+
+| `update` | Patterns read as | What a hit leads to |
+| --- | --- | --- |
+| `replace` | all seven | fix in place, per the protocol below. No deprecated banners, no strikethrough, no "previously" notes: rewrite the sentence that is now wrong. |
+| `append` | 2, 3, 5, 6, 7. Patterns 1 and 4 are this file's declared shape: dated sections added over time are how an `append` file grows, not a hit. | **flag only.** Existing text stays unchanged, so no fix to existing text is allowed. Report the hit to the operator, who decides whether the file should become `replace`, or the content move to a successor file. |
+| `never` | all seven, report only | **flag only.** No body change. If the file is now wrong, the answer is a successor file, plus a `description` that says what superseded it. |
+| missing | — | the file breaks the contract: report it for a frontmatter fix (scope-lint fixes it if the session created or edited the file). Do not edit the body. |
+
 ## Protocol
 
 For each doc in `docs`:
 
-1. **Read the doc** (frontmatter + body).
-2. **Run pattern checks** in order. For each pattern hit:
-   - **Unambiguous hit + current-context-fix scope:** fix directly. Examples: a dated "Extended Research" section can be merged into the main body; obvious progress-log bleed can be stripped; clearly stale content (a finding the current session contradicted) can be replaced.
+1. **Read the doc** (frontmatter + body) and note its `update`.
+2. **Run pattern checks** in order, as the table above reads them. For each pattern hit:
+   - **Mode-blocked hit** (`append` or `never` file): add to `flagged` with the pattern and the reason it could not be fixed. Do not edit the body.
+   - **Unambiguous hit + current-context-fix scope (`replace` file):** fix directly. Examples: a dated "Extended Research" section can be merged into the main body; obvious progress-log bleed can be stripped; clearly stale content (a finding the current session contradicted) can be replaced.
    - **Unambiguous hit + out-of-scope scope:** file as a Linear issue describing what needs consolidation. Use `/linear` issue-management with action=`create_followup`, project=current project, priority=Low, description naming the doc + the pattern + what needs to happen.
    - **Ambiguous pattern-match:** add to `for_review` list. The orchestrator spawns a `hygiene-review` subagent per ambiguous doc.
    - **No hit:** continue.
+   - **After any fix:** set `updated` to today and re-read the `description` against the new body; refresh it if it no longer holds (`knowledge-description` skill).
 
 3. **Classification is by current-context-availability, NOT by line count.** Per session-closeout's Step 6 discipline:
    - You have current-context for systems you authored or modified this session — fix regardless of size. The keystrokes are the cost; deferring rebuilds the context later.
@@ -44,6 +57,11 @@ fixes_applied:
   - doc: <path>
     pattern: <number + name>
     fix: <one-line description>
+flagged:
+  - doc: <path>
+    update: append | never | missing
+    pattern: <number + name>
+    why_not_fixed: <one line>
 deferrals_filed:
   - doc: <path>
     pattern: <number + name>

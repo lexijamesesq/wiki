@@ -21,14 +21,14 @@ Not every correction touches every layer. Scope it before acting:
 
 **Execution steps:**
 
-1. **Identify the domain** — which `area/*` does this correction touch?
+1. **Identify the domain** — which Wiki area does this correction touch? Match it to a context page, `{workspace_root}/Wiki/Contexts/<area>-context.md`.
 2. **Load the domain's context page** — understand current state.
 3. **Identify affected files** (check all layers): Data/ records (if structured data exists), Knowledge/ files (if the correction affects narrative knowledge), Context page (if working understanding needs updating), Personal/Work pages (downstream, stewarded last).
 4. **Apply the correction** through the chain:
-   - Data/ → update frontmatter fields via `update_frontmatter`
-   - Knowledge/ → append new information (append-bias; don't edit existing substance without approval)
-   - Context page → update if working understanding shifted
-   - Personal/Work → `patch_note` only (autonomous stewardship rules apply)
+   - Data/ → update frontmatter fields with `Edit`
+   - Knowledge/ → read the file's `update` field first. `append`: add the new information as a dated entry, existing text unchanged, then set `updated`. `replace` or `never`: halt and flag for human approval (Stop rule) — `replace` takes an in-place rewrite she approves, `never` takes a successor file.
+   - Context page → update through the `context-page` skill if working understanding shifted
+   - Personal/Work → targeted `Edit` only (autonomous stewardship rules apply)
 5. **Report what was updated** across all layers.
 
 ## Output
@@ -40,7 +40,7 @@ summary: <string>
 
 ## Stop rule
 
-If the correction would require editing existing substance in a Knowledge/ file (not appending), halt and flag for human approval.
+If the correction would require editing existing substance in a Knowledge/ file (not appending), or the file's `update` is not `append`, halt and flag for human approval.
 
 ## What this playbook does NOT do
 
