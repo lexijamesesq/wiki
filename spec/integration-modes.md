@@ -39,7 +39,7 @@ applied to a current-truth surface replaces the stale value.
 Derived from the architecture, not new policy:
 
 | Destination class | Serves | Encoded where |
-|---|---|---|
+| --- | --- | --- |
 | {workspace_root}/Wiki/Knowledge + project Knowledge/ | evolution | append-bias mutation discipline; consolidation human-approved |
 | Registered meeting logs | evolution | rolling log by construction (`type/meeting-capture`) |
 | {workspace_root}/Wiki/Contexts | current-truth | update-on-shift; authority hierarchy (context page wins conflicts) |
@@ -48,16 +48,33 @@ Derived from the architecture, not new policy:
 
 ## §3 Frontmatter override
 
-A specific file may override its class default: `integration: evolution` or
-`integration: current-truth` — e.g., a Knowledge/ file that is a maintained
-current-state reference rather than an accretion record. Writers read the override at
-write-plan time. Advisory to judgment, not lint-enforced — mutation discipline is
-deliberately outside the contract envelope.
+Every knowledge file declares its own mode in the `update` frontmatter field
+(`append` | `replace` | `never`, defined in `spec/knowledge-files.md`). That field is
+what a writer reads at write-plan time; the §2 class defaults are the fallback for a file
+that does not carry it. Files that still carry the older `integration:` field are read as
+`current-truth` → `replace` and `evolution` → `append` until that field is removed at
+cutover.
+
+What reads the field today, and what does not:
+
+- Interactive sessions: the field is the instruction. The contract lint
+  (`contract_lint.py` in the `knowledge-description` skill, landing with the Studio kit)
+  checks that `update` is present and one of the three values; nothing today checks that an
+  edit respected the mode. That is the writer's own discipline until the check below exists.
+- Unattended writers (eve agents): the vault tools will refuse a write that breaks the mode.
+  That check is the eve vault-tool change and is not yet built.
+- The filer in this repo (`gatekeeper`) reads `update` before any append to an existing file,
+  in both modes (`assess-candidates`, update-mode guard): `replace` and `never` targets take a
+  queue item, never an append. The check sits in the gatekeeper because the gatekeeper is what
+  writes; the session that invoked `/capture` or `/wiki-intake` never sees the destination. The
+  older integration-mode guard (`integration:` and the §2 class defaults) still runs after it in
+  automated mode, whose path (`automated-write-plan`) runs against nothing today: the capture
+  and maintenance lanes that invoked it are retired.
 
 ## §4 Write shape × authority
 
 | Destination mode | Interactive | Automated |
-|---|---|---|
+| --- | --- | --- |
 | evolution | append, per the calibration matrix | append, per the calibration matrix (Knowledge-layer write plan `{target, pre_state_hash, append_suffix}` — overwrite structurally impossible; registered meeting logs are playbook-owned) |
 | current-truth | the surface's own discipline (update-on-shift; correction chain on explicit intent; stewardship patch) | **validated-mutation path (§5)** once active; queue until then. Registered trust only — `automated + unregistered` queues always; the unregistered-trust line is untouched by activation |
 
