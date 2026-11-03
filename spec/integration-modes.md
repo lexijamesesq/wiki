@@ -39,7 +39,7 @@ applied to a current-truth surface replaces the stale value.
 Derived from the architecture, not new policy:
 
 | Destination class | Serves | Encoded where |
-|---|---|---|
+| --- | --- | --- |
 | {workspace_root}/Wiki/Knowledge + project Knowledge/ | evolution | append-bias mutation discipline; consolidation human-approved |
 | Registered meeting logs | evolution | rolling log by construction (`type/meeting-capture`) |
 | {workspace_root}/Wiki/Contexts | current-truth | update-on-shift; authority hierarchy (context page wins conflicts) |
@@ -51,13 +51,13 @@ Derived from the architecture, not new policy:
 A specific file may override its class default: `integration: evolution` or
 `integration: current-truth` — e.g., a Knowledge/ file that is a maintained
 current-state reference rather than an accretion record. Writers read the override at
-write-plan time. Advisory to judgment, not lint-enforced — mutation discipline is
-deliberately outside the contract envelope.
+write-plan time. Enforced by tooling for unattended writers; for interactive sessions the
+`update` field (`spec/knowledge-files.md`) is the instruction and lint runs on demand.
 
 ## §4 Write shape × authority
 
 | Destination mode | Interactive | Automated |
-|---|---|---|
+| --- | --- | --- |
 | evolution | append, per the calibration matrix | append, per the calibration matrix (Knowledge-layer write plan `{target, pre_state_hash, append_suffix}` — overwrite structurally impossible; registered meeting logs are playbook-owned) |
 | current-truth | the surface's own discipline (update-on-shift; correction chain on explicit intent; stewardship patch) | **validated-mutation path (§5)** once active; queue until then. Registered trust only — `automated + unregistered` queues always; the unregistered-trust line is untouched by activation |
 
