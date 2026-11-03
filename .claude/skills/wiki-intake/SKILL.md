@@ -13,7 +13,7 @@ description: >-
 
 # Wiki Intake
 
-Single entry point for all Wiki-axis content. Checks for specialized handlers first, delegates when matched, otherwise classifies intent and routes. Composes with `/gatekeeper` (the gatekeeper — owns the coherence decision and filing) and `/queue` (the Wiki/Queue/ item interface). See `{workspace_root}/System/Knowledge/unified-ingress-design.md §§13–15` for the architectural pattern.
+Single entry point for all Wiki-axis content. Checks for specialized handlers first, delegates when matched, otherwise classifies intent and routes. Composes with `/gatekeeper` (the gatekeeper — owns the coherence decision and filing) and `/queue` (the Wiki/Queue/ item interface). See `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §§13–15` for the architectural pattern.
 
 ## Identity
 
@@ -115,6 +115,6 @@ Paths use the `{workspace_root}` placeholder — resolve via global CLAUDE.md > 
 - `{workspace_root}/Wiki/CLAUDE.md` — Wiki stewardship rules, decision authority, stop rules.
 - `knowledge-contract.md § Part I` (path: `references.tag_taxonomy`) — closed tag namespaces.
 - `{workspace_root}/System/target-architecture-v2.md` — space structure, Data/ threshold.
-- `{workspace_root}/System/Knowledge/unified-ingress-design.md §§13–15` — routing patterns, handler registration, accountability boundaries.
+- `{workspace_root}/System/Knowledge/Reference/unified-ingress-design.md §§13–15` — routing patterns, handler registration, accountability boundaries.
 - `knowledge-contract.md § Part II` (path: `references.structural_contract`) — file envelope; authority for the frontmatter a filed Knowledge/ file must carry.
 - `knowledge-contract.md § Part III` §1 (path: `references.handoff_contracts`) — the wiki-intake filing handoff contract.
