@@ -8,5 +8,8 @@ tags:
 verified: 2025-12-01
 integration: manual
 sources:
-  - https://example.com/garden
+  - title: Garden almanac
+    url: https://example.com/garden
+    notes:
+      - kept for reference
 ---

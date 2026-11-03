@@ -279,6 +279,23 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(self.parse(fm_text)["updated"], "2026-01-01")
         self.assertEqual(kf.first_heading(body), "T")
 
+    def test_mapping_items_and_nested_structures_are_accepted(self):
+        fm = self.parse(
+            "sources:\n  - title: x\n    url: y\n  - title: z\n    url: w\n"
+            "foo:\n  bar:\n    - x\n    - y\n  baz: 1\n"
+            "tags:\n- topic/a\n- topic/b\nupdated: 2026-01-01"
+        )
+        self.assertEqual(len(fm["sources"]), 2)
+        self.assertIsInstance(fm["foo"], dict)
+        self.assertEqual(fm["tags"], ["topic/a", "topic/b"])
+        self.assertEqual(fm["updated"], "2026-01-01")
+
+    def test_quoted_list_entry_wrapping_lines(self):
+        fm = self.parse(
+            'sources:\n  - "first line\n    second line"\n  - plain\nupdated: 2026-01-01'
+        )
+        self.assertEqual(fm["sources"], ["first line second line", "plain"])
+
     def test_errors(self):
         for bad in (
             "a: b: c",

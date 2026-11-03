@@ -105,9 +105,8 @@ def _read_value(lines, i, rest):
             return None, i
         if block[0].lstrip().startswith("-"):
             return _read_block_list(lines[i:j], i), j
-        for ln in block:
-            if not KEY_RE.match(ln.strip()):
-                raise FrontmatterError(f"line {lineno}: nested value is not a mapping")
+        if not KEY_RE.match(block[0].strip()):
+            raise FrontmatterError(f"line {lineno}: nested value is not a mapping")
         return Mapping(), j
     if rest[0] in "[{":
         text, i = _gather_flow(lines, i - 1, rest)
@@ -247,38 +246,68 @@ def _plain_scalar(text, lineno):
 
 def _read_block_list(block, base):
     items = []
-    for off, ln in enumerate(block):
-        lineno = base + off + 1
+    dash_indent = None
+    k = 0
+    while k < len(block):
+        ln = block[k]
+        lineno = base + k + 1
+        k += 1
         s = ln.strip()
         if not s or s.startswith("#"):
             continue
-        if not s.startswith("-") or (len(s) > 1 and s[1] != " "):
+        indent = len(ln) - len(ln.lstrip(" "))
+        if dash_indent is None:
+            dash_indent = indent
+        if indent > dash_indent:
+            # Continuation of the previous entry (mapping keys, nested lists, or a
+            # wrapped plain scalar). Mappings stay opaque; plain text is joined.
+            if (
+                items
+                and isinstance(items[-1], str)
+                and not isinstance(items[-1], Mapping)
+            ):
+                items[-1] = (items[-1] + " " + _strip_comment(s)).strip()
+            elif not items:
+                raise FrontmatterError(f"line {lineno}: unexpected indented content")
+            continue
+        if (
+            indent < dash_indent
+            or not s.startswith("-")
+            or (len(s) > 1 and s[1] != " ")
+        ):
             raise FrontmatterError(f"line {lineno}: malformed list entry")
         item = s[1:].strip()
-        if item == "":
-            items.append(None)
-        elif item[0] in "[{":
-            value, pos = _parse_flow(item, 0, lineno)
-            if item[pos:].strip() and not item[pos:].strip().startswith("#"):
-                raise FrontmatterError(
-                    f"line {lineno}: unexpected text after list entry"
-                )
-            items.append(Mapping() if isinstance(value, Mapping) else value)
-        elif item[0] in "\"'":
-            end = _closing_quote(item, item[0])
-            if end is None:
-                raise FrontmatterError(f"line {lineno}: unterminated quoted list entry")
-            tail = item[end + 1 :].strip()
-            if tail and not tail.startswith("#"):
-                raise FrontmatterError(
-                    f"line {lineno}: unexpected text after list entry"
-                )
-            items.append(_unquote(item[: end + 1]))
-        elif KEY_RE.match(_strip_comment(item).strip()):
-            items.append(Mapping())
-        else:
-            items.append(_plain_scalar(_strip_comment(item).strip(), lineno))
+        if item[:1] in ("'", '"'):
+            # A quoted entry may wrap onto deeper-indented lines until it closes.
+            while _closing_quote(item, item[0]) is None and k < len(block):
+                nxt = block[k]
+                if nxt.strip() and len(nxt) - len(nxt.lstrip(" ")) <= dash_indent:
+                    break
+                item += " " + nxt.strip()
+                k += 1
+        items.append(_list_item(item, lineno))
     return items
+
+
+def _list_item(item, lineno):
+    if item == "":
+        return None
+    if item[0] in "[{":
+        value, pos = _parse_flow(item, 0, lineno)
+        if item[pos:].strip() and not item[pos:].strip().startswith("#"):
+            raise FrontmatterError(f"line {lineno}: unexpected text after list entry")
+        return Mapping() if isinstance(value, Mapping) else value
+    if item[0] in "\"'":
+        end = _closing_quote(item, item[0])
+        if end is None:
+            raise FrontmatterError(f"line {lineno}: unterminated quoted list entry")
+        tail = item[end + 1 :].strip()
+        if tail and not tail.startswith("#"):
+            raise FrontmatterError(f"line {lineno}: unexpected text after list entry")
+        return _unquote(item[: end + 1])
+    if KEY_RE.match(_strip_comment(item).strip()):
+        return Mapping()
+    return _plain_scalar(_strip_comment(item).strip(), lineno)
 
 
 def _gather_flow(lines, idx, rest):
