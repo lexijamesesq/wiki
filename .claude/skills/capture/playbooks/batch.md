@@ -12,15 +12,15 @@ items:
   - content: <markdown — the synthesis/claim body>
     title: <string>                    # optional; informs new-file naming
     kind_proposal: <kind enum>         # optional; default durable-knowledge
-    scope_hint: <project/* | area/*>   # optional
-    topic_hints: [<topic>, ...]
-    sources: [<provenance string>, ...]  # knowledge-contract Part II Provenance vocabulary
+    scope_hint: <project name | Wiki area name>   # optional
+    search_terms: [<word>, ...]        # words a future session would search with
+    sources: [<provenance string>, ...]  # gatekeeper SKILL.md › Sources
     pinned: <bool>                     # operator-confirmed at closeout → true
     source_attribution: <string>       # default "CC session YYYY-MM-DD (<project>)"
     trust: registered | unregistered   # optional, default registered (closeout synthesis is operator-authored); third-party material MUST be marked unregistered
 ```
 
-**Caller mapping — query-and-file input → items:** `draft_content` → `content`; `title` → `title` (`suggested_filename` → `title` when `title` is absent); `destination_class` + `scope` → `scope_hint` (`project/<scope>` for project-hosted, `area/<scope>` for Wiki-hosted); `host_project_root` → informs the project-hosted `scope_hint` (the gatekeeper resolves final placement and index.md location from the resolved scope); `topic` → `topic_hints`; `sources` → `sources`. Operator-approved synthesis is `pinned: true`.
+**Caller mapping — query-and-file input → items:** `draft_content` → `content`; `title` → `title` (`suggested_filename` → `title` when `title` is absent); `destination_class` + `scope` → `scope_hint` (the project name for project-hosted, the Wiki area name for Wiki-hosted); `host_project_root` → informs the project-hosted `scope_hint` (the gatekeeper resolves final placement, including the type folder, from the resolved scope); `search_terms` → `search_terms`; `sources` → `provenance`. Operator-approved synthesis is `pinned: true`.
 
 ## Protocol
 
@@ -30,13 +30,11 @@ items:
 4. **Return** the structured report to the caller:
 
 ```yaml
-filed:     [{path, destination_class, validator_verdict, index_synced}]
+filed:     [{path, destination_class, validator_verdict}]
 queued:    [{item_path, reasons}]
 discarded: [{summary, reason}]
 flags:     [...]
 ```
-
-`index_synced` is true on project-hosted filings — the gatekeeper performs the knowledge-contract Part III §4 post-file index sync itself; callers must NOT chain a second index-sync for these paths.
 
 ## What this playbook does NOT do
 
