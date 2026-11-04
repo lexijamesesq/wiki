@@ -11,7 +11,7 @@ description: >-
 
 # Knowledge description
 
-A knowledge file's `description` is the line a future session reads instead of the file. It is how someone finds the file, and how a session decides whether to open it. The contract for the frontmatter lives in `spec/knowledge-files.md`.
+A knowledge file's `description` is the line a future session reads instead of the file. It is how someone finds the file, and how a session decides whether to open it. The contract for the frontmatter lives in `spec/knowledge-files.md` at this plugin's root (`<this-skill-dir>/../../spec/knowledge-files.md`; the same file lives in the wiki repo's `spec/`). The describe tool never judges a file: unreadable frontmatter prints a heading fallback and a stderr warning, so after writing a file run the lint below, not only describe.
 
 ## Writing a description
 

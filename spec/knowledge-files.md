@@ -3,7 +3,7 @@ tags:
   - type/spec
   - project/system
   - status/active
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Knowledge Files
@@ -34,13 +34,15 @@ description: How the nightly export job is scheduled and what it writes.
 update: replace
 related:
   - "[[export-failure-log|Past failures]]"
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 ```
 
 - `related` links render in Obsidian and follow renames. A background librarian agent maintains the list; any writer may add to it.
 - Body is content only. Citations go in a bottom `## Sources` section.
 - Retired at cutover: `tags` (all families), `verified`, frontmatter `sources`, `integration`.
+- YAML: quote a `description` that contains a colon followed by a space, or starts with a character YAML reads as syntax (`[`, `{`, `*`, `&`, `!`, `%`, `@`, `` ` ``, `"`, `'`, `#`); the lint reports `yaml-parse` otherwise, and the describe tool shows only a heading fallback.
+- Filenames: kebab-case with the `.md` extension. The filename is the wikilink target, so it must be unique across the vault.
 
 ## Update modes
 
@@ -51,6 +53,8 @@ Declared per file in `update`. A folder never sets the mode. Frontmatter is edit
 | `append` | Existing text stays unchanged. New text is only added, anywhere (for example under its parent heading). |
 | `replace` | Rewritten in place to stay current. No deprecated or superseded banners, no strikethrough. |
 | `never` | No body changes. A successor is a new file. |
+
+Choosing a mode: `Methods/` and `Reference/` files are usually `replace` (they describe what is true now); `Research/`, `Decisions/` and `Records/` files are usually `never` (a later finding or choice is a new file); `append` fits a dated log that grows. The file's own content decides, the folder only suggests.
 
 ## Structure
 
