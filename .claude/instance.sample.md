@@ -2,7 +2,7 @@
 status: active
 description: >-
   Wiki stewardship rules — how Wiki maintains itself, mutation discipline,
-  intake pipeline, context management.
+  writing knowledge, context management.
 updated: 'TODO: date'
 ---
 # Wiki
@@ -36,7 +36,6 @@ Keep Wiki maintained, fresh, queryable, and trustworthy so every Claude session 
 ## Desired Outcomes
 
 - Sessions find what they need from context pages, file descriptions (the describe tool) and `related` links — no hand-curated indexes
-- Captures graduate through a deliberate intake pipeline: TODO: name your router/intake skill
 - Knowledge/ files stay single-question scoped (one question per file) with source attribution
 - Context files carry Claude's durable working understanding — updated when understanding shifts, not on every session
 - Stale content is flagged, not silently drifted (hygiene at closeout; the librarian agent once live)
@@ -66,15 +65,12 @@ Keep Wiki maintained, fresh, queryable, and trustworthy so every Claude session 
 - Creating new Knowledge/ files for new topics
 - Updating Context files when understanding shifted
 - Running the contract lint on request or at session closeout
-- Filing router-delivered captures via the intake skill (skill owns the coherence decision)
-- Creating queue items for judgments the system can't or won't decide autonomously
 - Patching stale facts on human-facing pages (stewardship)
 - TODO: name your automated lanes (if any) and their exact write scope — be explicit about what they may NEVER touch
 
 **Human-initiated:**
 
-- Triggering a stewardship session (contract lint + queue triage)
-- Promoting a queue item to Knowledge/
+- Triggering a stewardship session (contract lint, human-facing page check)
 - Removing content (deletion) — user confirms target
 - Expanding structured-data domains
 
@@ -93,7 +89,7 @@ Keep Wiki maintained, fresh, queryable, and trustworthy so every Claude session 
 - Halt before deleting any file without explicit user confirmation — deletion has no reliable recovery
 - Halt before editing existing text in an `append` file or the body of a `never` file — the file's `update` field forbids it, and mutation is the primary corruption vector. Flag the edit for approval instead.
 - Halt before consolidating Knowledge/ files without user confirmation — consolidation is a judgment call on redundancy
-- Halt when intake can't classify a capture cleanly — an honest queue item beats a wrong placement
+- Halt when content doesn't meet the coherence criteria (Writing knowledge, below) — name it to the user rather than filing it
 - Halt before restructuring any human-facing page — these are human-navigable surfaces designed for the user's cognitive model
 
 ---
@@ -117,21 +113,6 @@ TODO: describe your own human/Claude surface split, if you use one. The pattern 
 
 ## Self-Management
 
-### Operator-judgment queue (`Queue/`)
-
-One file per pending judgment — the single operator-attention surface for everything the system can't or won't decide autonomously. **Not task management**: queue items are pending judgments about routing, integrity, or staging — never work items.
-
-Item kinds — TODO: define your own taxonomy. This repo's convention (kept minimal, expand only when reality demands it):
-
-| queue-kind | Meaning |
-| --- | --- |
-| `disposition` | Here is a finding/item; operator decides what happens to it |
-| `proposal` | Here is a specific proposed change; operator approves or rejects it |
-
-**Item shape:** filename `{YYYY-MM-DD}-{queue-kind}-{slug}.md`; frontmatter `queue-kind`, `source`, `reasons` (array), `created`, `status: pending | resolved | expired`, a `scope` list; body carries the payload + search evidence.
-
-**Triage:** pull-only — session boundaries are not task surfaces. TODO: name your triage verb/skill and its passive signal (e.g. a statusline count).
-
 ### Management triggers
 
 | Task | Trigger | Who runs |
@@ -140,7 +121,6 @@ Item kinds — TODO: define your own taxonomy. This repo's convention (kept mini
 | Context update | TODO: your trigger | Automatic |
 | Human-facing page stewardship | TODO: your trigger | Automatic |
 | Knowledge/ mutation review | Closeout hygiene flags a file over threshold | Flagged for user review |
-| Queue triage | Operator-invoked only | User decides when |
 | Structured-data expansion | Session-initiated | User decides when a domain fits |
 
 ---
@@ -167,7 +147,7 @@ Agent-optimized. Terse, dense, tables over paragraphs. Wikilinks between pages. 
 
 An automated agent building summaries, populating hubs, or answering domain questions loads the context page first and treats it as the authoritative lens.
 
-**When drift is detected:** Add the file to `stale_suspects` in the domain's context page (frontmatter array of file paths). This is autonomous — flagging is not mutation. Resolution happens with a human (edit, append, or archive the Knowledge/ file).
+**When drift is detected:** name it to the user in the session; the resolution (edit, append, or archive the Knowledge/ file) is a decision with them.
 
 ### Freshness signals
 
@@ -186,7 +166,6 @@ At point-of-use: check the domain's context page first (authority hierarchy). Fo
 | File | Purpose |
 | --- | --- |
 | `.claude/instance.md` | This file — Wiki stewardship rules |
-| `Queue/` | Operator-judgment queue — one item file per pending judgment |
 | `Knowledge/` | Narrative knowledge, one topic per file |
 | `Data/` | Structured per-item records |
 | `Contexts/` | Claude's durable working understanding + domain schema |
@@ -195,16 +174,16 @@ At point-of-use: check the domain's context page first (authority hierarchy). Fo
 
 ---
 
-## Intake
+## Writing knowledge
 
-TODO: name your single entry point for Wiki-axis content. The Router delivers here; this skill owns area classification, coherence gating, and internal dispatch.
+A session writes a knowledge file directly when it has durable content with a known home: `Knowledge/{area}-{slug}.md` (or a project's type folder), the four contract fields, and a `## Sources` section. **A data correction** (a recorded fact changed) is applied only when the user stated the change ("switched to X", "the value is now Z"); when it is only inferred, ask first. Then scope it before editing: state the old and new value, find every layer that holds the old value (Data/ → Knowledge/ → Context → human-facing page; often only one or two do), and apply it through each:
 
-### Default path
+- Data/ → update the record's frontmatter.
+- Knowledge/ → read the file's `update` field: `replace` is rewritten in place (no banner); `append` takes a dated entry with existing text unchanged; `never` halts for the user's approval (Stop rules) — its successor is a new file.
+- Context page → through the `context-page` skill, if the working understanding shifted.
+- Human-facing page → a targeted fact patch under the stewardship rules.
 
-- **Coherent + additive** → `Knowledge/{area}-{slug}.md` with the four contract fields and a `## Sources` section
-- **Data correction** → propagate through affected layers (Data/ → Knowledge/ → Context → human-facing page)
-- **Explore-later topic** → `Queue/` item, `queue-kind: disposition`
-- **Half-thought / incoherent** → `Queue/` item, `queue-kind: disposition`
+Report which layers changed.
 
 **Coherence criteria:**
 
@@ -213,15 +192,7 @@ TODO: name your single entry point for Wiki-axis content. The Router delivers he
 - **Additive:** contributes content Wiki doesn't already cover (not a duplicate of an existing Knowledge/ file)
 - **Single-question scoped:** the file should answer one identifiable question
 
-If any criterion fails → a `Queue/` item, not Knowledge/.
-
-### Specialized handlers
-
-TODO: list your own specialized intake handlers, if any. Handlers are overrides, not peers — the default intake skill is always the fallback.
-
-### Scope boundary
-
-TODO: describe where task-axis captures (work items with no project owner) route in your system — Queue/ items are pending judgments (routing, integrity, staging), never work items.
+If any criterion fails, the content is not filed; name it to the user instead.
 
 ---
 

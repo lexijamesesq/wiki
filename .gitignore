@@ -11,10 +11,9 @@
 /Data/
 /Contexts/
 /Attachments/
-/Queue/
 /Working/
 
-# === Operational State (queue/backlog artifacts) ===
+# === Operational State (backlog artifacts) ===
 /backlog.json
 /backlog-archive.json
 
