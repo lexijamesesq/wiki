@@ -25,22 +25,22 @@ Do not record: what happened in this session, task status, anything already in a
 
 ## Shape of the page
 
-Frontmatter carries the four required fields (`description`, `update: replace`, `related`, `updated`). The `description` says what area the page covers and what a session gets from it. The page has three hand-written sections, in this order:
+Frontmatter carries the four required fields (`description`, `update: replace`, `related`, `updated`). The `description` says what area the page covers and what a session gets from it. The page has three hand-written sections (listed here in the order a new page uses; an existing page may carry them in another order, and a fact update does not reorder or reformat them):
 
 | Section | Holds |
 | --- | --- |
 | `## User Context` | The operator's preferences and constraints in this area, stated as facts about her. |
 | `## Approach` | How to help in this area: what to do, what to avoid, and what depth she wants. |
-| `## Working Understanding` | A synthesized picture of the area as it stands: how the parts fit and what is settled versus open. Prose that you keep coherent, not a log. |
+| `## Working Understanding` | A synthesized picture of the area as it stands: how the parts fit and what is settled versus open. A synthesis you keep coherent, not a log, in whatever form the page already uses (prose or bullets). |
 
 There is no Cross-Domain section. Links to other areas, and to the Knowledge files that back a claim, go in `related` frontmatter as aliased wikilinks, `"[[target|short reason]]"`.
 
 ## How to update
 
-1. Read the page, and run the describe tool over the area's Knowledge folder (see `knowledge-description`) to see what already carries the detail.
+1. Read the page with the Read tool, and run the describe tool over the area's Knowledge folder to see what already carries the detail: `python3 <knowledge-description-skill-dir>/scripts/describe.py <folder>`, where `<knowledge-description-skill-dir>` is the sibling `knowledge-description` skill's directory (the one holding its `SKILL.md`, next to this skill's).
 2. Revise in place. The page is `update: replace`: rewrite the sentence that is now wrong rather than appending a correction, and leave no "previously" or "superseded" notes. Merge a new fact into the section where it belongs; if it contradicts an existing line, resolve the contradiction.
 3. Keep Working Understanding a synthesis. When it starts reading as a list of findings, those findings belong in a Knowledge file with a `related` link from here.
 4. Add `related` links for areas or files the new understanding connects to. Refresh `description` if the page's scope changed. Set `updated` to today's date.
-5. Check the result against the contract: `python3 <knowledge-description-skill-dir>/scripts/contract_lint.py <page>`.
+5. Check the result against the contract: `python3 <knowledge-description-skill-dir>/scripts/contract_lint.py <page>` (same directory as in step 1).
 
-Write the page through the vault tooling your session is configured to use for vault notes, not by editing a checkout of this repo. Say in your reply what you changed on the page and why, in one or two lines.
+Edit the page in place with the Edit tool (Write only when the page does not exist yet). The vault is live files under `{workspace_root}`, never a checkout of this repo, and no MCP server mediates vault writes. Say in your reply what you changed on the page and why, in one or two lines.
