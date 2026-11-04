@@ -8,7 +8,7 @@ updated: 2026-07-26
 
 # Knowledge Contract (superseded)
 
-**Superseded 2026-11-03 by `spec/knowledge-files.md`.** No skill reads this document any more: `lint.py` is retired, the gatekeeper and knowledge-layer read the four-field contract, and the vault's frontmatter cutover removed the keys this document governs (`tags`, `verified`, `sources`, `integration`). It stays as the record of the earlier rules. Where each part went:
+**Superseded 2026-11-03 by `spec/knowledge-files.md`.** No skill reads this document any more: `lint.py` is retired, sessions write knowledge files directly under the four-field contract, and the vault's frontmatter cutover removed the keys this document governs (`tags`, `verified`, `sources`, `integration`). It stays as the record of the earlier rules. Where each part went:
 
 | Section | Fate |
 | --- | --- |
@@ -20,7 +20,7 @@ updated: 2026-07-26
 | Part II, Body and Content Architecture | Replaced by the per-file `update` modes |
 | Part II, Scope Boundaries (Location and Type gates) | Replaced by the folder scope list in `knowledge-files.md` |
 | Part II, Migration Legacy | Retired with the tags |
-| Part III, Filing Handoffs | Replaced by the gatekeeper's filing step against the four fields |
+| Part III, Filing Handoffs | Retired: sessions write knowledge files directly against the four fields; the gatekeeper is retired |
 | Part IV, Lint Surface | Replaced by `contract_lint.py` (the `knowledge-description` skill) |
 | Part V, Parsing Contract and Machine-Parse Invariants | Retired with `lint.py` |
 
