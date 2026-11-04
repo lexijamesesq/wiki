@@ -1,6 +1,6 @@
 {
   "name": "wiki",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Knowledge-layer skills for an Obsidian-vault wiki: the knowledge-file contract, its describe and lint tools, context pages, and per-session maintenance.",
   "author": {
     "name": "Lexi James",
