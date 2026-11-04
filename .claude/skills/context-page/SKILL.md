@@ -37,10 +37,10 @@ There is no Cross-Domain section. Links to other areas, and to the Knowledge fil
 
 ## How to update
 
-1. Read the page with the Read tool, and run the describe tool over the area's Knowledge folder (`python3 ${CLAUDE_PLUGIN_ROOT}/.claude/skills/knowledge-description/scripts/describe.py <folder>`) to see what already carries the detail.
+1. Read the page with the Read tool, and run the describe tool over the area's Knowledge folder to see what already carries the detail: `python3 <knowledge-description-skill-dir>/scripts/describe.py <folder>`, where `<knowledge-description-skill-dir>` is the sibling `knowledge-description` skill's directory (the one holding its `SKILL.md`, next to this skill's).
 2. Revise in place. The page is `update: replace`: rewrite the sentence that is now wrong rather than appending a correction, and leave no "previously" or "superseded" notes. Merge a new fact into the section where it belongs; if it contradicts an existing line, resolve the contradiction.
 3. Keep Working Understanding a synthesis. When it starts reading as a list of findings, those findings belong in a Knowledge file with a `related` link from here.
 4. Add `related` links for areas or files the new understanding connects to. Refresh `description` if the page's scope changed. Set `updated` to today's date.
-5. Check the result against the contract: `python3 ${CLAUDE_PLUGIN_ROOT}/.claude/skills/knowledge-description/scripts/contract_lint.py <page>`.
+5. Check the result against the contract: `python3 <knowledge-description-skill-dir>/scripts/contract_lint.py <page>` (same directory as in step 1).
 
 Edit the page in place with the Edit tool (Write only when the page does not exist yet). The vault is live files under `{workspace_root}`, never a checkout of this repo, and no MCP server mediates vault writes. Say in your reply what you changed on the page and why, in one or two lines.
