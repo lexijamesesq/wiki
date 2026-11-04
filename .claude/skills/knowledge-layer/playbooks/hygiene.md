@@ -45,7 +45,7 @@ For each doc in `docs`:
    - **No hit:** continue.
    - **After any fix:** set `updated` to today and re-read the `description` against the new body; refresh it if it no longer holds (`knowledge-description` skill).
 
-3. **Classification is by current-context-availability, NOT by line count.** Per session-closeout's Step 6 discipline:
+3. **Classification is by current-context-availability, NOT by line count.** Per session-closeout's current-context discipline (its Decision Authority section):
    - You have current-context for systems you authored or modified this session — fix regardless of size. The keystrokes are the cost; deferring rebuilds the context later.
    - Out-of-scope = genuinely separate scope (different system, different domain, requires independent research you didn't do this session). A 5-line edit to a system you don't understand may still belong as a Linear issue.
 
