@@ -19,7 +19,7 @@ The Knowledge layer is the vault's reusable-synthesis surface — methodology do
 Discipline rules applied on every invocation:
 
 - **The `update` field decides what may change.** `append`: existing text stays unchanged, new text is only added. `replace`: rewritten in place to stay current, with no deprecated banners or strikethrough. `never`: no body change; a successor is a new file. Frontmatter is editable under every mode. Read a file's `update` before changing its body.
-- **One filing path.** New synthesis files through `/gatekeeper assess candidates`, which composes the file, places it, and runs the contract lint. This skill never writes a new knowledge file itself.
+- **One filing path for this skill.** Synthesis that closeout hands to `query-and-file` goes through `/gatekeeper assess candidates`, which composes the file, places it, and runs the contract lint; this skill never writes a new knowledge file itself. A session authoring a knowledge file in the course of its work writes it directly, per the `knowledge-description` skill and the contract lint; that is not this skill's path and not a violation of it.
 - **Vault files are read and edited with native tools** (Read, Grep, Glob, Edit) under the session's own permissions.
 - **A changed file gets a true description.** Any body fix this skill makes ends with the file's `description` re-read against the new body and refreshed if it no longer holds (`knowledge-description` skill), and `updated` set to today.
 
@@ -38,7 +38,7 @@ Discipline rules applied on every invocation:
 
 - Zero body edits to `never` files; zero rewrites of existing text in `append` files.
 - Load-boundary-as-guard for the hygiene write/review split: the scan path NEVER loads the review playbook.
-- Zero new knowledge files written outside the gatekeeper.
+- Zero new knowledge files written by this skill outside the gatekeeper.
 
 **Strategic context.** One of three domain skills session-closeout composes (with `/project-state` and `/linear`). Periodic whole-corpus checks are `/lint-knowledge`'s (on demand) and, once live, the librarian agent's: freshness, links, and drift between context pages and Knowledge files move there.
 
