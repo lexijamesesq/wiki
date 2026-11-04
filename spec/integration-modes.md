@@ -6,7 +6,17 @@ tags:
 updated: '2026-11-03'
 ---
 
-# Integration Modes — Destination Write Discipline
+# Integration Modes — Destination Write Discipline (superseded)
+
+**Superseded 2026-11-04.** No skill reads this document any more. Its write discipline lives in `spec/knowledge-files.md`, and the automated-write machinery it described was retired with the gatekeeper, router, wiki-intake and queue skills, which were built for captures arriving with no known destination and were never used that way. Kept as the design record; amend nothing here.
+
+| Part | Fate |
+| --- | --- |
+| §1 The property (evolution vs current truth) | Replaced by the per-file `update` mode (`append` / `replace` / `never`) in `spec/knowledge-files.md` › Update modes |
+| §2 Class defaults | Retired: a folder never sets the mode; each file declares its own |
+| §3 Frontmatter override | Replaced by the required `update` field; `integration:` retired at cutover |
+| §4 Write shape × authority | Retired with the gatekeeper; interactive sessions follow the `update` field, unattended writers are held by their own tools (`spec/knowledge-files.md` › Enforcement) |
+| §5 The validated-mutation path | Retired, never activated; unattended-write enforcement belongs to the eve agents' vault tools (the librarian work) |
 
 The canonical home of the **integration-mode property**: whether a write destination
 serves *evolution* or *current truth*, the write shape and authority that follow, and

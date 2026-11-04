@@ -10,7 +10,7 @@ Run the contract lint over the knowledge files this session touched, at closeout
 
 ## Protocol
 
-1. **Keep only knowledge files.** From `scope_paths`, keep paths under a `Knowledge/` folder or `{workspace_root}/Wiki/Contexts/`. Drop everything else (CLAUDE.md, `overview.md`, `Wiki/Data`, `Wiki/Queue`, Personal/Work). Nothing left → report `scope-lint: no knowledge files touched` and stop.
+1. **Keep only knowledge files.** From `scope_paths`, keep paths under a `Knowledge/` folder or `{workspace_root}/Wiki/Contexts/`. Drop everything else (CLAUDE.md, `overview.md`, `Wiki/Data`, Personal/Work). Nothing left → report `scope-lint: no knowledge files touched` and stop.
 
 2. **Run the lint** — `contract_lint.py` lives in the sibling `knowledge-description` skill (same skills directory as this skill):
 
@@ -36,4 +36,4 @@ Run the contract lint over the knowledge files this session touched, at closeout
 
 - Does NOT run whole-corpus scans — that's `/lint-knowledge`.
 - Does NOT create queue items; remaining findings go in the closeout summary for the operator.
-- Does NOT gate filing — the gatekeeper's lint already ran on files it filed; scope-lint is the closeout backstop across everything the session touched.
+- Does NOT gate a write — a session lints a file it creates when it creates it (`knowledge-description`); scope-lint is the closeout backstop across everything the session touched.
