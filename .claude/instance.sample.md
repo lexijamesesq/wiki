@@ -2,7 +2,7 @@
 status: active
 description: >-
   Wiki stewardship rules — how Wiki maintains itself, mutation discipline,
-  intake pipeline, context management.
+  writing knowledge, context management.
 updated: 'TODO: date'
 ---
 # Wiki
@@ -176,7 +176,14 @@ At point-of-use: check the domain's context page first (authority hierarchy). Fo
 
 ## Writing knowledge
 
-A session writes a knowledge file directly when it has durable content with a known home: `Knowledge/{area}-{slug}.md` (or a project's type folder), the four contract fields, and a `## Sources` section. A data correction propagates through the affected layers (Data/ → Knowledge/ → Context → human-facing page).
+A session writes a knowledge file directly when it has durable content with a known home: `Knowledge/{area}-{slug}.md` (or a project's type folder), the four contract fields, and a `## Sources` section. **A data correction** (a recorded fact changed) is applied only when the user stated the change ("switched to X", "the value is now Z"); when it is only inferred, ask first. Then scope it before editing: state the old and new value, find every layer that holds the old value (Data/ → Knowledge/ → Context → human-facing page; often only one or two do), and apply it through each:
+
+- Data/ → update the record's frontmatter.
+- Knowledge/ → read the file's `update` field: `append` takes a dated entry with existing text unchanged; `replace` or `never` halts for the user's approval (Stop rules).
+- Context page → through the `context-page` skill, if the working understanding shifted.
+- Human-facing page → a targeted fact patch under the stewardship rules.
+
+Report which layers changed.
 
 **Coherence criteria:**
 

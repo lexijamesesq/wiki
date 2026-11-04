@@ -18,6 +18,12 @@ updated: '2026-11-03'
 | §4 Write shape × authority | Retired with the gatekeeper; interactive sessions follow the `update` field, unattended writers are held by their own tools (`spec/knowledge-files.md` › Enforcement) |
 | §5 The validated-mutation path | Retired, never activated; unattended-write enforcement belongs to the eve agents' vault tools (the librarian work) |
 
+---
+
+## Historical record (as of 2026-11-03, unmaintained)
+
+Everything below is the document as it stood before supersession. Its instructions, including "amend here", no longer apply.
+
 The canonical home of the **integration-mode property**: whether a write destination
 serves *evolution* or *current truth*, the write shape and authority that follow, and
 the validated-mutation path that earns automated writes on current-truth surfaces.

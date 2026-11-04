@@ -66,7 +66,7 @@ Per invocation, identify the operation and load the matching playbook:
 | --- | --- | --- | --- |
 | **hygiene** scan | List of touched doc paths | Fixes applied (`replace` files, current-context) + items flagged (defer, or mode-blocked) + ambiguous items for review | `playbooks/hygiene.md` |
 | **hygiene-review** (subagent-only) | Doc path + its update mode + anti-pattern definitions | Per-doc verdict (PASS/FAIL/REVISE) | `playbooks/hygiene-review.md` |
-| **scope-lint** | Session-touched vault paths, including files the session created | Frontmatter fixes on session-touched files; remaining findings listed for the closeout summary | `playbooks/scope-lint.md` |
+| **scope-lint** | Session-touched vault paths + session-created subset | Frontmatter fixes on session-touched files; remaining findings listed for the closeout summary | `playbooks/scope-lint.md` |
 
 ## Load-boundary-as-guard
 
