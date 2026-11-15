@@ -2,12 +2,17 @@
 tags:
   - type/claude-repo
 description: "Claude Code skills that maintain an Obsidian-vault knowledge base — the knowledge-file contract with its describe and lint tools, context pages, and per-session maintenance."
-docs_home: "{workspace_root}/Wiki"
+linear_project_id: "370bc981-298b-402c-86da-738cdeb5831a"
+linear_url: "https://linear.app/lexijamesesq/project/wiki-8162836e4e37"
+notion_project: "https://app.notion.com/p/4195f53f7dbc8152a83fdf93c9f322aa"
+notion_knowledge: "collection://4195f53f-7dbc-8183-a0bf-000b6a646302"
 ---
 
 # wiki
 
 The machinery half of a personal knowledge-base system: the knowledge-file kit (`/knowledge-description`, `/context-page`), maintenance (`/knowledge-layer`, `/lint-knowledge`). The notes half — `Knowledge/`, `Data/`, `Contexts/`, `Attachments/` — lives in the operator's vault, addressed via `{workspace_root}`; this repo never tracks it. Public repo: also the source `wiki` plugin published for other Claude Code sessions to consume.
+
+The maintainer's project documentation is in Notion and its work is tracked in Linear; the front matter points to both, and they are private. The maintainer's own knowledge has since moved out of the vault into Notion, so these skills no longer act on where it is kept; they remain as built, for Markdown knowledge files.
 
 ## Setup
 
